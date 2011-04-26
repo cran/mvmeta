@@ -1,0 +1,15 @@
+citHeader("To cite the R package 'mvmeta' in publications use:")
+
+if(!exists("meta") || is.null(meta)) meta <- packageDescription("mvmeta")
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date)
+vers <- paste("R package version", meta$Version)
+
+citEntry(entry="Manual",
+	title = "mvmeta: multivariate meta-analysis and meta-regression.",
+	author = personList(as.person("Gasparrini A")),
+	year = year,
+	note = vers,
+	textVersion =
+	paste("Gasparrini A. mvmeta: multivariate meta-analysis and meta-regression (",year,"). ",vers, ".", sep=""))
+
+citFooter("A BibTeX entry for LaTeX users is returned by: toBibtex(citation('mvmeta'))")

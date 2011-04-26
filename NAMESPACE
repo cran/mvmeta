@@ -1,0 +1,44 @@
+
+# EXPORTED
+export(mvmeta)
+export(print.mvmeta,summary.mvmeta)
+export(logLik.mvmeta,AIC.mvmeta,BIC.mvmeta)
+export(coef.mvmeta,vcov.mvmeta)
+export(fitted.mvmeta,predict.mvmeta)
+export(blup,blup.mvmeta)
+export(qtest,qtest.mvmeta)
+
+# DOCUMENTED BUT NOT EXPORTED
+#export(mvmeta.ml,mvmeta.reml,mvmeta.ml.grad,mvmeta.reml.grad)
+#export(mvmeta.igls)
+#export(mvmeta.check)
+#export(kXlistmk,gradchol)
+#export(logMat,expMat,vechMat,xpndMat)
+#export(sumlist,meanlist,rbindlist,cbindlist)
+
+# NOT DOCUMENTED OR EXPORTED EITHER
+#export(print.qtest.mvmeta)
+
+# NOT INCLUDED IN THIS VERSION
+#export(simulate.mvmeta)
+#export(mvmeta.rigls,mvmeta.em)
+
+# IMPORTED
+import(stats,graphics,grDevices)
+importFrom(utils,packageDescription)
+#importFrom(metafor,blup)
+
+# METHODS
+S3method(summary, mvmeta)
+S3method(print, mvmeta)
+S3method(logLik, mvmeta)
+S3method(AIC, mvmeta)
+S3method(BIC, mvmeta)
+S3method(coef, mvmeta)
+S3method(vcov, mvmeta)
+S3method(fitted, mvmeta)
+S3method(predict, mvmeta)
+S3method(blup, mvmeta)
+S3method(qtest, mvmeta)
+S3method(print, qtest.mvmeta)
+#S3method(simulate, mvmeta)
