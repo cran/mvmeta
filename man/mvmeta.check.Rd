@@ -9,19 +9,18 @@ This function performs some checks on the arguments of the main function \code{\
 }
 
 \usage{
-mvmeta.check(y, S, X, method, lab, cen, na.action)
+mvmeta.check(y, S, X, method, lab, na.action)
 }
 
 \arguments{
 
 See also the related arguments in \code{\link{mvmeta}}:
 
-  \item{y }{ series of \eqn{k} estimated outcome parameters for each one of the \eqn{m} studies.}
-  \item{S }{ series of within-study (co)variance matrices of estimated outcome parameters for each one of the \eqn{m} studies.}
-  \item{X }{ series of \eqn{p-1} study-level predictors (excluding intercept) for each one of the \eqn{m} studies.}
+  \item{y }{ \eqn{m} x \eqn{k} matrix of estimated outcome parameters for each one of the \eqn{m} studies.}
+  \item{S }{ series of within-study (co)variance matrices of estimated outcome parameters for each one of the \eqn{m} studies, allowed in different formats.}
+  \item{X }{ \eqn{m} x \eqn{p} matrix of study-level predictors (including intercept) for each one of the \eqn{m} studies.}
   \item{method }{ estimation method.}
   \item{lab }{ list of label vectors.}
-  \item{cen }{ centering values for the predictors in meta-regression.}
   \item{na.action }{ a function which indicates what should happen when the data contain \code{NA}s.}
 
 }
@@ -44,30 +43,19 @@ See \code{\link{mvmeta-package}} and \code{\link{mvmeta}} for an overview of the
 }
 
 \examples{
-mvmeta.check <- function(y, S, X, method, lab, cen, na.action) {
-	# y, S AND X TYPES
-	if(!is.numeric(y) && !is.list(y)) {
-		stop("the argument 'y' must be a matrix, vector, list or dataframe")
-	}
+mvmeta.check <- function(y, S, X, method, lab, na.action) {
+
+	# S TYPES
 	if(!is.numeric(S) && !is.list(S) && !is.array(S)) {
 		stop("the argument 'S' must be a matrix, vector, list, dataframe or array")
 	}
-	if(!is.null(X) && !is.numeric(X) && !is.list(X)) {
-		stop("the argument 'y' must be a matrix, vector, list or dataframe")
-	}
+
 	# DIMENSIONS
-	if(is.numeric(y)) {
-		m <- nrow(as.matrix(y))
-		k <- ncol(as.matrix(y))
-	} else {
-		m <- length(y)
-		k <- nrow(as.matrix(y[[1]]))
-	}
+	m <- nrow(y)
+	k <- ncol(y)
+	p <- ncol(X)
 	if(m<2) stop("at least 2 studies are required")
-	# CHECK ON y
-	if(!is.numeric(y) && any(sapply(y,length)!=k)) {
-			stop("studies have different number of outcomes")
-	}
+
 	# CHECK ON S
 	if(is.numeric(S) && !is.matrix(S)) {
 		if(k>1) stop("the argument S must provide a kxk covar matrix for m studies")
@@ -83,19 +71,12 @@ mvmeta.check <- function(y, S, X, method, lab, cen, na.action) {
 	} else {
 		if(dim(S)!=c(k,k,m)) stop("incorrect dimensions of argument 'S'")
 	}
-	# CHECK ON X
-	if(!is.null(X) && is.numeric(X)) {
-		p <- 1+ncol(as.matrix(X))
-		if(nrow(as.matrix(X))!=m) stop("incorrect dimensions of argument 'X'")
-	} else if(!is.null(X)) {
-		if(length(X)!=m) stop("incorrect dimensions of argument 'X'")
-		p <- length(X[[1]])
-		if(any(sapply(X,length)!=p)) stop("incorrect dimensions of argument 'X'")
-	} else p <- 1
+
 	# METHOD
 	if(!method\%in\%c("fixed","ml","reml")) {
 		stop("Methods allowed: 'fixed', 'ml', 'reml'")
 	}
+
 	# LAB
 	if(!is.list(lab)) stop("argument 'lab' must be a list")
 	if(!is.null(lab$mlab) && length(lab$mlab)!=m) {
@@ -104,16 +85,10 @@ mvmeta.check <- function(y, S, X, method, lab, cen, na.action) {
 	if(!is.null(lab$klab) && length(lab$klab)!=k) {
 		 stop("incorrect dimensions of argument 'klab'")
 	}
-	if(!is.null(lab$plab) && length(lab$plab)!=p-1) {
+	if(!is.null(lab$plab) && length(lab$plab)!=p) {
 		 stop("incorrect dimensions of argument 'plab'")
 	}
-	#CEN
-	if(!is.logical(cen) && !is.numeric(cen)) {
-		stop("argument 'cen' must be logical or a numeric vector")
-	}
-	if(!is.null(X) && is.numeric(cen)) {
-		if(length(cen)!=p-1) stop("incorrect dimensions of argument 'cen'")
-	}
+
 	# NA.ACTION
 		format <- match.arg(na.action,c("na.omit","na.exclude",
 		"na.fail","na.pass"))

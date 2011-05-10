@@ -2,7 +2,7 @@
 \alias{berkey98}
 \docType{data}
 
-\title{ Five Published Trials on Peridontal Disease }
+\title{ Five Published Trials on Periodontal Disease }
 
 \description{
 The dataset contains the results of 5 published trials comparing surgical and non-surgical treatments for medium-severity periodontal disease, one year after treatment. The 2 estimated outcomes are average improvements (surgical minus non-surgical, in mm) in probing depth (PD) and attachment level (AL).

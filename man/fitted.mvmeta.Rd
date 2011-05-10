@@ -16,7 +16,7 @@ This method function computes model fitted values for objects of class \code{"mv
 
   \item{object}{ an object of class \code{"mvmeta"}.}
   \item{format}{ the format for the returned results. See Value.}
-  \item{na.action}{ a function which indicates what should happen when the data contain \code{NA}s. The default to the value saved in the \code{"mvmeta"} object. See Note.}
+  \item{na.action}{ a function which indicates what should happen when the data contain \code{NA}s. The default to the value saved in \code{object}. See Note.}
   \item{\dots}{ further arguments passed to or from other methods.}
 
 }
@@ -28,16 +28,16 @@ A \eqn{m} x \eqn{k} matrix or a \eqn{m}-length list of \eqn{k}-length vectors. I
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}
 
 \note{
-This method function has a slightly different behaviour in the presence of missing values, if compared to the same method for other classes. Specifically, the fitted values are set to \code{NA} if at least one of the predictor values is missing in meta-regression models. In constrast, the function computes the fitted values in the presence of missing outcomes in \code{y} or entries of the within-study (co)variance matrices \code{S} in \code{\link{mvmeta}}.
+This method function has a slightly different behaviour in the presence of missing values, if compared to the same method for other classes. Specifically, the fitted values are set to \code{NA} if at least one of the predictor values is missing in meta-regression models. In constrast, the function computes the fitted values in the presence of missing outcomes parameters estimates or entries of the within-study (co)variance matrices (left-hand side of \code{formula} and \code{S} in \code{\link{mvmeta}}, respectively).
 }
 
 \seealso{
-The function \code{\link[mvmeta:predict.mvmeta]{predict}} computes the predicted values, optionally for different values of the predictors in meta-regression models. The function \code{\link[mvmeta:blup.mvmeta]{blup}} provides best linear unbiased pridictions for the set of studies included in the analysis. See \code{\link{mvmeta-package}} and \code{\link{mvmeta}} for an overview of the package and modelling framework.
+The method function \code{\link[mvmeta:predict.mvmeta]{predict}} computes the predicted values, optionally for different values of the predictors in meta-regression models. The method function \code{\link[mvmeta:blup.mvmeta]{blup}} provides best linear unbiased pridictions for the set of studies included in the analysis. See \code{\link{mvmeta-package}} and \code{\link{mvmeta}} for an overview of the package and modelling framework.
 }
 
 \examples{
 # RUN THE MODEL 
-model <- mvmeta(y=berkey98[4:5],S=berkey98[6:8])
+model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[6:8],data=berkey98)
 
 # FITTED VALUES
 fitval <- fitted(model,format="list")

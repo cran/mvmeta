@@ -20,7 +20,7 @@ mvmeta.reml(par, ylist, Slist, kXlist, nalist, nobs, k)
 mvmeta.ml.grad(par, ylist, Slist, kXlist, nalist, nobs, k)
 mvmeta.reml.grad(par, ylist, Slist, kXlist, nalist, nobs, k)
 
-mvmeta.igls(Psi, ylist, Slist, kXlist, nalist, k, m, p)
+mvmeta.igls(Psi, ylist, Slist, kXlist, nalist, k, m)
 
 }
 
@@ -30,13 +30,15 @@ mvmeta.igls(Psi, ylist, Slist, kXlist, nalist, k, m, p)
   \item{Psi }{ matrix representing the current estimate of the between-study (co)variance matrix of the outcome parameters.}
   \item{ylist }{ a list of study-specific vectors of estimated outcome parameters. Missing values have been excluded.}
   \item{Slist }{ a list of study-specific (co)variance matrices of estimated outcome parameters. Missing values have been excluded.}
-  \item{kXlist }{ a list of study-specific design matrices for the fixed part of the model, as returned by \code{\link{kXlistmk}}.}
-  \item{nalist }{ a list of \eqn{k}-length study-specific logical vectors, \code{TRUE} when the outcome parameter is not missing.}
+  \item{kXlist }{ a list of study-specific design matrices for the fixed part of the model.}
+  \item{nalist }{ a list of \eqn{k}-length study-specific logical vectors, \code{TRUE} when the related obseervation is not (set to) missing.}
   \item{nobs, k, m, p }{ numeric scalars: number of observations (excluding missing), number of outcome parameters, number of studies included in estimation (equal to the length of lists above), number of coefficients for each outcome parameter.}
 
 }
 
 \details{
+In the absence of missing values, each matrix in the argument \code{kXlist} is produced by a Kronecker product between an identity matrix of dimension \eqn{k} and the transpose of the \eqn{p}-length vector of study-level predictors. In the presence of missing outcome parameters, the related row of the identity matrix is excluded. For simple multivariate meta-analysis without predictors, the vector of study-level predictors is simply the numeric scalar 1, representing the intercept. The final desing matrix is therefore an identity matrix itself.
+
 Random-effects models are fitted through (restricted) maximum likelihood using a quasi-Newton iterative algorithm, in order to estimate the coefficients \eqn{beta} and the variance components of \eqn{Psi}. The procedure is based on a profiled (or concentrated) likelihood, expressing the (restricted) likelihood only in terms of the components of \eqn{Psi}, while the conditional estimate of \eqn{beta}, obtained through generalized least square, is plugged-in at every iteration. This approach reduces the number of parameters in the optimization routine, especially in meta-regression models.
 
 The optimization routine is performed by \code{\link{optim}}, which calls \code{mvmeta.ml}-\code{mvmeta.ml.grad} or \code{mvmeta.reml}-\code{mvmeta.reml.grad}. These functions provide the (restricted) likelihood functions and their functions of partial derivatives with respect to the model parameters. Given that \code{\link{optim}} minimizes the objective, these values are returned with the minus sign.
@@ -204,7 +206,7 @@ mvmeta.reml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	return(-grad)
 }
 
-mvmeta.igls <- function(Psi, ylist, Slist, kXlist, nalist, k, m, p) {
+mvmeta.igls <- function(Psi, ylist, Slist, kXlist, nalist, k, m) {
 	# COMPUTE beta BY GLS
 	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
 		Slist,nalist,SIMPLIFY=FALSE)

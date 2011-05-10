@@ -1,5 +1,5 @@
 mvmeta.igls <-
-function(Psi, ylist, Slist, kXlist, nalist, k, m, p) {
+function(Psi, ylist, Slist, kXlist, nalist, k, m) {
 
 	# COMPUTE beta BY GLS
 	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],

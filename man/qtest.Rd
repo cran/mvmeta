@@ -32,9 +32,5 @@ Returned values depend on the specific class. Usually, the results of the test.
 See \code{\link{qtest.mvmeta}} for the specific method function applied to objects of class \code{"mvmeta"}.
 }
 
-\examples{
-#.
-}
-
 \keyword{methods}
 \keyword{htest}

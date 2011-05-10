@@ -30,7 +30,7 @@ See \code{\link{mvmeta-package}} and \code{\link{mvmeta}} for an overview of the
 
 \examples{
 # RUN THE MODEL 
-model <- mvmeta(y=berkey98[4:5],S=berkey98[6:8])
+model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[6:8],data=berkey98)
 
 # EXTRACT COEFFICIENTS
 coef(model)

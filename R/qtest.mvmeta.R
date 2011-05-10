@@ -2,22 +2,26 @@ qtest.mvmeta <-
 function(object, ...) {
 
 	# RE-COMPUTE QUANTITIES
-	nastudy <- sapply(object$y,function(x) !all(is.na(x)))
-	nastudy[sapply(object$S,function(x) all(is.na(rowSums(x)+colSums(x))))] <- FALSE
-	if(!is.null(object$X)) {
-		Xna <- rowSums(!is.na(object$X))==ncol(object$X)
-		nastudy[!Xna] <- FALSE
-	}
-
+	model <- object$model
+	y <- as.matrix(model.response(model,"numeric"))
+	y <- lapply(seq(nrow(as.matrix(y))), function(i) as.matrix(y)[i,])
+	terms <- terms(model)
+	X <- model.matrix(terms,model,object$contrast)
+	S <- object$S
+	nastudy <- sapply(y,function(x) !all(is.na(x)))
+	nastudy[sapply(S,function(x) all(is.na(rowSums(x)+colSums(x))))] <- FALSE
+	Xna <- rowSums(!is.na(X))==object$dim$p
+	nastudy[!Xna] <- FALSE
 	nalist <- mapply(function(y,S) {
 		na <- !is.na(y)
 		na[unique(which(is.na(S),arr.ind=TRUE))] <- FALSE
-		return(na)},object$y[nastudy],object$S[nastudy],SIMPLIFY=FALSE)
-	ylist <- mapply(function(y,na) y[na],object$y[nastudy],nalist,SIMPLIFY=FALSE)
+		return(na)},y[nastudy],S[nastudy],SIMPLIFY=FALSE)
+	ylist <- mapply(function(y,na) y[na],y[nastudy],nalist,SIMPLIFY=FALSE)
 	Slist <- mapply(function(S,na) S[na,na,drop=FALSE],
-		object$S[nastudy],nalist,SIMPLIFY=FALSE)
-	kXlist <- kXlistmk(object$X[nastudy,,drop=FALSE],object$cen,nalist,
-		length(ylist),object$dim$k)
+		S[nastudy],nalist,SIMPLIFY=FALSE)
+	kXlist <- mapply(function(i,na) {diag(1,object$dim$k)[na,,drop=FALSE]%x%
+		X[nastudy,,drop=FALSE][i,,drop=FALSE]},
+		seq(length(ylist)),nalist,SIMPLIFY=FALSE)
 
 	# COMPUTE beta WITH FIXED EFFECTS MODEL
 	# OBTAIN beta BY GLS

@@ -18,20 +18,27 @@ function(object, se=FALSE, pi=FALSE, vcov=FALSE, pi.level=0.95,
 	# SLIST INCLUDING 0 AND 10^12 IN COVARIANCES AND VARIANCES,
 	#	RESPECTIVELY, MATCHING THE PATTERN IN y
 	# kXlist INCLUDES ALL THE OBS, ALSO MISSING
+	model <- object$model
+	y <- as.matrix(model.response(model,"numeric"))
+	y <- lapply(seq(nrow(as.matrix(y))), function(i) as.matrix(y)[i,])
+	terms <- terms(model)
+	X <- model.matrix(terms,model,object$contrast)
+	S <- object$S
 	nalist <- mapply(function(y,S) {
 		na <- !is.na(y)
 		na[unique(which(is.na(S),arr.ind=TRUE))] <- FALSE
-		return(na)},object$y,object$S,SIMPLIFY=FALSE)
+		return(na)},y,S,SIMPLIFY=FALSE)
 	nalist2 <- lapply(nalist,function(x) rep(TRUE,length(x)))
 	ylist <- mapply(function(y,na) {
 		y[!na] <- 0
-		return(y)},object$y,nalist,SIMPLIFY=FALSE)
+		return(y)},y,nalist,SIMPLIFY=FALSE)
 	Slist <- mapply(function(S,na) {
 		S1 <- diag(10^10,length(na))
 		S1[na,na] <- S[na,na]
-		return(S1)},object$S,nalist,SIMPLIFY=FALSE)
-	kXlist <- kXlistmk(object$X,object$cen,nalist2,
-		length(nalist),object$dim$k)
+		return(S1)},S,nalist,SIMPLIFY=FALSE)
+	kXlist <- mapply(function(i,na) {diag(1,object$dim$k)[na,,drop=FALSE]%x%
+		X[i,,drop=FALSE]},seq(length(ylist)),nalist2,SIMPLIFY=FALSE)
+
 		
 	# PREPARE ADDITIONAL OBJECTS
 	Sigmalist <- lapply(Slist, function(S) S+object$Psi)
@@ -62,19 +69,17 @@ function(object, se=FALSE, pi=FALSE, vcov=FALSE, pi.level=0.95,
 			bluplist,selist,SIMPLIFY=FALSE)
 
 	# HANDLE MISSING
-	if(!is.null(object$X)) {
-		Xna <- rowSums(!is.na(object$X))==ncol(object$X)
-		if(na.action=="na.fail" && !all(Xna)) {
-			stop("missing values in 'X'")
-		}
-		if(!all(Xna) && na.action=="na.omit") {
-			bluplist <- bluplist[Xna]
-			selist <- selist[Xna]
-			pilblist <- pilblist[Xna]
-			piublist <- piublist[Xna]
-			vcovlist <- vcovlist[Xna]
-			mlab <- object$lab$mlab[Xna]
-		} else mlab <- object$lab$mlab
+	Xna <- rowSums(!is.na(X))==object$dim$p
+	if(na.action=="na.fail" && !all(Xna)) {
+		stop("missing values in 'X'")
+	}
+	if(na.action=="na.omit") {
+		bluplist <- bluplist[Xna]
+		selist <- selist[Xna]
+		pilblist <- pilblist[Xna]
+		piublist <- piublist[Xna]
+		vcovlist <- vcovlist[Xna]
+		mlab <- object$lab$mlab[Xna]
 	} else mlab <- object$lab$mlab
 
 #########################################################################

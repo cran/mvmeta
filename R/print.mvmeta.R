@@ -3,9 +3,11 @@ function(x, ci.level=0.95, digits=4, ...) {
 
 	if(ci.level<=0||ci.level>=1) stop("'ci.level' must be within 0 and 1")
 
-	# CREATE USEFUL xS
+	# CREATE USEFUL OBJECTS
 	methodname <- c("reml","ml","fixed")
 	methodlabel <- c("REML","ML","Fixed")
+	p <- x$dim$p
+	int <- x$int
 
 ###########################################################################
 # HEADING AND SUBHEADING
@@ -23,7 +25,7 @@ function(x, ci.level=0.95, digits=4, ...) {
 
 	cat("Fixed effects","\n",sep="")
 
-	# COMPUTE USEFUL xS
+	# COMPUTE USEFUL OBJECTS
 	beta.se <- sqrt(diag(x$vcov))
 	zval <- x$beta/beta.se
 	zvalci <- qnorm((1-ci.level)/2,lower.tail=FALSE)
@@ -36,7 +38,7 @@ function(x, ci.level=0.95, digits=4, ...) {
 		"*", ".", " "))
 
 	# FOR SIMPLE META-ANALYSIS
-	if(is.null(x$X)) {
+	if(p-int==0) {
 		table <- cbind(x$beta,beta.se,zval,pvalue,ci.lb,ci.ub)
 		rownames(table) <- x$lab$klab
 		colnames(table) <- c("Estimate","StdErr","z","p-value",cilab)
@@ -48,8 +50,7 @@ function(x, ci.level=0.95, digits=4, ...) {
 	}	
 
 	# FOR META-REGRESSION
-	if(!is.null(x$X)) {
-		p <- x$dim$p
+	if(p-int>0) {
 		tabletot <- cbind(x$beta,beta.se,zval,pvalue,ci.lb,ci.ub)
 		for(i in seq(x$dim$k)) {
 			ind <- seq((i-1)*p+1,(i-1)*p+p)
@@ -73,7 +74,7 @@ function(x, ci.level=0.95, digits=4, ...) {
 		cat("Variance components: between-studies stdev and correlation matrix",
 			"\n",sep="")
 
-		# COMPUTE USEFUL xS
+		# COMPUTE USEFUL OBJECTS
 		Psisd <- sqrt(diag(x$Psi))
 		Psicor <- round(cov2cor(x$Psi),3)
 		Psicor[upper.tri(Psicor)] <- NA

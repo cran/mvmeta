@@ -1,31 +1,17 @@
 mvmeta.check <-
-function(y, S, X, method, lab, cen, na.action) {
+function(y, S, X, method, lab, na.action) {
 
-	# y, S AND X TYPES
-	if(!is.numeric(y) && !is.list(y)) {
-		stop("the argument 'y' must be a matrix, vector, list or dataframe")
-	}
+	# S TYPES
 	if(!is.numeric(S) && !is.list(S) && !is.array(S)) {
 		stop("the argument 'S' must be a matrix, vector, list, dataframe or array")
 	}
-	if(!is.null(X) && !is.numeric(X) && !is.list(X)) {
-		stop("the argument 'y' must be a matrix, vector, list or dataframe")
-	}
 
 	# DIMENSIONS
-	if(is.numeric(y)) {
-		m <- nrow(as.matrix(y))
-		k <- ncol(as.matrix(y))
-	} else {
-		m <- length(y)
-		k <- nrow(as.matrix(y[[1]]))
-	}
+	m <- nrow(y)
+	k <- ncol(y)
+	p <- ncol(X)
 	if(m<2) stop("at least 2 studies are required")
 
-	# CHECK ON y
-	if(!is.numeric(y) && any(sapply(y,length)!=k)) {
-			stop("studies have different number of outcomes")
-	}
 	# CHECK ON S
 	if(is.numeric(S) && !is.matrix(S)) {
 		if(k>1) stop("the argument S must provide a kxk covar matrix for m studies")
@@ -41,15 +27,6 @@ function(y, S, X, method, lab, cen, na.action) {
 	} else {
 		if(dim(S)!=c(k,k,m)) stop("incorrect dimensions of argument 'S'")
 	}
-	# CHECK ON X
-	if(!is.null(X) && is.numeric(X)) {
-		p <- 1+ncol(as.matrix(X))
-		if(nrow(as.matrix(X))!=m) stop("incorrect dimensions of argument 'X'")
-	} else if(!is.null(X)) {
-		if(length(X)!=m) stop("incorrect dimensions of argument 'X'")
-		p <- length(X[[1]])
-		if(any(sapply(X,length)!=p)) stop("incorrect dimensions of argument 'X'")
-	} else p <- 1
 
 	# METHOD
 	if(!method%in%c("fixed","ml","reml")) {
@@ -64,16 +41,8 @@ function(y, S, X, method, lab, cen, na.action) {
 	if(!is.null(lab$klab) && length(lab$klab)!=k) {
 		 stop("incorrect dimensions of argument 'klab'")
 	}
-	if(!is.null(lab$plab) && length(lab$plab)!=p-1) {
+	if(!is.null(lab$plab) && length(lab$plab)!=p) {
 		 stop("incorrect dimensions of argument 'plab'")
-	}
-
-	#CEN
-	if(!is.logical(cen) && !is.numeric(cen)) {
-		stop("argument 'cen' must be logical or a numeric vector")
-	}
-	if(!is.null(X) && is.numeric(cen)) {
-		if(length(cen)!=p-1) stop("incorrect dimensions of argument 'cen'")
 	}
 
 	# NA.ACTION

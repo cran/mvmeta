@@ -1,12 +1,12 @@
 Package: mvmeta
 Type: Package
 Title: Multivariate meta-analysis and meta-regression
-Version: 0.1.0
-Date: 2011-04-26
+Version: 0.2.0
+Date: 2011-05-10
 Author: Antonio Gasparrini
 Maintainer: Antonio Gasparrini <antonio.gasparrini@lshtm.ac.uk>
 Depends: R (>= 2.8.0)
-Imports: stats, graphics, utils
+Imports: stats, graphics, utils, Matrix
 Suggests: metafor, meta, rmeta, nlme
 Description: The package mvmeta contains functions to run fixed and
         random effects meta-analysis and meta-regression on multiple
@@ -14,6 +14,6 @@ Description: The package mvmeta contains functions to run fixed and
 License: GPL (>= 2)
 LazyLoad: yes
 LazyData: yes
-Packaged: 2011-05-09 09:38:52 UTC; Gaspa
+Packaged: 2011-05-10 07:50:20 UTC; Gaspa
 Repository: CRAN
-Date/Publication: 2011-05-09 15:29:58
+Date/Publication: 2011-05-10 09:36:32

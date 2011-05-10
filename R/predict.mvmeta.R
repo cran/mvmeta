@@ -4,22 +4,6 @@ function(object, newdata, se=FALSE, ci=FALSE, vcov=FALSE,
 	format=c("matrix","list"), aggregate=c("stat","y"), na.action, ...) {
 
 	# CHECKS
-	if(is.null(object$X)) {
-		if(!missing(newdata)) stop("original model does not include predictors")
-		newdata <- NULL
-	}
-	if(missing(newdata)) newdata <- object$X
-	if(is.list(newdata)&&!is.data.frame(newdata)) newdata <- rbindlist(newdata)
-	if(!is.null(newdata) && is.data.frame(newdata)) {
-		newdata <- as.matrix(newdata)
-	}
-	if(!is.null(newdata) && !is.matrix(newdata)) {
-		if(object$dim$p==2) { newdata <- as.matrix(newdata)
-		} else newdata <- t(as.matrix(newdata))
-	}
-	if(!is.null(newdata) && ncol(newdata)!=object$dim$p-1) {
-		stop("columns in 'newdata' must match number of predictors")
-	}
 	interval <- match.arg(interval,c("confidence","prediction"))
 	if(ci.level<=0||ci.level>=1) stop("'ci.level' must be within 0 and 1")
 	format <- match.arg(format,c("matrix","list"))
@@ -28,14 +12,35 @@ function(object, newdata, se=FALSE, ci=FALSE, vcov=FALSE,
 	na.action <- match.arg(na.action,c("na.omit","na.exclude",
 		"na.fail","na.pass"))
 
+	# CREATE DESIGN MATRIX X
+	# IF ONLY-INTERCEPT MODEL, ONLY 1 PREDICTED VALUE
+	if(object$dim$p-object$int==0) { 
+		X <- as.matrix(1)
+	# IF newdata MISSING, USE ORIGINAL SET OF PREDICTORS
+	} else if(missing(newdata) || is.null(newdata)) {
+		model <- object$model
+		terms <- terms(model)
+		X <- model.matrix(terms,model,object$contrast)
+	# IF NOT MISSING
+	} else {
+		model <- object$model
+		terms <- delete.response(terms(model))
+		xlevels <- .getXlevels(terms,model)
+		# NEW DATA MAY BE ALSO A MATRIX OR VECTOR
+		mdata <- model.frame(terms,newdata,
+			na.action=na.action,xlev=xlevels)
+		X <- model.matrix(terms,mdata,contrasts.arg=object$contrasts)
+	}
+
 #########################################################################
 
 	# RE-CREATE OBJECTS
 	# HERE nalist INCLUDES ALL THE OBS, ALSO MISSING
 	# kXlist IS OF LENGTH 1 IF NO PREDICTOR
-	len <- ifelse(!is.null(newdata),nrow(newdata),1)
+	len <- nrow(X)
 	nalist <- lapply(seq(len),function(x) rep(TRUE,object$dim$k))
-	kXlist <- with(object,kXlistmk(newdata,cen,nalist,len,dim$k))
+	kXlist <- mapply(function(i,na) {diag(1,object$dim$k)[na,,drop=FALSE]%x%
+		X[i,,drop=FALSE]},seq(len),nalist,SIMPLIFY=FALSE)
 
 	# COMPUTE PREDICTION
 	predlist <- lapply(kXlist,function(kX) {
@@ -57,18 +62,16 @@ function(object, newdata, se=FALSE, ci=FALSE, vcov=FALSE,
 			predlist,selist,SIMPLIFY=FALSE)
 
 	# HANDLE MISSING
-	if(!is.null(newdata)) {
-		Xna <- rowSums(!is.na(object$X))==ncol(object$X)
-		if(na.action=="na.fail" && !all(Xna)) {
-			stop("missing values in 'X'")
-		}
-		if(!all(Xna) && na.action=="na.omit") {
-			predlist <- predlist[Xna]
-			selist <- selist[Xna]
-			cilblist <- cilblist[Xna]
-			ciublist <- ciublist[Xna]
-			vcovlist <- vcovlist[Xna]
-		}
+	Xna <- rowSums(!is.na(X))==object$dim$p
+	if(na.action=="na.fail" && !all(Xna)) {
+		stop("missing values in 'X'")
+	}
+	if(na.action=="na.omit") {
+		predlist <- predlist[Xna]
+		selist <- selist[Xna]
+		cilblist <- cilblist[Xna]
+		ciublist <- ciublist[Xna]
+		vcovlist <- vcovlist[Xna]
 	}
 
 #########################################################################

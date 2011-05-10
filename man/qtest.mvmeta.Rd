@@ -25,6 +25,7 @@ In this context, the test assesses the null hypothesis that the variability in t
 
 \value{
 A list object of class \code{"qtest.mvmeta"} with the following components:
+
   \item{Q }{ the test statistic, distributed under the null hypothesis as a Chi-square with degrees of freedom \code{df}.}
   \item{df }{ the degrees of freedom of the null distribution, equal to the number of observations used for estimation minus the number of coefficients in the fixed part of the model.}
   \item{pvalue }{ the p-value of the test.}
@@ -35,7 +36,7 @@ A list object of class \code{"qtest.mvmeta"} with the following components:
 \references{
 Berkey, C. S., D. C. Hoaglin, et al. (1998). "Meta-analysis of multiple outcomes by regression with random effects." \emph{Statistics in Medicine}. \bold{17}(22):2537-2550.
 
-Ritz, J., E. Demidenkob, et al. (2008). "Multivariate meta-analysis for data consortia, individual patient meta-analysis, and pooling projects." \emph{Journal of Statistical Planning and Inference}. \bold{139}(7):1919-1933.
+Ritz, J., E. Demidenkob, Spiegelman G. (2008). "Multivariate meta-analysis for data consortia, individual patient meta-analysis, and pooling projects." \emph{Journal of Statistical Planning and Inference}. \bold{139}(7):1919-1933.
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}
@@ -46,7 +47,7 @@ See \code{\link{qtest}} for the generic method function. See \code{\link{mvmeta-
 
 \examples{
 # RUN THE MODEL AND SUMMARIZE THE RESULTS
-model <- mvmeta(y=berkey98[4:5],S=berkey98[6:8])
+model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[6:8],data=berkey98)
 
 # MULTIVARIATE COCHRAN Q TEST FOR HETEROGENEITY
 test <- qtest(model)

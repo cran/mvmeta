@@ -35,7 +35,7 @@ For \code{AIC} and \code{BIC}, a numeric value corresponding to the selected inf
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}
 
 \note{
-The attributes of the object returned by \code{logLik} may display different information than that stored in the \code{model} object. In particular, \code{nall} defines the total number of observations used for estimation (equal to \code{df$nobs} in \code{model}), while here \code{nobs} returns the same number, but substracted by the number of estimated coefficients for models estimated by REML. The number of total estimated parameters \code{df} is given by the sum of number of coefficients (\code{fixed}) and (co)variance terms (\code{random}) in the model. This choice is made in order to be coherent with related methods functions for other classes in the computation of AIC and BIC.
+The attributes of the object returned by \code{logLik} may display different information than that stored in the \code{"mvmeta"} model object. In particular, \code{nall} defines the total number of observations used for estimation (equal to \code{df$nobs} in the model object), while here \code{nobs} returns the same number, but substracted by the number of estimated coefficients for models estimated by REML. The number of total estimated parameters \code{df} is given by the sum of number of coefficients (\code{fixed}) and (co)variance terms (\code{random}) in the model. This choice is made in order to be coherent with related methods functions for other classes in the computation of AIC and BIC.
 }
 
 \section{Warnings}{
@@ -48,7 +48,7 @@ See \code{\link{mvmeta-package}} and \code{\link{mvmeta}} for an overview of the
 
 \examples{
 # RUN THE MODEL 
-model <- mvmeta(y=berkey98[4:5],S=berkey98[6:8])
+model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[6:8],data=berkey98)
 
 # AIC and BIC
 AIC(model)

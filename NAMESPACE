@@ -12,7 +12,7 @@ export(qtest,qtest.mvmeta)
 #export(mvmeta.ml,mvmeta.reml,mvmeta.ml.grad,mvmeta.reml.grad)
 #export(mvmeta.igls)
 #export(mvmeta.check)
-#export(kXlistmk,gradchol)
+#export(gradchol)
 #export(logMat,expMat,vechMat,xpndMat)
 #export(sumlist,meanlist,rbindlist,cbindlist)
 
@@ -26,6 +26,7 @@ export(qtest,qtest.mvmeta)
 # IMPORTED
 import(stats,graphics,grDevices)
 importFrom(utils,packageDescription)
+importFrom(Matrix,rankMatrix)
 #importFrom(metafor,blup)
 
 # METHODS

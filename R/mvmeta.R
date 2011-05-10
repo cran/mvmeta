@@ -1,59 +1,67 @@
 mvmeta <-
-function(y, S, X=NULL, method="reml", lab, cen=FALSE, na.action, ...) {
+function(formula, S, data, method="reml", lab, contrasts, na.action, ...) {
 
 ##########################################################################
 # PREPARE THE DATA
 
+	# CREATE y AND X FROM formula (FOLLOW lm FUNCTION)
+	call  <- match.call()
+	# CREATE THE CALL
+	model <- match.call(expand.dots=FALSE)
+	mn <- match(c("formula","data","constrasts"), names(model), 0L)
+	model <- model[c(1L, mn)]
+  	model$drop.unused.levels <- TRUE
+	# HERE KEEP THE MISSING
+  	model$na.action <- "na.pass"
+	model[[1L]] <- as.name("model.frame")
+	model <- eval(model,parent.frame())
+	terms <- attr(model,"terms")
+	# DESIGN MATRIX (NOT EXPANDED YET)
+	if(missing(contrasts)) contrasts <- NULL
+	X <- model.matrix(terms,model,contrasts)
+	int <- any(colnames(X)=="(Intercept)")
+	if(int) colnames(X)[colnames(X)=="(Intercept)"] <- "(Int)"
+	# KEEP MATRIX FORMAT ALSO WITH UNIVARIATE RESPONSE
+	y <- as.matrix(model.response(model,"numeric"))
+
+	# NUMBER OF OUTCOMES AND PREDICTORS
+	k <- ncol(y)
+	p <- ncol(X)
+
 	# FIRST CHECKS
-	if(is.data.frame(y)) y <- as.matrix(y)
+	if(!is.null(model.offset(model))) stop("an offset is not allowed")
+	if(is.empty.model(terms)) stop("an empty model is not allowed")
+	if(is.null(model.response(model))) stop("response needed in formula")
 	if(is.data.frame(S)) S <- as.matrix(S)
-	if(is.data.frame(X)) X <- as.matrix(X)
 	if(missing(lab)) lab <- list()
 	if(missing(na.action)) na.action <- getOption("na.action")
-	mvmeta.check(y, S, X, method, lab, cen, na.action)
+	mvmeta.check(y, S, X, method, lab, na.action)
 
-	# TRANSFORM y IN LIST
-	if(!is.list(y)) {
-		mlab <- rownames(y)
-		klab <- colnames(y)
-		y <- lapply(seq(nrow(as.matrix(y))), function(i) {
-			yi <- as.matrix(y)[i,]
-			names(yi) <- klab
-			return(yi)})
-		names(y) <- mlab
-	}
-
-	# TRANFORM X IN MATRIX, CENTER AND EXPAND + LABELS
-	if(is.list(X)) {X <- rbindlist(X)
-	} else if(!is.null(X)) X <- as.matrix(X)
-
-	# LABELS: PUT NAMES OF FIRST OBS OR CREATE THEM
+	# LABELS
 	mlab <- lab$mlab
 	klab <- lab$klab
 	plab <- lab$plab
 	if(is.null(mlab)) {
-		if(!is.null(names(y))) { mlab <- names(y)
-		} else {
-			mlab <- paste("study",seq(length(y)),sep="")
-			names(y) <- mlab
-		}
+		if(!is.null(rownames(y))) {
+			mlab <- rownames(y)
+		} else mlab <- paste("study",seq(nrow(y)),sep="")
 	}
+	rownames(y) <- rownames(X) <- mlab
 	if(is.null(klab)) {
-		if(!is.null(names(y[[1]]))) { klab <- names(y[[1]])
-		} else {
-			klab <- paste("y",seq(length(y[[1]])),sep="")
-			for(i in seq(length(y))) names(y[[i]]) <- klab
-		}
-	}
-	if(is.null(plab)&&!is.null(X)) {
-		if(!is.null(colnames(X))) { plab <- colnames(X)
-		} else plab <- paste("beta",seq(ncol(as.matrix(X))),sep="")
-	}
-	plab <- c("int",plab)
-	if(!is.null(X)) {
-		rownames(X) <- mlab
-		colnames(X) <- plab[-1]
-	}
+		labk <- paste("y",seq(k),sep="")
+		if(is.null(colnames(y))) {
+			colnames(y) <- labk
+		} else colnames(y)[colnames(y)==""] <- labk[colnames(y)==""]
+		klab <- colnames(y)
+	} else colnames(y) <- klab
+	if(is.null(plab)) {
+		plab <- colnames(X)
+	} else colnames(X) <- plab
+
+	# TRANSFORM y IN LIST OF VECTORS
+	y <- lapply(seq(nrow(as.matrix(y))), function(i) {
+		yi <- as.matrix(y)[i,]
+		return(yi)})
 
 	# TRANFORM S IN A LIST OF MATRICES
 	if(!is.list(S)) {
@@ -77,13 +85,11 @@ function(y, S, X=NULL, method="reml", lab, cen=FALSE, na.action, ...) {
 	# 	CREATE A LIST WITH THE MISSING PATTERN (CONSIDERING y,S,X)
 	nastudy <- sapply(y,function(x) !all(is.na(x)))
 	nastudy[sapply(S,function(x) all(is.na(rowSums(x)+colSums(x))))] <- FALSE
-	if(!is.null(X)) {
-		Xna <- !is.na(X)
-		if(any(colSums(Xna)==0)) {
-			stop("at least one predictor in 'X' is completely missing")
-		}
-		nastudy[rowSums(Xna)<ncol(X)] <- FALSE
+	Xna <- !is.na(X)
+	if(any(colSums(Xna)==0)) {
+		stop("at least one predictor in 'X' is completely missing")
 	}
+	nastudy[rowSums(Xna)<ncol(X)] <- FALSE
 	nalist <- mapply(function(y,S) {
 		na <- !is.na(y)
 		na[unique(which(is.na(S),arr.ind=TRUE))] <- FALSE
@@ -98,21 +104,18 @@ function(y, S, X=NULL, method="reml", lab, cen=FALSE, na.action, ...) {
 	Slist <- mapply(function(S,na) S[na,na,drop=FALSE],
 		S[nastudy],nalist,SIMPLIFY=FALSE)
 
-	# NUMBER OF STUDIES, OUTCOMES AND PREDICTORS
+	# NUMBER OF STUDIES AND OBSERVATIONS
 	m <- sum(nastudy)
-	k <- length(y[[1]])
-	p <- length(plab)
 	nobs <- sum(unlist(nalist))
 	
+	# CHECK X
+	if(rankMatrix(X[nastudy,,drop=FALSE])<p) {
+		stop("rank-deficient design matrix: check predictors and missing pattern",sep="")
+	}
 	# CREATE kXlist
-	if(!is.null(X)) {
-		if(!is.numeric(cen)) {
-			if(cen) { cen <- colMeans(as.matrix(X),na.rm=T)
-			} else cen <- rep(0,ncol(as.matrix(X)))
-		}
-		names(cen) <- plab[-1]
-	} else cen <- FALSE
-	kXlist <- kXlistmk(X[nastudy,,drop=FALSE],cen,nalist,m,k)
+	kXlist <- mapply(function(i,na) {diag(1,k)[na,,drop=FALSE]%x%
+		X[nastudy,,drop=FALSE][i,,drop=FALSE]},
+		seq(m),nalist,SIMPLIFY=FALSE)
 
 ##########################################################################
 # FIXED-EFFECTS 
@@ -158,7 +161,7 @@ function(y, S, X=NULL, method="reml", lab, cen=FALSE, na.action, ...) {
 		Psi <- diag(0.001,k)
 		niter <- 10
 		for(i in 1:niter) {
-			Psi <- mvmeta.igls(Psi,ylist,Slist,kXlist,nalist,k,m,p)
+			Psi <- mvmeta.igls(Psi,ylist,Slist,kXlist,nalist,k,m)
 		}
 
 		# GENERATE par AND RUN THE MODEL
@@ -166,12 +169,12 @@ function(y, S, X=NULL, method="reml", lab, cen=FALSE, na.action, ...) {
 		obj <- as.name(paste("mvmeta",method,sep="."))
 		fgrad <- as.name(paste("mvmeta",method,"grad",sep="."))
 
-		model <- optim(par,eval(obj),eval(fgrad),ylist=ylist,Slist=Slist,
+		fit <- optim(par,eval(obj),eval(fgrad),ylist=ylist,Slist=Slist,
 			kXlist=kXlist,nalist=nalist,nobs=nobs,k=k,method="BFGS",...)
 
 		# Psi: ESTIMATED BETWEEN-STUDY (CO)VARIANCE MATRIX
 		Psi <- matrix(0,k,k)
-		Psi[lower.tri(Psi,diag=TRUE)] <- model$par
+		Psi[lower.tri(Psi,diag=TRUE)] <- fit$par
 		Psi <- tcrossprod(Psi)
 	
 		# OBTAIN beta BY GLS
@@ -194,9 +197,9 @@ function(y, S, X=NULL, method="reml", lab, cen=FALSE, na.action, ...) {
 		vcov <- tcrossprod(backsolve(R,diag(1,ncol(invtUX))))
 
 		# LOGLIKELIHOOD AND CONVERGENCE
-		logLik <- -model$value
-		nranpar <- length(model$par)
-		convergence <- model$convergence
+		logLik <- -fit$value
+		nranpar <- length(fit$par)
+		convergence <- fit$convergence
 }
 
 ##########################################################################
@@ -212,9 +215,10 @@ function(y, S, X=NULL, method="reml", lab, cen=FALSE, na.action, ...) {
 	dimnames(vcov) <- list(plablong,plablong)
 	dimnames(Psi) <- list(klab,klab)	
 
-	results <- list(y=y,S=S,X=X,beta=beta,vcov=vcov,
-		Psi=Psi,method=method,logLik=logLik,df=df,dim=dim,lab=lab,cen=cen,
-		na.action=na.action,convergence=convergence)
+	results <- list(beta=beta,vcov=vcov,Psi=Psi,method=method,
+		logLik=logLik,df=df,dim=dim,lab=lab,int=int,call=call,model=model,
+		S=S,na.action=na.action,contrasts=contrasts,
+		convergence=convergence)
 
 	class(results) <- "mvmeta"
 	return(results)

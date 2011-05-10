@@ -6,6 +6,8 @@ function(object, ci.level=0.95, digits=4, ...) {
 	# CREATE USEFUL OBJECTS
 	methodname <- c("reml","ml","fixed")
 	methodlabel <- c("REML","ML","Fixed")
+	p <- object$dim$p
+	int <- object$int
 
 ###########################################################################
 # HEADING AND SUBHEADING
@@ -45,7 +47,7 @@ function(object, ci.level=0.95, digits=4, ...) {
 		"*", ".", " "))
 
 	# FOR SIMPLE META-ANALYSIS
-	if(is.null(object$X)) {
+	if(p-int==0) {
 		table <- cbind(object$beta,beta.se,zval,pvalue,ci.lb,ci.ub)
 		rownames(table) <- object$lab$klab
 		colnames(table) <- c("Estimate","StdErr","z","p-value",cilab)
@@ -57,7 +59,7 @@ function(object, ci.level=0.95, digits=4, ...) {
 	}	
 
 	# FOR META-REGRESSION
-	if(!is.null(object$X)) {
+	if(p-int>0) {
 		p <- object$dim$p
 		tabletot <- cbind(object$beta,beta.se,zval,pvalue,ci.lb,ci.ub)
 		for(i in seq(object$dim$k)) {
