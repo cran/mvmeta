@@ -55,7 +55,7 @@ Use \code{citation("mvmeta")} to cite this package.
 }
 
 \section{Warnings}{
-This release of the package \pkg{mvmeta} has been tested with different simulated and real datasets. The functions generally perform very well under several scenarios, and comparison with alternative software implementations show good agreement. However, bugs and bad performances under un-tested conditions may not be excluded. Please report any error or unexpected behaviour to the e-mail address below.
+This release of the package \pkg{mvmeta} has been tested with different simulated and real datasets. The functions generally perform very well under several scenarios, and comparisons with alternative software implementations show good agreement. However, bugs and bad performances under un-tested conditions may not be excluded. Please report any error or unexpected behaviour to the e-mail address below.
 }
 
 \author{

@@ -4,17 +4,18 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, ...) {
 ##########################################################################
 # PREPARE THE DATA
 
-	# CREATE y AND X FROM formula (FOLLOW lm FUNCTION)
-	call  <- match.call()
 	# CREATE THE CALL
-	model <- match.call(expand.dots=FALSE)
-	mn <- match(c("formula","data","constrasts"), names(model), 0L)
-	model <- model[c(1L, mn)]
-  	model$drop.unused.levels <- TRUE
+	call  <- match.call()
+	mcall <- match.call(expand.dots=FALSE)
+	mn <- match(c("formula","data","constrasts"), names(mcall), 0L)
+	mcall <- mcall[c(1L, mn)]
+  	mcall$drop.unused.levels <- TRUE
 	# HERE KEEP THE MISSING
-  	model$na.action <- "na.pass"
-	model[[1L]] <- as.name("model.frame")
-	model <- eval(model,parent.frame())
+  	mcall$na.action <- "na.pass"
+	mcall[[1L]] <- as.name("model.frame")
+
+	# CREATE y AND X FROM formula (FOLLOW lm FUNCTION)
+	model <- eval(mcall,parent.frame())
 	terms <- attr(model,"terms")
 	# DESIGN MATRIX (NOT EXPANDED YET)
 	if(missing(contrasts)) contrasts <- NULL

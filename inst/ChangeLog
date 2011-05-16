@@ -1,4 +1,16 @@
 
+Changes in mvmeta 0.2.1
+==============================================================================
+
+Minor changes
+-------------
+
+    o	Fixed bug in printing of qtest.mvmeta().
+
+    o	Documentation changed accordingly.
+
+
+
 Changes in mvmeta 0.2.0
 ==============================================================================
 
@@ -11,7 +23,7 @@ Major changes
 
     o	The objects 'class', 'contrasts' and 'model' have been added to mvmeta
 	objects, storing info about the fitted model. In particular, method
-	functions such as predict() now use model.matrix() and other functions
+	functions such as predict now use model.matrix() and other functions
 	to re-build the model.
 
     o	The function kXlistmk() has been excluded from the package. Now the 
@@ -24,6 +36,8 @@ Minor changes
     o	Changes in dependencies: created a new generic for blup(), in order
 	to avoid the loading of metafor and its initial message. Function
 	rankMatrix() imported from Matrix to check full-rank of desing matrix.
+
+    o	Documentation changed accordingly.
 
     o	Documentation changed accordingly.
 

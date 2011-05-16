@@ -89,7 +89,7 @@ blup(model,pi=TRUE,aggregate="y",pi.level=0.90)
 
 ### SECOND EXAMPLE
 ### MULTIVARIATE META-REGRESSION
-### ESTIMATED THROUGH ML, CENTERED ON PREDICTOR MEAN
+### ESTIMATED THROUGH ML
 
 # RUN THE MODEL AND SUMMARIZE THE RESULTS
 model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[6:8],data=berkey98,method="ml")
@@ -97,7 +97,7 @@ summary(model)
 # MULTIVARIATE COCHRAN Q TEST FOR RESIDUAL HETEROGENEITY
 qtest(model)
 # PREDICTED AVERAGED OUTOCOMES AND STANDARD ERRORS FROM YEAR 1985 TO 1989
-newdata <- data.frame(pubyear=1985:1987)
+newdata <- data.frame(pubyear=1985:1989)
 predict(model,newdata,se=TRUE)
 }
 

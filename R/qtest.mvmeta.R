@@ -39,7 +39,7 @@ function(object, ...) {
 	Q <- as.numeric(crossprod(invtUy-invtUX%*%beta))
 	df <- object$df$nobs-object$df$fixed
 	pvalue <- 1-pchisq(Q,df)
-	residual <- !is.null(object$X)
+	residual <- object$dim$p-object$int>0
 	k <- object$dim$k
 
 	res <- list(Q=Q,df=df,pvalue=pvalue,residual=residual,k=k)
