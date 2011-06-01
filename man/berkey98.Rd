@@ -13,7 +13,7 @@ The dataset contains the results of 5 published trials comparing surgical and no
 \format{
   A data frame with 5 observations on the following 8 variables.
   \describe{
-    \item{\code{trial} }{ number of trial.}
+    \item{\code{trial} }{ trial label.}
     \item{\code{pubyear} }{publication year of the trial.}
     \item{\code{npat} }{ number of patients included in the trial.}
     \item{\code{PD}}{ estimated improvement of surgical vs. non-surgical treatments in probing depth (mm).}
@@ -25,7 +25,9 @@ The dataset contains the results of 5 published trials comparing surgical and no
 }
 
 \source{
-Berkey C. S., Hoaglin D. C., Antczak-Bouckoms A., Mosteller F, Colditz, G. A. Meta-analysis of multiple outcomes by regression with random effects. \emph{Statistics in Medicine}. 1998; \bold{17}:2537-2550.
+Berkey C. S., Hoaglin D. C., Antczak-Bouckoms A., Mosteller F., Colditz, G. A. Meta-analysis of multiple outcomes by regression with random effects. \emph{Statistics in Medicine}. 1998; \bold{17}:2537-2550.
+
+Berkey C. S., Antczak-Bouckoms A., Hoaglin D. C., Mosteller F., Pihlstrom B. L. Multiple-outcomes meta-analysis of treatments for periodontal disease. Journal of Dental Research. 1995; \bold{74}(4):1030-1039.
 }
 
 \keyword{datasets}

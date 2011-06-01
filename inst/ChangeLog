@@ -1,6 +1,29 @@
-
-Changes in mvmeta 0.2.1
 ==============================================================================
+Changes in mvmeta 0.2.2
+========================
+
+Major changes
+-------------
+
+    o	The argument 'formula' now accept also matrix-type objects for simple
+	meta-analysis.
+
+    o	Included 'fnscale=-1' for optim() and changed the sign of the
+	estimation algorithms: now the function maximizes.
+
+    o	Also 'S' and 'mlab' now can be stored in 'data'.
+
+    o	Included labels in the dataframe 'berkey98'.
+	
+Minor changes
+-------------
+
+    o	Documentation changed accordingly.
+
+
+==============================================================================
+Changes in mvmeta 0.2.1
+========================
 
 Minor changes
 -------------
@@ -10,9 +33,9 @@ Minor changes
     o	Documentation changed accordingly.
 
 
-
-Changes in mvmeta 0.2.0
 ==============================================================================
+Changes in mvmeta 0.2.0
+========================
 
 Major changes
 -------------
@@ -36,8 +59,6 @@ Minor changes
     o	Changes in dependencies: created a new generic for blup(), in order
 	to avoid the loading of metafor and its initial message. Function
 	rankMatrix() imported from Matrix to check full-rank of desing matrix.
-
-    o	Documentation changed accordingly.
 
     o	Documentation changed accordingly.
 

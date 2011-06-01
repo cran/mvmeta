@@ -35,6 +35,6 @@ function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 
 	# REPEAT FOR ALL THE PARAMETERS 
 	grad <- sapply(Dlist,fgrad,y=ylist,kX=kXlist,invU=invUlist,nalist)
-	return(-grad)
+	return(grad)
 }
 

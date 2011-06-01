@@ -34,6 +34,6 @@ function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	logLik <- const + det1 + det2 + res
 
 	# RETURN MINUS THE VALUE: optim MINIMIZES
-	return(-logLik)
+	return(logLik)
 }
 

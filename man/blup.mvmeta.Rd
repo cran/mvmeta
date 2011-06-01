@@ -53,12 +53,13 @@ See also the generic method function \code{\link[metafor:blup]{blup}}. The metho
 
 \examples{
 # RUN THE MODEL
-model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[6:8],data=berkey98)
+model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[6:8],data=berkey98,
+	lab=list(mlab=trial))
 
 # BLUP AND SE
 blup(model,se=TRUE)
-# SAME AS ABOVE, AGGREGATED BY OUTCOME
-blup(model,se=TRUE,aggregate="y")
+# SAME AS ABOVE, AGGREGATED BY OUTCOME, WITH PREDICTION INTERVALS
+blup(model,se=TRUE,pi=TRUE,aggregate="y")
 }
 
 \keyword{models}

@@ -1,5 +1,5 @@
 mvmeta <-
-function(formula, S, data, method="reml", lab, contrasts, na.action, ...) {
+function(formula, S, data, method="reml", lab, contrasts, na.action, control) {
 
 ##########################################################################
 # PREPARE THE DATA
@@ -13,6 +13,15 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, ...) {
 	# HERE KEEP THE MISSING
   	mcall$na.action <- "na.pass"
 	mcall[[1L]] <- as.name("model.frame")
+
+	# CREATE FORMULA IF NOT PROVIDED (FOR SIMPLE META-ANALYSIS)
+	if(missing(data)) {
+		data <- sys.frame(sys.parent())
+	} else if(!is.data.frame(data)) stop("'data' must be a data.frame")
+	if(class(eval(mcall[[mn[1]]],data))!="formula") {
+		call[[mn[1]]] <- mcall[[mn[1]]] <- formula <- 
+			as.formula(paste(deparse(substitute(formula)),"~ 1"))
+	}
 
 	# CREATE y AND X FROM formula (FOLLOW lm FUNCTION)
 	model <- eval(mcall,parent.frame())
@@ -29,13 +38,21 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, ...) {
 	k <- ncol(y)
 	p <- ncol(X)
 
+	# CREATE S AND lab
+	S <- eval(call$S,data)
+	if(missing(lab)) {
+		lab <- list()
+	} else lab <- eval(call$lab,data)
+
 	# FIRST CHECKS
 	if(!is.null(model.offset(model))) stop("an offset is not allowed")
 	if(is.empty.model(terms)) stop("an empty model is not allowed")
 	if(is.null(model.response(model))) stop("response needed in formula")
 	if(is.data.frame(S)) S <- as.matrix(S)
-	if(missing(lab)) lab <- list()
 	if(missing(na.action)) na.action <- getOption("na.action")
+	if(missing(control)) {
+		control <- list()
+	} else if(!is.list(control)) stop("'control' must be a list")
 	mvmeta.check(y, S, X, method, lab, na.action)
 
 	# LABELS
@@ -169,9 +186,12 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, ...) {
 		par <- vechMat(t(chol(Psi)))
 		obj <- as.name(paste("mvmeta",method,sep="."))
 		fgrad <- as.name(paste("mvmeta",method,"grad",sep="."))
+		# FORCE TO MAXIMIZATION
+		control$fnscale <- -1
 
 		fit <- optim(par,eval(obj),eval(fgrad),ylist=ylist,Slist=Slist,
-			kXlist=kXlist,nalist=nalist,nobs=nobs,k=k,method="BFGS",...)
+			kXlist=kXlist,nalist=nalist,nobs=nobs,k=k,method="BFGS",
+			control=control)
 
 		# Psi: ESTIMATED BETWEEN-STUDY (CO)VARIANCE MATRIX
 		Psi <- matrix(0,k,k)
@@ -198,7 +218,7 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, ...) {
 		vcov <- tcrossprod(backsolve(R,diag(1,ncol(invtUX))))
 
 		# LOGLIKELIHOOD AND CONVERGENCE
-		logLik <- -fit$value
+		logLik <- fit$value
 		nranpar <- length(fit$par)
 		convergence <- fit$convergence
 }

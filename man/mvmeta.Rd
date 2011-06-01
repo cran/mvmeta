@@ -9,31 +9,31 @@ This function fits fixed and random-effects multivariate meta-analysis and meta-
 }
 
 \usage{
-mvmeta(formula, S, data, method="reml", lab, contrasts, na.action, ...)
+mvmeta(formula, S, data, method="reml", lab, contrasts, na.action, control)
 }
 
 \arguments{
 In multivariate meta-analysis, \eqn{k} outcome parameters \eqn{y}, estimated in \eqn{m} studies, are pooled accounting for their (co)variance matrix \eqn{S}. Optionally, \eqn{p} predictors (usually with intercept) may be included  in order specify a multivariate meta-regression model. The arguments of the function are:
 
-  \item{formula }{ an object of class \code{"\link{formula}"} (or one that can be coerced to that class) offering a symbolic description of the model to be fitted. Terms in both sides of the model equation must be matrix or vectors objects, optionally provided in the \code{data} argument below. See Details.}
-  \item{S }{ series of within-study (co)variance matrices of the estimated outcome parameters for each one of the \eqn{m} studies. Accepted formats are a \eqn{m}-length list of \eqn{k} x \eqn{k} matrices; a tri-dimensional \eqn{k} x \eqn{k} x \eqn{m} array; or a \eqn{m} x \eqn{[k(k+1)/2]} matrix or dataframe where each row represents the entries of the lower triangle of the related (co)variance matrix, taken by column.}
+  \item{formula }{ an object of class \code{"\link{formula}"} (or one that can be coerced to that class) offering a symbolic description of the model to be fitted. Alternatively, for meta-analysis with no predictor, a single matrix -type object. Terms must be matrix or vectors objects, optionally provided in the \code{data} argument below. See Details.}
+  \item{S }{ series of within-study (co)variance matrices of the estimated outcome parameters for each one of the \eqn{m} studies. Accepted formats are a \eqn{m}-length list of \eqn{k} x \eqn{k} matrices; a tri-dimensional \eqn{k} x \eqn{k} x \eqn{m} array; or a \eqn{m} x \eqn{[k(k+1)/2]} matrix or dataframe where each row represents the entries of the lower triangle of the related (co)variance matrix, taken by column. Optionally, terms may be provided in the \code{data} argument below.}
   \item{data }{ an optional data frame, list or environment (or object coercible by \code{\link{as.data.frame}} to a data frame) containing the variables in \code{formula}. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which \code{mvmeta} is called.}
   \item{method }{ estimation method: \code{"fixed"} for fixed-effects models, \code{"ml"} or \code{"reml"} for random-effects models through (restricted) maximum likelihood.}
-  \item{lab }{ list of label vectors: \code{mlab} for the \eqn{m} studies, \code{klab} for the \eqn{k} outcome parameters, \code{plab} for the \eqn{(p)} predictors (including intercept and allowing for factor expansion). Set to default values if not provided.}
+  \item{lab }{ list of label vectors: \code{mlab} for the \eqn{m} studies, \code{klab} for the \eqn{k} outcome parameters, \code{plab} for the \eqn{(p)} predictors (including intercept and allowing for factor expansion). Optionally, \code{mlab} may be provided in the \code{data} argument above. Set to default values if not provided.}
   \item{contrasts }{ an optional list. See the \code{contrasts.arg} of \code{\link{model.matrix.default}}.}
   \item{na.action }{ a function which indicates what should happen when the data contain \code{NA}s. The default is set by the \code{na.action} setting of \code{\link{options}}, usually \code{\link{na.omit}}. Value \code{\link{na.exclude}} can be useful. See Details.}
-  \item{\dots }{ further argument passed to functions called internally. See Details.}
+  \item{control }{ a list of further argument passed to functions called internally. See Details.}
 
 }
 
 \details{
-Multivariate meta-analysis is specified with the formula \code{y ~ 1}, where the left-hand side is a matrix (or vector for univariate analysis), optionally of form \code{cbind(y1,...,yk)} with terms stored in \code{data}. In (multivariate) meta-regression, other terms are added in the right-hand side. Factors, variable transformations and interactions are allowed, following the standard formula specification. See \code{\link{formula}} for further details. 
+Multivariate meta-analysis is specified with the formula \code{y ~ 1}, where the left-hand side is a matrix (or vector for univariate analysis), optionally of form \code{cbind(y1,...,yk)} with terms stored in \code{data}. Alternatively, matrix or vector objects are allowed, and the formula is retrieved internally adding \code{~ 1}. In (multivariate) meta-regression, other terms are added in the right-hand side of the formula. Factors, variable transformations and interactions are allowed, following the standard formula specification. See \code{\link{formula}} for further details. 
 
 Fixed-effects models are estimated through generalized least square given the within-study (co)variance matrices \eqn{S}. Random-effects models are estimated through profiled (restricted) maximum likelihood, with quasi-Newton iterative algorithms. In this approach the (restricted) likelihood is maximized exclusively with respect to parameters of the between-study (co)variance matrix \eqn{Psi}, with coefficients \eqn{beta} re-computed at each iteration. Additional information on the estimation procedures are given in pages of \code{\link[mvmeta:mvmeta.ml]{estimation algorithms}}.
 
 Missing valus are allowed in both sides of \code{formula} and in \code{S}. In the case of missing predictors (right-hand side of \code{formula}), the related study is entirely excluded from estimation. Instead, if outcomes or their (co)variance matrix in \code{S} are partially provided, the function excludes in each study the outcome parameters for which the estimate or one of the (co)variance terms are missing.
 
-Additional arguments specified by \dots are passed to the function \code{\link{optim}}, called internally by \code{mvmeta} for random-effects models, and may be used to control or inspect the optimization procedure. See the related help page for a list of specific arguments.
+Additional arguments specified by \code{control} are passed to the function \code{\link{optim}}, called internally by \code{mvmeta} for random-effects models, and may be used to control or inspect the optimization procedure. See the related help page for a list of specific arguments.
 }
 
 \value{
@@ -80,7 +80,7 @@ berkey98
 ### ESTIMATED THROUGH REML
 
 # RUN THE MODEL AND SUMMARIZE THE RESULTS
-model <- mvmeta(cbind(PD,AL)~1,S=berkey98[6:8],data=berkey98)
+model <- mvmeta(cbind(PD,AL),S=berkey98[6:8],data=berkey98,lab=list(mlab=trial))
 summary(model)
 # AIC VALUE
 AIC(model)
@@ -92,7 +92,8 @@ blup(model,pi=TRUE,aggregate="y",pi.level=0.90)
 ### ESTIMATED THROUGH ML
 
 # RUN THE MODEL AND SUMMARIZE THE RESULTS
-model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[6:8],data=berkey98,method="ml")
+model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[6:8],data=berkey98,
+	lab=list(mlab=trial),method="ml")
 summary(model)
 # MULTIVARIATE COCHRAN Q TEST FOR RESIDUAL HETEROGENEITY
 qtest(model)

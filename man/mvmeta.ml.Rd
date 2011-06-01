@@ -41,7 +41,7 @@ In the absence of missing values, each matrix in the argument \code{kXlist} is p
 
 Random-effects models are fitted through (restricted) maximum likelihood using a quasi-Newton iterative algorithm, in order to estimate the coefficients \eqn{beta} and the variance components of \eqn{Psi}. The procedure is based on a profiled (or concentrated) likelihood, expressing the (restricted) likelihood only in terms of the components of \eqn{Psi}, while the conditional estimate of \eqn{beta}, obtained through generalized least square, is plugged-in at every iteration. This approach reduces the number of parameters in the optimization routine, especially in meta-regression models.
 
-The optimization routine is performed by \code{\link{optim}}, which calls \code{mvmeta.ml}-\code{mvmeta.ml.grad} or \code{mvmeta.reml}-\code{mvmeta.reml.grad}. These functions provide the (restricted) likelihood functions and their functions of partial derivatives with respect to the model parameters. Given that \code{\link{optim}} minimizes the objective, these values are returned with the minus sign.
+The optimization routine is performed by \code{\link{optim}}, which calls \code{mvmeta.ml}-\code{mvmeta.ml.grad} or \code{mvmeta.reml}-\code{mvmeta.reml.grad}. These functions provide the (restricted) likelihood functions and their functions of partial derivatives with respect to the model parameters.
 Although efficient, convergence of Newton methods is highly dependent on optimal starting values of the parameters, which are computed by few iterations of an iterative generalized least square algorithm provided by the function \code{mvmeta.igls}. Initial value of \eqn{Psi} for \code{mvmeta.igls} is given by a diagonal matrix with 0.001 entries.
 
 The parameters of \eqn{Psi} are expressed in terms of its Cholesky decomposition, in order to assure the positive-definiteness of the estimated between-study (co)variance matrix. (Restricted) likelihood and derivatives are computed as sums of study-level contributions, in order to avoid the specification of high-dimensional sparse matrices and reduce the computation burden. A second Cholesky decomposition of  \eqn{Sigma = S +Psi} is performed in order to speed up the computation of \eqn{beta} through generalized least-square at each iteration, and the calculation of matrix inverses and determinants. More details are provided in the references below.
@@ -98,8 +98,8 @@ mvmeta.ml <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	# DETERMINANT COMPONENT
 	det <- -sum(sapply(Ulist,function(U) sum(log(diag(U)))))
 	logLik <- const + det + res
-	# RETURN MINUS THE VALUE: optim MINIMIZES
-	return(-logLik)
+	# RETURN THE VALUE
+	return(logLik)
 }
 
 mvmeta.reml <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
@@ -131,8 +131,8 @@ mvmeta.reml <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	tXMXtot <- sumlist(lapply(invtUXlist,function(x)crossprod(x)))
 	det2 <- -sum(log(diag(chol(tXMXtot))))
 	logLik <- const + det1 + det2 + res
-	# RETURN MINUS THE VALUE: optim MINIMIZES
-	return(-logLik)
+	# RETURN THE VALUE
+	return(logLik)
 }
 
 mvmeta.ml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
@@ -166,7 +166,7 @@ mvmeta.ml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	}
 	# REPEAT FOR ALL THE PARAMETERS 
 	grad <- sapply(Dlist,fgrad,y=ylist,kX=kXlist,invU=invUlist,nalist)
-	return(-grad)
+	return(grad)
 }
 
 mvmeta.reml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
@@ -203,7 +203,7 @@ mvmeta.reml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	}
 	# REPEAT FOR ALL THE PARAMETERS 
 	grad <- sapply(Dlist,fgrad,y=ylist,kX=kXlist,invU=invUlist,nalist)
-	return(-grad)
+	return(grad)
 }
 
 mvmeta.igls <- function(Psi, ylist, Slist, kXlist, nalist, k, m) {

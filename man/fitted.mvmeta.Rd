@@ -37,7 +37,8 @@ The method function \code{\link[mvmeta:predict.mvmeta]{predict}} computes the pr
 
 \examples{
 # RUN THE MODEL 
-model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[6:8],data=berkey98)
+model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[6:8],data=berkey98,
+	lab=list(mlab=trial))
 
 # FITTED VALUES
 fitval <- fitted(model,format="list")
