@@ -44,9 +44,9 @@ function(object, newdata, se=FALSE, ci=FALSE, vcov=FALSE,
 
 	# COMPUTE PREDICTION
 	predlist <- lapply(kXlist,function(kX) {
-		pred <- as.numeric(kX%*%object$beta)
-		names(pred) <- object$lab$klab
-		return(pred)})
+		fit <- as.numeric(kX%*%object$coef)
+		names(fit) <- object$lab$klab
+		return(fit)})
 
 	# COMPUTE VCOV, SE AND CI
 	zvalci <- qnorm((1-ci.level)/2,lower.tail=FALSE)
@@ -56,9 +56,9 @@ function(object, newdata, se=FALSE, ci=FALSE, vcov=FALSE,
 		dimnames(vcov) <- list(object$lab$klab,object$lab$klab)
 		return(vcov)})
 	selist <- lapply(vcovlist, function(x) sqrt(diag(x)))
-	cilblist <- mapply(function(pred,se) pred-zvalci*se,
+	cilblist <- mapply(function(fit,se) fit-zvalci*se,
 			predlist,selist,SIMPLIFY=FALSE)
-	ciublist <- mapply(function(pred,se) pred+zvalci*se,
+	ciublist <- mapply(function(fit,se) fit+zvalci*se,
 			predlist,selist,SIMPLIFY=FALSE)
 
 	# HANDLE MISSING
@@ -80,53 +80,62 @@ function(object, newdata, se=FALSE, ci=FALSE, vcov=FALSE,
 	if(vcov && object$dim$k>1) format <- "list"
 	# IF ONLY 1 OUTCOME, FORCE THE AGGREGATION ON IT
 	if(format=="matrix" && object$dim$k==1) {
-		pred <- rbindlist(predlist)
-		if(se) pred <- cbind(pred,rbindlist(selist))
-		if(ci) pred <- cbind(pred,rbindlist(cilblist),rbindlist(ciublist))
-		if(vcov) pred <- cbind(pred,rbindlist(vcovlist))
-		dimnames(pred) <- list(NULL,c("pred","se","ci.lb",
+		fit <- rbindlist(predlist)
+		if(se) fit <- cbind(fit,rbindlist(selist))
+		if(ci) fit <- cbind(fit,rbindlist(cilblist),rbindlist(ciublist))
+		if(vcov) fit <- cbind(fit,rbindlist(vcovlist))
+		dimnames(fit) <- list(NULL,c("fit","se","ci.lb",
 			"ci.ub","vcov")[c(TRUE,se,ci,ci,vcov)])
 	# IF NO OTHER STAT, FORCE THE AGGREGATION ON PREDICTION
 	}else if(format=="matrix" && !se && !ci) {
-		pred <- rbindlist(predlist)
+		fit <- rbindlist(predlist)
 	# WHEN AGGREGATE ON STAT
 	} else if (format=="matrix" && aggregate=="stat") {
-		pred <- list(pred=rbindlist(predlist))
-		if(se) pred$se <- rbindlist(selist)
+		fit <- list(fit=rbindlist(predlist))
+		if(se) fit$se <- rbindlist(selist)
 		if(ci) {
-			pred$ci.lb <- rbindlist(cilblist)
-			pred$ci.ub <- rbindlist(ciublist)
+			fit$ci.lb <- rbindlist(cilblist)
+			fit$ci.ub <- rbindlist(ciublist)
 		}
 	# WHEN AGGREGATE ON OUTCOME
 	} else if (format=="matrix" && aggregate=="y") {
-		pred <- list()
+		fit <- list()
 		for(j in seq(object$dim$k)) {
 			templist <- lapply(seq(predlist),function(i) {
-				pred <- predlist[[i]][j]
-				if(se) pred <- cbind(pred,selist[[i]][j])
-				if(ci) pred <- cbind(pred,cilblist[[i]][j],
+				fit <- predlist[[i]][j]
+				if(se) fit <- cbind(fit,selist[[i]][j])
+				if(ci) fit <- cbind(fit,cilblist[[i]][j],
 					ciublist[[i]][j])
-				return(as.matrix(pred))})
+				return(as.matrix(fit))})
 			temp <- rbindlist(templist)
 			dimnames(temp) <- list(NULL,
-				c("pred","se","ci.lb","ci.ub")[c(TRUE,se,ci,ci)])
-			pred[[j]] <- temp
+				c("fit","se","ci.lb","ci.ub")[c(TRUE,se,ci,ci)])
+			fit[[j]] <- temp
 		}
-		names(pred) <- object$lab$klab
+		names(fit) <- object$lab$klab
 	# ALL THE OTHER COMBINATIONS, PRODUCE A LIST
 	} else {
-		pred <- mapply(function(predarg,searg,cilbarg,ciubarg,vcovarg) {
-			temp <- list(pred=predarg)
+		fit <- mapply(function(predarg,searg,cilbarg,ciubarg,vcovarg) {
+			temp <- list(fit=predarg)
 			if(se) temp$se <- searg
 			if(ci) temp$ci.lb <- cilbarg
 			if(ci) temp$ci.ub <- ciubarg
 			if(vcov) temp$vcov <- vcovarg
-			return(temp)},
+      # RETURN ONE OBJECT IF ONLY FIT 
+			if(se||ci||vcov) {
+        return(temp)
+      } else return(temp[[1]])},
 			predlist,selist,cilblist,ciublist,vcovlist,SIMPLIFY=FALSE)
 		# IF PREDICTION ONLY FOR 1 VALUE, ELIMINATE THE FIRST HIERARCHY
-		if(length(pred)==1) pred <- pred[[1]]	
+		if(length(fit)==1) fit <- fit[[1]]	
 	}
+  
+  # SIMPLIFY IF MATRIX AND ONLY 1 PREDICTION
+  if(format=="matrix"  && length(predlist)==1L) {
+    if(is.matrix(fit)) fit <- fit[1,]
+    if(is.list(fit)) fit <- lapply(fit,function(x) x[1,])
+  }
 
-	return(pred)
+	return(fit)
 }
 

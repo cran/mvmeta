@@ -1,7 +1,7 @@
 mvmeta.igls <-
 function(Psi, ylist, Slist, kXlist, nalist, k, m) {
 
-	# COMPUTE beta BY GLS
+	# COMPUTE coef BY GLS
 	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
 		Slist,nalist,SIMPLIFY=FALSE)
 	Ulist <- lapply(Sigmalist,chol)
@@ -12,7 +12,7 @@ function(Psi, ylist, Slist, kXlist, nalist, k, m) {
 		invUlist,ylist,SIMPLIFY=FALSE)
 	invtUX <- rbindlist(invtUXlist)
 	invtUy <- rbindlist(invtUylist)
-	beta <- as.numeric(qr.solve(invtUX,invtUy))
+	coef <- as.numeric(qr.solve(invtUX,invtUy))
 
 	# CREATE A MATRIX WITH INDICATOR OF (CO)VAR COMPONENTS
 	npar <- k*(k+1)/2
@@ -26,7 +26,7 @@ function(Psi, ylist, Slist, kXlist, nalist, k, m) {
 	# RESPONSE VECTORS WITH RESIDUALS MINUS THE WITHIN (CO)VARIANCE
 	#	COMPONENTS, CONSIDERED FIXED
 	flist <- mapply(function(y,S,kX) {
-		return(as.numeric(tcrossprod(y-kX%*%beta))-as.numeric(S))},
+		return(as.numeric(tcrossprod(y-kX%*%coef))-as.numeric(S))},
 		ylist,Slist,kXlist,SIMPLIFY=FALSE)
 	# DESIGN MATRIX MAPPING THE PARAMETERS TO BE ESTIMATED
 	#	IT AUTOMATICALLY CREATES 0 COLUMNS FOR MISSING OBSERVATIONS

@@ -17,9 +17,9 @@ Similarly to univariate methods, fixed-effects models do not assume heterogeneit
 
 Estimation and interpretation exploit the framework of linear mixed models. The fixed part of the model provides an estimate of fixed effects, representing the population-averaged outcome parameters and, in the case of multivariate meta-regression, the coefficients associated to study-level predictors. The random part of the model describes the deviation from the population averages, estimating the components of the between-study (co)variance matrix. These model may be summarized by the equation:
 
-\deqn{y_i ~ N_k(kX_i beta, S_i + Psi)}
+\deqn{y_i ~ N_k(X_i beta, S_i + Psi)}
 
-Here the \eqn{k} outcome parameters \eqn{y} estimated in each of the \eqn{i = 1, \ldots, m} studies are assumed to be sampled from a multivariate normal distribution of order \eqn{k}. The distribution is centered on \eqn{kX beta}, with \eqn{kX} a design matrix produced by the \eqn{p}-length vector of study-level predictors \eqn{x_i}, and the \eqn{kp}-length vector of coefficient \eqn{beta}. The covariance \eqn{Sigma = S + Psi} is given by the sum of within (assumed known) and between-study (co)variance matrices \eqn{S} and \eqn{Psi}, respectively. In multivariate meta-analysis with no predictors, \eqn{kX} is an identity matrix and \eqn{kX beta} reduces to \eqn{k} intercepts \eqn{beta}, representing here the vector of population-average outcome parameters. In fixed-effects meta-analytic models, \eqn{Psi} is assumed a zero matrix. The model aims to estimate the coefficient \eqn{beta} and, for random-effects models, the components of between-study (co)variance matrix \eqn{Psi}.
+Here the \eqn{k} outcome parameters \eqn{y} estimated in each of the \eqn{i = 1, \ldots, m} studies are assumed to be sampled from a multivariate normal distribution of order \eqn{k}. The distribution is centered on \eqn{X beta}, with \eqn{X} a design matrix produced by the \eqn{p}-length vector of study-level predictors \eqn{x_i}, and the \eqn{kp}-length vector of coefficient \eqn{beta}. The covariance \eqn{Sigma = S + Psi} is given by the sum of within (assumed known) and between-study (co)variance matrices \eqn{S} and \eqn{Psi}, respectively. In multivariate meta-analysis with no predictors, \eqn{X} is an identity matrix and \eqn{X beta} reduces to \eqn{k} intercepts \eqn{beta}, representing here the vector of population-average outcome parameters. In fixed-effects meta-analytic models, \eqn{Psi} is assumed a zero matrix. The model aims to estimate the coefficient \eqn{beta} and, for random-effects models, the components of between-study (co)variance matrix \eqn{Psi}.
 
 In multivariate meta-analysis, the \eqn{k} estimated coefficients \eqn{beta} are interpreted as the population-averaged outcome parameters, with \eqn{Psi} summarizing their (co)variance between study-specific realizations. In multivariate meta-regression, this variability (or part of it, for random-effects models) is explained by study-level predictors. Usually, in this case, the model specifies coefficients for the \eqn{p} predictors (including intercept) for each one of the \eqn{k} outcomes, with \eqn{kp} total fixed parameters in the model. 
 }
@@ -27,13 +27,16 @@ In multivariate meta-analysis, the \eqn{k} estimated coefficients \eqn{beta} are
 \section{Functions included in the package}{
 The main function in the package is \code{\link{mvmeta}}, which performs the various models illustrated above. The function specifies the model, through arguments defining  the estimated outcomes parameters and their (co)variance matrix for the \emph{m} studies. Optionally, for multivariate meta-regression, study-level predictors may be included in the formula defining the fixed part of the model. The function returns a list object of class \code{"mvmeta"}.
 
-In the current implementation, estimation methods for random-effects models are based on (restricted) maximum likelihood, through quasi-Newton methods. The algorithms are provided by the internal functions \code{\link{mvmeta.ml}}, \code{\link{mvmeta.reml}}, \code{\link{mvmeta.ml.grad}} and \code{\link{mvmeta.reml.grad}}. Initial values are computed with the internal function \code{\link{mvmeta.igls}}.
+In the current implementation, estimation methods for random-effects models are based on (restricted) maximum likelihood, through quasi-Newton methods. The algorithms are provided by the internal functions \code{\link{mvmeta.ml}}, \code{\link{mvmeta.reml}}, \code{\link{mvmeta.ml.grad}}
+ and \code{\link{mvmeta.reml.grad}}. Initial values are computed with the internal function \code{\link{mvmeta.igls}}.
 
-Method functions are available for objects \code{"mvmeta"}: \code{\link[mvmeta:print.mvmeta]{print}} and \code{\link[mvmeta:summary.mvmeta]{summary}} for summarizing model results; \code{\link[mvmeta:coef.mvmeta]{coef}} and \code{\link[mvmeta:vcov.mvmeta]{vcov}} to extract estimated coefficients and their (co)variance matrix; \code{\link[mvmeta:logLik.mvmeta]{logLik}}, \code{\link[mvmeta:AIC.mvmeta]{AIC}} and \code{\link[mvmeta:BIC.mvmeta]{BIC}} to provide fit statistics.
+
+
+Method functions are available for objects \code{"mvmeta"}: \code{\link[mvmeta:print.mvmeta]{print}} and \code{\link[mvmeta:summary.mvmeta]{summary}} for summarizing model results; \code{\link[mvmeta:coef.mvmeta]{coef}} and \code{\link[mvmeta:vcov.mvmeta]{vcov}} to extract estimated coefficients and their (co)variance matrix; \code{\link[mvmeta:logLik.mvmeta]{logLik}}, \code{\link[mvmeta:AIC.mvmeta]{AIC}} and \code{\link[mvmeta:BIC.mvmeta]{BIC}} to provide fit statistics.
 
 The method function \code{\link[mvmeta:fitted.mvmeta]{fitted}} calculates fitted values for a given model, while \code{\link[mvmeta:predict.mvmeta]{predict}} compute predicted values for a set of new values of the predictors. \code{\link[mvmeta:blup.mvmeta]{blup}} gives the (shrunk) best linear unbiased prediction for the set of studies used for estimation.
 
-The generic method function \code{\link{qtest}} and the method function \code{\link{qtest.mvmeta}} for \code{"mvmeta"} objects perform the (multivariate) Cochran Q test for (residual) heterogeneity.
+The generic method function \code{\link{qtest}} and the method function \code{\link{qtest.mvmeta}} for \code{"mvmeta"} objects perform the (multivariate) Cochran Q test for (residual) heterogeneity, on the overall multivariate distribution and on single outcome parameters.
 
 Internal functions of the package are not exported (not included in the package namespace), but nonetheless fully documented in the related help pages.
 
@@ -63,7 +66,7 @@ Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}
 }
 
 \references{
-Jackson, D., Riley, R., White, I. R. Multivariate meta-analysis: Potential and promise. \emph{Statistics in Medicine}. Online First. DOI: 10.1002/sim.4172.
+Jackson, D., Riley, R., White, I. R. (2011). Multivariate meta-analysis: Potential and promise. \emph{Statistics in Medicine}. \bold{30}(20);2481-2498.
 
 Berkey, C. S., D. C. Hoaglin, et al. (1998). "Meta-analysis of multiple outcomes by regression with random effects." \emph{Statistics in Medicine}. \bold{17}(22):2537-2550.
 

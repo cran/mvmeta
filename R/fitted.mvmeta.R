@@ -18,7 +18,7 @@ function(object, format=c("matrix","list"), na.action, ...) {
 
 	# COMPUTE FITTED
 	fitted <- lapply(kXlist,function(kX) {
-		fit <- as.numeric(kX%*%object$beta)
+		fit <- as.numeric(kX%*%object$coef)
 		names(fit) <- object$lab$klab
 		return(fit)})
 

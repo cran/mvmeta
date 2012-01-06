@@ -31,7 +31,7 @@ Multivariate meta-analysis is specified with the formula \code{y ~ 1}, where the
 
 Fixed-effects models are estimated through generalized least square given the within-study (co)variance matrices \eqn{S}. Random-effects models are estimated through profiled (restricted) maximum likelihood, with quasi-Newton iterative algorithms. In this approach the (restricted) likelihood is maximized exclusively with respect to parameters of the between-study (co)variance matrix \eqn{Psi}, with coefficients \eqn{beta} re-computed at each iteration. Additional information on the estimation procedures are given in pages of \code{\link[mvmeta:mvmeta.ml]{estimation algorithms}}.
 
-Missing valus are allowed in both sides of \code{formula} and in \code{S}. In the case of missing predictors (right-hand side of \code{formula}), the related study is entirely excluded from estimation. Instead, if outcomes or their (co)variance matrix in \code{S} are partially provided, the function excludes in each study the outcome parameters for which the estimate or one of the (co)variance terms are missing.
+Missing values are allowed in both sides of \code{formula} and in \code{S}. In the case of missing predictors (right-hand side of \code{formula}), the related study is entirely excluded from estimation. Instead, if outcomes or their (co)variance matrix in \code{S} are partially provided, the function excludes in each study the outcome parameters for which the estimate or one of the (co)variance terms are missing.
 
 Additional arguments specified by \code{control} are passed to the function \code{\link{optim}}, called internally by \code{mvmeta} for random-effects models, and may be used to control or inspect the optimization procedure. See the related help page for a list of specific arguments.
 }
@@ -39,8 +39,9 @@ Additional arguments specified by \code{control} are passed to the function \cod
 \value{
 A list object of class \code{"mvmeta"} with the following components:
 
-  \item{beta, vcov }{ estimated coefficients and related (co)variance matrix for the fixed part of the model.}
+  \item{coef, vcov }{ estimated coefficients and related (co)variance matrix for the fixed part of the model.}
   \item{Psi }{ estimated between-study (co)variance matrix.}
+  \item{qstat }{ list of quantities to perform a multivariate Cochran Q test for (residual) heterogeneity.}
   \item{logLik }{ (restricted) maximum likelihood.}
   \item{df }{ list with the following scalar components: \code{nobs} (number of observations, excluding missing values), \code{fixed} (number of estimated coefficients), \code{random} (number of estimated (co)variance parameters).}
   \item{dim }{ list with the following scalar components: \code{m} (number of studies included in estimation, which could be lower than the total number in the presence of missing values), \code{k} (number of parameters), \code{p} (number of coefficients for each outcome parameter).}
@@ -54,7 +55,7 @@ Other arguments are returned as specified in the Usage section. The method funct
 }
 
 \references{
-Jackson, D., Riley, R., White, I. R. Multivariate meta-analysis: Potential and promise. \emph{Statistics in Medicine}. Online First. DOI: 10.1002/sim.4172.
+Jackson, D., Riley, R., White, I. R. (2011). Multivariate meta-analysis: Potential and promise. \emph{Statistics in Medicine}. \bold{30}(20);2481-2498.
 
 Berkey, C. S., D. C. Hoaglin, et al. (1998). "Meta-analysis of multiple outcomes by regression with random effects." \emph{Statistics in Medicine}. \bold{17}(22):2537-2550.
 
@@ -64,7 +65,7 @@ White, I. R. (2009). "Multivariate random-effects meta-analysis." \emph{Stata Jo
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}
 
 \note{
-The current implementation of the function does not allow any pre-specified structure on the matrix \eqn{Psi}, and requires the estimation of  \eqn{k(k+1)/2} (co)variance parameters. Simpler structure will be included in the next releases. In addition, meta-regression models specify \eqn{p} coefficients for each one of the \eqn{k} outcome parameters. Future improvements will offer the option to define different equation formulae for each outcome, for example excluding the intercept or associating to each outcome a subset of the other \eqn{(p-1)} predictors.
+The current implementation of the function does not allow any pre-specified structure on the matrix \eqn{Psi}, and requires the estimation of  \eqn{k(k+1)/2} (co)variance parameters. Alternative structures will be included in the next releases. In addition, meta-regression models specify \eqn{p} coefficients for each one of the \eqn{k} outcome parameters. Future improvements will offer the option to define different equation formulae for each outcome, for example excluding the intercept or associating to each outcome a subset of the other \eqn{(p-1)} predictors.
 }
 
 \seealso{ 

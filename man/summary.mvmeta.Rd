@@ -9,7 +9,7 @@ Print and summary method functions for objects of class \code{"mvmeta"}.
 }
 
 \usage{
-\method{print}{mvmeta}(x, ci.level=0.95, digits=4, ...)
+\method{print}{mvmeta}(x, digits=4, ...)
 
 \method{summary}{mvmeta}(object, ci.level=0.95, digits=4, ...)
 }
@@ -22,11 +22,9 @@ Print and summary method functions for objects of class \code{"mvmeta"}.
 }
 
 \details{
-The \code{print} method only returns the main results, basically the estimates (with standard errors, z and p-values and confidence intervals for the fixed-effects \eqn{beta}), plus the components of the between-study (co)variance matrix \eqn{Psi} for random-effects models, namely standard deviations (square root of the diagonal) and correlations.
+The \code{print} method only returns basic information on the moded dimension and estimation procedure, the number of studies, number of observations, fixed and random parameters and fit statistics (log-likelihood, AIC, BIC).
 
-The \code{summary} method also prints information on the number of studies and outcome parameters included, the estimation method, number of observations, fixed and random parameters and fit statistics (log-likelihood, AIC, BIC).
-
-Significance legend for the printed results: \code{'***'} < 0.001, \code{'**'} < 0.01, \code{'*'} < 0.05, \code{'.'} < 0.10.
+The \code{summary} method also prints the estimates (with standard errors, z and p-values and confidence intervals for the fixed-effects \eqn{beta}), plus the components of the between-study (co)variance matrix \eqn{Psi} for random-effects models, namely standard deviations (square root of the diagonal) and correlations.
 }
 
 \value{

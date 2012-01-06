@@ -24,7 +24,8 @@ function(object, se=FALSE, pi=FALSE, vcov=FALSE, pi.level=0.95,
 	terms <- terms(model)
 	X <- model.matrix(terms,model,object$contrast)
 	S <- object$S
-	nalist <- mapply(function(y,S) {
+  # SET TO NA MISSING y, THEN MISSING VARIANCES, THEN MISSING CORRELATIONS
+  nalist <- mapply(function(y,S) {
 		na <- !is.na(y)
 		na[unique(which(is.na(S),arr.ind=TRUE))] <- FALSE
 		return(na)},y,S,SIMPLIFY=FALSE)
@@ -39,18 +40,17 @@ function(object, se=FALSE, pi=FALSE, vcov=FALSE, pi.level=0.95,
 	kXlist <- mapply(function(i,na) {diag(1,object$dim$k)[na,,drop=FALSE]%x%
 		X[i,,drop=FALSE]},seq(length(ylist)),nalist2,SIMPLIFY=FALSE)
 
-		
 	# PREPARE ADDITIONAL OBJECTS
 	Sigmalist <- lapply(Slist, function(S) S+object$Psi)
 	Ulist <- lapply(Sigmalist,chol)
 	invUlist <- lapply(Ulist,function(U) backsolve(U,diag(ncol(U))))
-	reslist <- mapply(function(y,kX) res <- y-kX%*%object$beta,
+	reslist <- mapply(function(y,kX) res <- y-kX%*%object$coef,
 		ylist,kXlist,SIMPLIFY=FALSE)
 	Psi <- object$Psi
 
 	# COMPUTE BLUP
 	bluplist <- mapply(function(invU,res,kX) {
-		blup <- as.numeric(kX%*%object$beta + 
+		blup <- as.numeric(kX%*%object$coef + 
 			Psi%*%(tcrossprod(invU))%*%res)
 		names(blup) <- object$lab$klab
 		return(blup)},invUlist,reslist,kXlist,SIMPLIFY=FALSE)
@@ -136,8 +136,11 @@ function(object, se=FALSE, pi=FALSE, vcov=FALSE, pi.level=0.95,
 			if(pi) temp$pi.lb <- pilbarg
 			if(pi) temp$pi.ub <- piubarg
 			if(vcov) temp$vcov <- vcovarg
-			return(temp)},
-			bluplist,selist,pilblist,piublist,vcovlist,SIMPLIFY=FALSE)
+      # RETURN ONE OBJECT IF ONLY PRED 
+  		if(se||pi||vcov) {
+        return(temp)
+      } else return(temp[[1]])},
+      bluplist,selist,pilblist,piublist,vcovlist,SIMPLIFY=FALSE)
 		names(blup) <- mlab
 	}
 

@@ -1,4 +1,25 @@
 ==============================================================================
+Changes in mvmeta 0.2.4 (06 Jan 2011)
+===================================
+
+Minor changes
+-------------
+
+    o Computation of quantities for Q test moved from qtest to mvmeta.
+
+    o	Q test output now includes also tests for single outcomes.
+
+    o Warning added to mvmeta when convergence not reached.
+
+    o Bug fixed in mvmeta when formula is not specified.
+
+    o beta changed to coef for coherence with other regression functions.
+
+    o Simplified output of predict() and blup(): vector for meta-analysis or
+      single prediction. Also label pred changed to fit, coherently with other 
+      regression functions.
+
+==============================================================================
 Changes in mvmeta 0.2.3
 ========================
 

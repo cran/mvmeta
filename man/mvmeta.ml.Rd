@@ -76,7 +76,7 @@ mvmeta.ml <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	Psi[lower.tri(Psi,diag=TRUE)] <- par
 	Psi <- tcrossprod(Psi)
 
-	# COMPUTE beta BY GLS
+	# COMPUTE coef BY GLS
 	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
 		Slist,nalist,SIMPLIFY=FALSE)
 	Ulist <- lapply(Sigmalist,chol)
@@ -87,14 +87,14 @@ mvmeta.ml <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 		invUlist,ylist,SIMPLIFY=FALSE)
 	invtUX <- rbindlist(invtUXlist)
 	invtUy <- rbindlist(invtUylist)
-	beta <- as.numeric(qr.solve(invtUX,invtUy))
+	coef <- as.numeric(qr.solve(invtUX,invtUy))
 	# LIKELIHOOD FUNCTION
 	# CONSTANT PART
 	const <- -0.5*nobs*log(2*pi)
 	# I GUESS IN STATA:
 	#const <- -0.5*length(ylist)*ncol(Psi)*log(2*pi)
 	# RESIDUAL COMPONENT
-	res <- -0.5*crossprod(invtUy-invtUX\%*\%beta)
+	res <- -0.5*crossprod(invtUy-invtUX\%*\%coef)
 	# DETERMINANT COMPONENT
 	det <- -sum(sapply(Ulist,function(U) sum(log(diag(U)))))
 	logLik <- const + det + res
@@ -108,7 +108,7 @@ mvmeta.reml <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	Psi <- matrix(0,k,k)
 	Psi[lower.tri(Psi,diag=TRUE)] <- par
 	Psi <- tcrossprod(Psi)
-	# GET THE ESTIMATE OF beta CONDITIONAL ON Psi_theta
+	# GET THE ESTIMATE OF coef CONDITIONAL ON Psi_theta
 	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
 		Slist,nalist,SIMPLIFY=FALSE)
 	Ulist <- lapply(Sigmalist,chol)
@@ -117,15 +117,15 @@ mvmeta.reml <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 		invUlist,kXlist,SIMPLIFY=FALSE)
 	invtUylist <- mapply(function(invU,y) crossprod(invU,y),
 		invUlist,ylist,SIMPLIFY=FALSE)
-	beta <- qr.solve(rbindlist(invtUXlist),rbindlist(invtUylist))
+	coef <- qr.solve(rbindlist(invtUXlist),rbindlist(invtUylist))
 	# LIKELIHOOD FUNCTION
 	# CONSTANT PART
-	const <- -0.5*(nobs-length(beta))*log(2*pi)
+	const <- -0.5*(nobs-length(coef))*log(2*pi)
 	# I GUESS IN STATA:
 	#const <- -0.5*(length(ylist)-1)*ncol(Psi)*log(2*pi)
 	# RESIDUAL COMPONENT
 	res <- -0.5*sum(mapply(function(invtUy,invtUX) {
-		crossprod(invtUy-invtUX\%*\%beta)},invtUylist,invtUXlist))
+		crossprod(invtUy-invtUX\%*\%coef)},invtUylist,invtUXlist))
 	# DETERMINANT COMPONENTS
 	det1 <- -sum(sapply(Ulist,function(U) sum(log(diag(U)))))
 	tXMXtot <- sumlist(lapply(invtUXlist,function(x)crossprod(x)))
@@ -141,7 +141,7 @@ mvmeta.ml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	L[lower.tri(L,diag=TRUE)] <- par
 	U <- t(L)
 	Psi <- crossprod(U)
-	# GET THE ESTIMATE OF beta CONDITIONAL ON Psi_theta
+	# GET THE ESTIMATE OF coef CONDITIONAL ON Psi_theta
 	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
 		Slist,nalist,SIMPLIFY=FALSE)
 	Ulist <- lapply(Sigmalist,chol)
@@ -152,14 +152,14 @@ mvmeta.ml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 		invUlist,ylist,SIMPLIFY=FALSE)
 	invtUX <- rbindlist(invtUXlist)
 	invtUy <- rbindlist(invtUylist)
-	beta <- as.numeric(qr.solve(invtUX,invtUy))
+	coef <- as.numeric(qr.solve(invtUX,invtUy))
 	# COMPUTE THE MATRIX DERIVATIVES OF EACH PARAMETER
 	Dlist <- lapply(seq(length(par)),gradchol,k,U)
 	# FUNCTION TO COMPUTE THE GRADIENT COMPONENTS FOR A GIVEN PARAMETER
 	fgrad <- function(D,y,kX,invU,na) {
 		sum(mapply(function(y,kX,invU,na) {
 			invSigma <- tcrossprod(invU)
-			res <- as.numeric(y-kX\%*\%beta)
+			res <- as.numeric(y-kX\%*\%coef)
 			A <- crossprod(res,invSigma)\%*\%D[na,na]%*%invSigma\%*\%res
 			B <- sum(diag(invSigma\%*\%D[na,na]))
 			return(as.numeric(0.5*(A-B)))},y,kX,invU,na))
@@ -175,7 +175,7 @@ mvmeta.reml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	L[lower.tri(L,diag=TRUE)] <- par
 	U <- t(L)
 	Psi <- crossprod(U)
-	# GET THE ESTIMATE OF beta CONDITIONAL ON Psi_theta
+	# GET THE ESTIMATE OF coef CONDITIONAL ON Psi_theta
 	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
 		Slist,nalist,SIMPLIFY=FALSE)
 	Ulist <- lapply(Sigmalist,chol)
@@ -184,7 +184,7 @@ mvmeta.reml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 		invUlist,kXlist,SIMPLIFY=FALSE)
 	invtUylist <- mapply(function(invU,y) crossprod(invU,y),
 		invUlist,ylist,SIMPLIFY=FALSE)
-	beta <- qr.solve(rbindlist(invtUXlist),rbindlist(invtUylist))
+	coef <- qr.solve(rbindlist(invtUXlist),rbindlist(invtUylist))
 
 	tXMXtot <- sumlist(lapply(invtUXlist,function(x)crossprod(x)))
 	invtXMXtot <- chol2inv(chol(tXMXtot))
@@ -195,7 +195,7 @@ mvmeta.reml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 		sum(mapply(function(y,kX,invU,na) {
 			invSigma <- tcrossprod(invU)
 			MDM <- invSigma\%*\%D[na,na]\%*\%invSigma
-			res <- as.numeric(y-kX\%*\%beta)
+			res <- as.numeric(y-kX\%*\%coef)
 			A <- crossprod(res,MDM)\%*\%res
 			B <- sum(diag(invSigma\%*\%D[na,na]))
 			C <- sum(diag(invtXMXtot\%*\%crossprod(kX,MDM)\%*\%kX))
@@ -207,7 +207,7 @@ mvmeta.reml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 }
 
 mvmeta.igls <- function(Psi, ylist, Slist, kXlist, nalist, k, m) {
-	# COMPUTE beta BY GLS
+	# COMPUTE coef BY GLS
 	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
 		Slist,nalist,SIMPLIFY=FALSE)
 	Ulist <- lapply(Sigmalist,chol)
@@ -218,7 +218,7 @@ mvmeta.igls <- function(Psi, ylist, Slist, kXlist, nalist, k, m) {
 		invUlist,ylist,SIMPLIFY=FALSE)
 	invtUX <- rbindlist(invtUXlist)
 	invtUy <- rbindlist(invtUylist)
-	beta <- as.numeric(qr.solve(invtUX,invtUy))
+	coef <- as.numeric(qr.solve(invtUX,invtUy))
 	# CREATE A MATRIX WITH INDICATOR OF (CO)VAR COMPONENTS
 	npar <- k*(k+1)/2
 	indMat <- xpndMat(seq(npar))
@@ -230,7 +230,7 @@ mvmeta.igls <- function(Psi, ylist, Slist, kXlist, nalist, k, m) {
 	# RESPONSE VECTORS WITH RESIDUALS MINUS THE WITHIN (CO)VARIANCE
 	#	COMPONENTS, CONSIDERED FIXED
 	flist <- mapply(function(y,S,kX) {
-		return(as.numeric(tcrossprod(y-kX\%*\%beta))-as.numeric(S))},
+		return(as.numeric(tcrossprod(y-kX\%*\%coef))-as.numeric(S))},
 		ylist,Slist,kXlist,SIMPLIFY=FALSE)
 	# DESIGN MATRIX MAPPING THE PARAMETERS TO BE ESTIMATED
 	#	IT AUTOMATICALLY CREATES 0 COLUMNS FOR MISSING OBSERVATIONS

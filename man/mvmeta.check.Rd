@@ -1,7 +1,6 @@
 \name{mvmeta.check}
 \alias{mvmeta.check}
 
-
 \title{ Internal Functions for Package mvmeta }
 
 \description{

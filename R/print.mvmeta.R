@@ -1,7 +1,5 @@
 print.mvmeta <-
-function(x, ci.level=0.95, digits=4, ...) {
-
-	if(ci.level<=0||ci.level>=1) stop("'ci.level' must be within 0 and 1")
+function(x, digits=4, ...) {
 
 	# CREATE USEFUL OBJECTS
 	methodname <- c("reml","ml","fixed")
@@ -12,80 +10,35 @@ function(x, ci.level=0.95, digits=4, ...) {
 ###########################################################################
 # HEADING AND SUBHEADING
 
-	# HEADING
-	#cat("\n")
-	cat(if(x$dim$k==1)"UNI" else "MULTI","VARIATE ",
-		ifelse(x$method=="fixed","FIXED","RANDOM"),"-EFFECTS META-",
-		ifelse(!is.null(x$X),"REGRESSION","ANALYSIS"),sep="")
+  # HEADING
+  cat("call:\n")
+  print(x$call)
+  cat("\n")
+
+	# SUB-HEADING
+  cat(if(x$dim$k==1)"Uni" else "Multi","variate ",
+		ifelse(x$method=="fixed","fixed","random"),"-effects meta-",
+		ifelse(p-int>0,"regression","analysis"),"\n",sep="")
 	# CHECK LATER FOR CHOICE META-ANALYSIS OR METAREGRESSION
-	cat("\n\n")
+	cat("Dimension: ",x$dim$k,"\n","Studies: ",x$dim$m,"\n",sep="")
+	if(x$method!="fixed") {
+		cat("Estimation method: ",
+			methodlabel[which(x$method==methodname)],"\n",sep="")
+		cat("Variance-covariance matrix Psi: ","unstructured","\n",sep="")
+	}
+	cat("\n")
 
 ###########################################################################
-# FIXED EFFECTS ESTIMATES
-
-	cat("Fixed effects","\n",sep="")
-
-	# COMPUTE USEFUL OBJECTS
-	beta.se <- sqrt(diag(x$vcov))
-	zval <- x$beta/beta.se
-	zvalci <- qnorm((1-ci.level)/2,lower.tail=FALSE)
-	pvalue <- 2*(1-pnorm(abs(zval)))
-	ci.lb <- x$beta-zvalci*beta.se
-	ci.ub <- x$beta+zvalci*beta.se
-	cilab <- paste(round(ci.level,2)*100,"%ci.",c("lb","ub"),sep="")
-      signif <- symnum(pvalue, corr = FALSE, na = FALSE, cutpoints = c(0, 
-		0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", "**", 
-		"*", ".", " "))
-
-	# FOR SIMPLE META-ANALYSIS
-	if(p-int==0) {
-		table <- cbind(x$beta,beta.se,zval,pvalue,ci.lb,ci.ub)
-		rownames(table) <- x$lab$klab
-		colnames(table) <- c("Estimate","StdErr","z","p-value",cilab)
-		table <- formatC(table,digits=digits,format="f")
-		table <- cbind(table,signif)
-		colnames(table)[7] <- ""
-		print(table,quote=FALSE,right=TRUE,print.gap=2)
-		cat("\n")
-	}	
-
-	# FOR META-REGRESSION
-	if(p-int>0) {
-		tabletot <- cbind(x$beta,beta.se,zval,pvalue,ci.lb,ci.ub)
-		for(i in seq(x$dim$k)) {
-			ind <- seq((i-1)*p+1,(i-1)*p+p)
-			table <- tabletot[ind,,drop=FALSE]
-			rownames(table) <- x$lab$plab
-			colnames(table) <- c("Estimate","StdErr","z","p-value",cilab)
-			table <- formatC(table,digits=digits,format="f")
-			table <- cbind(table,signif[ind])
-			colnames(table)[7] <- ""
-			cat(x$lab$klab[i],":","\n")
-			print(table,quote=FALSE,right=TRUE,print.gap=2)
-			cat("\n")
-		}
-	}
-
 ###########################################################################
-# RANDOM EFFECTS ESTIMATES
+# FIT STATS
 
-	if(!x$method=="fixed") {
-	
-		cat("Variance components: between-studies stdev and correlation matrix",
-			"\n",sep="")
+  cat(x$df$nobs," observations, ",x$df$fixed," fixed and ",
+		x$df$random," random parameters","\n",sep="")
+	table <- c(logLik(x),AIC(x),BIC(x))
+	names(table) <- c("logLik","AIC","BIC")
+	table <- formatC(table,digits=digits,format="f")
+	print(table,quote=FALSE,right=TRUE,print.gap=2)
+	cat("\n")
 
-		# COMPUTE USEFUL OBJECTS
-		Psisd <- sqrt(diag(x$Psi))
-		Psicor <- round(cov2cor(x$Psi),3)
-		Psicor[upper.tri(Psicor)] <- NA
-
-		table <- cbind(Psisd,Psicor)
-		colnames(table)[1] <- "StdDev"
-		table <- formatC(table,digits=digits,format="f")
-		table[grep("NA",table)] <- "."
-		print(table,quote=FALSE,right=TRUE,na.print="",print.gap=2)
-
-		cat("\n")
-	}
 }
 

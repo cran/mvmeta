@@ -7,7 +7,7 @@ function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	U <- t(L)
 	Psi <- crossprod(U)
 
-	# GET THE ESTIMATE OF beta CONDITIONAL ON Psi_theta
+	# GET THE ESTIMATE OF coef CONDITIONAL ON Psi_theta
 	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
 		Slist,nalist,SIMPLIFY=FALSE)
 	Ulist <- lapply(Sigmalist,chol)
@@ -16,7 +16,7 @@ function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 		invUlist,kXlist,SIMPLIFY=FALSE)
 	invtUylist <- mapply(function(invU,y) crossprod(invU,y),
 		invUlist,ylist,SIMPLIFY=FALSE)
-	beta <- qr.solve(rbindlist(invtUXlist),rbindlist(invtUylist))
+	coef <- qr.solve(rbindlist(invtUXlist),rbindlist(invtUylist))
 
 	tXMXtot <- sumlist(lapply(invtUXlist,function(x)crossprod(x)))
 	invtXMXtot <- chol2inv(chol(tXMXtot))
@@ -30,7 +30,7 @@ function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 		sum(mapply(function(y,kX,invU,na) {
 			invSigma <- tcrossprod(invU)
 			MDM <- invSigma%*%D[na,na]%*%invSigma
-			res <- as.numeric(y-kX%*%beta)
+			res <- as.numeric(y-kX%*%coef)
 			A <- crossprod(res,MDM)%*%res
 			B <- sum(diag(invSigma%*%D[na,na]))
 			C <- sum(diag(invtXMXtot%*%crossprod(kX,MDM)%*%kX))

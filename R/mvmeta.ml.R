@@ -7,7 +7,7 @@ function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	Psi[lower.tri(Psi,diag=TRUE)] <- par
 	Psi <- tcrossprod(Psi)
 
-	# COMPUTE beta BY GLS
+	# COMPUTE coef BY GLS
 	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
 		Slist,nalist,SIMPLIFY=FALSE)
 	Ulist <- lapply(Sigmalist,chol)
@@ -18,7 +18,7 @@ function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 		invUlist,ylist,SIMPLIFY=FALSE)
 	invtUX <- rbindlist(invtUXlist)
 	invtUy <- rbindlist(invtUylist)
-	beta <- as.numeric(qr.solve(invtUX,invtUy))
+	coef <- as.numeric(qr.solve(invtUX,invtUy))
 
 	# LIKELIHOOD FUNCTION
 	# CONSTANT PART
@@ -26,7 +26,7 @@ function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	# I GUESS IN STATA:
 	#const <- -0.5*length(ylist)*ncol(Psi)*log(2*pi)
 	# RESIDUAL COMPONENT
-	res <- -0.5*crossprod(invtUy-invtUX%*%beta)
+	res <- -0.5*crossprod(invtUy-invtUX%*%coef)
 	# DETERMINANT COMPONENT
 	det <- -sum(sapply(Ulist,function(U) sum(log(diag(U)))))
 

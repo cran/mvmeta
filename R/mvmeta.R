@@ -20,7 +20,7 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, control) {
 	} else if(!is.data.frame(data)) stop("'data' must be a data.frame")
 	if(class(eval(mcall[[mn[1]]],data))!="formula") {
 		call[[mn[1]]] <- mcall[[mn[1]]] <- formula <- 
-			as.formula(paste(deparse(substitute(formula)),"~ 1"))
+			as.formula(paste(deparse(substitute(formula),width=499L),"~ 1"))
 	}
 
 	# CREATE y AND X FROM formula (FOLLOW lm FUNCTION)
@@ -99,9 +99,9 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, control) {
 	names(S) <- mlab
 
 	# MISSINGNESS: 
-	#	CREATE A LOGICAL VECTOR OF STUDIES WITH NON-MISSING
+	#	CREATE A LOGICAL VECTOR OF STUDIES WITH NON-MISSING (y AND VARIANCES)
 	# 	CREATE A LIST WITH THE MISSING PATTERN (CONSIDERING y,S,X)
-	nastudy <- sapply(y,function(x) !all(is.na(x)))
+  nastudy <- sapply(y,function(x) !all(is.na(x)))
 	nastudy[sapply(S,function(x) all(is.na(rowSums(x)+colSums(x))))] <- FALSE
 	Xna <- !is.na(X)
 	if(any(colSums(Xna)==0)) {
@@ -114,7 +114,7 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, control) {
 		return(na)},y[nastudy],S[nastudy],SIMPLIFY=FALSE)
 	if(sum(nastudy)<2) stop("at least 2 non-missing studies are required")
 	if(na.action=="na.fail" && !all(c(unlist(nalist),nastudy))) {
-		stop("missing values in 'y' or 'X'")
+		stop("missing values in responses or predictors")
 	}
 
 	# CREATE y AND S LISTS ELIMINATING MISSING
@@ -138,25 +138,37 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, control) {
 ##########################################################################
 # FIXED-EFFECTS 
 
-	if(method=="fixed") {
+	# BETWEEN-STUDY (CO)VARIANCE MATRIX SET TO 0
+	Psi <- diag(0,k)
+  
+	# OBTAIN coef BY GLS
+	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
+		Slist,nalist,SIMPLIFY=FALSE)
+	Ulist <- lapply(Sigmalist,chol)
+	invUlist <- lapply(Ulist,function(U) backsolve(U,diag(ncol(U))))
+	invtUXlist <- mapply(function(invU,kX) crossprod(invU,kX),
+		invUlist,kXlist,SIMPLIFY=FALSE)
+	invtUylist <- mapply(function(invU,y) crossprod(invU,y),
+  	invUlist,ylist,SIMPLIFY=FALSE)
+	invtUX <- rbindlist(invtUXlist)
+	invtUy <- rbindlist(invtUylist)
+	coef <- as.numeric(qr.solve(invtUX,invtUy))
 
-		# BETWEEN-STUDY (CO)VARIANCE MATRIX SET TO 0
-		Psi <- diag(0,k)
+  # Q STAT
+  qstat <- list()
+	qstat$Q <- c(as.numeric(crossprod(invtUy-invtUX%*%coef)),
+    colSums(rbindlist(mapply(function(y,S,kX,na) {
+      comp <- rep(0,k)
+      comp[na] <- as.vector((y-kX%*%coef)^2 / diag(S))
+      return(comp)},
+      ylist,Slist,kXlist,nalist,SIMPLIFY=FALSE))))
 
-		# OBTAIN beta BY GLS
-		Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
-			Slist,nalist,SIMPLIFY=FALSE)
-		Ulist <- lapply(Sigmalist,chol)
-		invUlist <- lapply(Ulist,function(U) backsolve(U,diag(ncol(U))))
-		invtUXlist <- mapply(function(invU,kX) crossprod(invU,kX),
-			invUlist,kXlist,SIMPLIFY=FALSE)
-		invtUylist <- mapply(function(invU,y) crossprod(invU,y),
-			invUlist,ylist,SIMPLIFY=FALSE)
-		invtUX <- rbindlist(invtUXlist)
-		invtUy <- rbindlist(invtUylist)
-		beta <- as.numeric(qr.solve(invtUX,invtUy))
-
-		# COMPUTE (CO)VARIANCE MATRIX OF beta
+  if(method=="fixed") {
+    
+    coef <- coef
+    Psi <- Psi
+    
+		# COMPUTE (CO)VARIANCE MATRIX OF coef
 		qrinvtUX <- qr(invtUX)
 		R <- qr.R(qrinvtUX)
 		Qty <- qr.qty(qrinvtUX,invtUy)
@@ -164,7 +176,7 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, control) {
 
 		# OTHER OBJECTS
 		logLik <- as.numeric(-0.5*(nobs*log(2*pi) +
-			crossprod(invtUy-invtUX%*%beta))+
+			crossprod(invtUy-invtUX%*%coef))+
 			-sum(sapply(Ulist,function(U) sum(log(diag(U))))))
 		nranpar <- 0
 		convergence <- NULL
@@ -189,16 +201,20 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, control) {
 		# FORCE TO MAXIMIZATION
 		control$fnscale <- -1
 
+    # MAXIMIZE
 		fit <- optim(par,eval(obj),eval(fgrad),ylist=ylist,Slist=Slist,
 			kXlist=kXlist,nalist=nalist,nobs=nobs,k=k,method="BFGS",
 			control=control)
+    if(fit$convergence==1L) {
+      warning("convergence not reached after maximum number of iterations")
+    }
 
 		# Psi: ESTIMATED BETWEEN-STUDY (CO)VARIANCE MATRIX
 		Psi <- matrix(0,k,k)
 		Psi[lower.tri(Psi,diag=TRUE)] <- fit$par
 		Psi <- tcrossprod(Psi)
 	
-		# OBTAIN beta BY GLS
+		# OBTAIN coef BY GLS
 		Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
 			Slist,nalist,SIMPLIFY=FALSE)
 		Ulist <- lapply(Sigmalist,chol)
@@ -209,9 +225,9 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, control) {
 			invUlist,ylist,SIMPLIFY=FALSE)
 		invtUX <- rbindlist(invtUXlist)
 		invtUy <- rbindlist(invtUylist)
-		beta <- as.numeric(qr.solve(invtUX,invtUy))
+		coef <- as.numeric(qr.solve(invtUX,invtUy))
 
-		# COMPUTE (CO)VARIANCE MATRIX OF beta
+		# COMPUTE (CO)VARIANCE MATRIX OF coef
 		qrinvtUX <- qr(invtUX)
 		R <- qr.R(qrinvtUX)
 		Qty <- qr.qty(qrinvtUX,invtUy)
@@ -226,17 +242,22 @@ function(formula, S, data, method="reml", lab, contrasts, na.action, control) {
 ##########################################################################
 
 	# DF AND LABELS
-	df <- list(nobs=nobs,fixed=length(beta),random=nranpar)
+	df <- list(nobs=nobs,fixed=length(coef),random=nranpar)
 	lab <- list(mlab=mlab,klab=klab,plab=plab)
 	dim <- list(m=m,k=k,p=p)
+  
+  # Q STAT
+  qstat$df <- c(df$nobs-df$fixed,colSums(rbindlist(nalist),na.rm=TRUE)-dim$p)
+	qstat$pvalue <- with(qstat,sapply(seq(Q),function(i) 1-pchisq(Q[i],df[i])))
+  with(qstat, names(Q) <- names(df) <- names(pvalue) <- c("overall",klab))
 	
-	# PUT NAMES ON beta, vcov ANS Psi
+	# PUT NAMES ON coef, vcov ANS Psi
 	plablong <- paste(rep(klab,each=length(plab)),rep(plab,k),sep=".")
-	names(beta) <- plablong
+	names(coef) <- plablong
 	dimnames(vcov) <- list(plablong,plablong)
 	dimnames(Psi) <- list(klab,klab)	
 
-	results <- list(beta=beta,vcov=vcov,Psi=Psi,method=method,
+	results <- list(coef=coef,vcov=vcov,Psi=Psi,qstat=qstat,method=method,
 		logLik=logLik,df=df,dim=dim,lab=lab,int=int,call=call,model=model,
 		S=S,na.action=na.action,contrasts=contrasts,
 		convergence=convergence)

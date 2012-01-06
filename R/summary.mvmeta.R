@@ -13,15 +13,16 @@ function(object, ci.level=0.95, digits=4, ...) {
 # HEADING AND SUBHEADING
 
 	# HEADING
-	#cat("\n")
-	cat(if(object$dim$k==1)"UNI" else "MULTI","VARIATE ",
-		ifelse(object$method=="fixed","FIXED","RANDOM"),"-EFFECTS META-",
-		ifelse(!is.null(object$X),"REGRESSION","ANALYSIS"),sep="")
-	# CHECK LATER FOR CHOICE META-ANALYSIS OR METAREGRESSION
-	cat("\n")
+  cat("call:\n")
+  print(object$call)
+  cat("\n")
 
 	# SUB-HEADING
-	cat("Dimensions: ",object$dim$k,"\n","Studies: ",object$dim$m,"\n",sep="")
+  cat(if(object$dim$k==1)"Uni" else "Multi","variate ",
+		ifelse(object$method=="fixed","fixed","random"),"-effects meta-",
+		ifelse(p-int>0,"regression","analysis"),"\n",sep="")
+	# CHECK LATER FOR CHOICE META-ANALYSIS OR METAREGRESSION
+	cat("Dimension: ",object$dim$k,"\n","Studies: ",object$dim$m,"\n",sep="")
 	if(object$method!="fixed") {
 		cat("Estimation method: ",
 			methodlabel[which(object$method==methodname)],"\n",sep="")
@@ -35,33 +36,32 @@ function(object, ci.level=0.95, digits=4, ...) {
 	cat("Fixed effects","\n",sep="")
 
 	# COMPUTE USEFUL OBJECTS
-	beta.se <- sqrt(diag(object$vcov))
-	zval <- object$beta/beta.se
+	coef.se <- sqrt(diag(object$vcov))
+	zval <- object$coef/coef.se
 	zvalci <- qnorm((1-ci.level)/2,lower.tail=FALSE)
 	pvalue <- 2*(1-pnorm(abs(zval)))
-	ci.lb <- object$beta-zvalci*beta.se
-	ci.ub <- object$beta+zvalci*beta.se
+	ci.lb <- object$coef-zvalci*coef.se
+	ci.ub <- object$coef+zvalci*coef.se
 	cilab <- paste(round(ci.level,2)*100,"%ci.",c("lb","ub"),sep="")
-      signif <- symnum(pvalue, corr = FALSE, na = FALSE, cutpoints = c(0, 
-		0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", "**", 
+  signif <- symnum(pvalue, corr = FALSE, na = FALSE, cutpoints = c(0, 
+	  0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", "**", 
 		"*", ".", " "))
 
 	# FOR SIMPLE META-ANALYSIS
 	if(p-int==0) {
-		table <- cbind(object$beta,beta.se,zval,pvalue,ci.lb,ci.ub)
+		table <- cbind(object$coef,coef.se,zval,pvalue,ci.lb,ci.ub)
 		rownames(table) <- object$lab$klab
 		colnames(table) <- c("Estimate","StdErr","z","p-value",cilab)
 		table <- formatC(table,digits=digits,format="f")
 		table <- cbind(table,signif)
 		colnames(table)[7] <- ""
 		print(table,quote=FALSE,right=TRUE,print.gap=2)
-		cat("\n")
 	}	
 
 	# FOR META-REGRESSION
 	if(p-int>0) {
 		p <- object$dim$p
-		tabletot <- cbind(object$beta,beta.se,zval,pvalue,ci.lb,ci.ub)
+		tabletot <- cbind(object$coef,coef.se,zval,pvalue,ci.lb,ci.ub)
 		for(i in seq(object$dim$k)) {
 			ind <- seq((i-1)*p+1,(i-1)*p+p)
 			table <- tabletot[ind,,drop=FALSE]
@@ -72,9 +72,9 @@ function(object, ci.level=0.95, digits=4, ...) {
 			colnames(table)[7] <- ""
 			cat(object$lab$klab[i],":","\n")
 			print(table,quote=FALSE,right=TRUE,print.gap=2)
-			cat("\n")
 		}
 	}
+  cat("---\nSignif. codes: ", attr(signif, "legend"), "\n\n")
 
 ###########################################################################
 # RANDOM EFFECTS ESTIMATES
@@ -98,9 +98,16 @@ function(object, ci.level=0.95, digits=4, ...) {
 		cat("\n")
 	}
 
+  # OVERALL QTEST AND I-SQUARE
 	q <- qtest(object)
-	print(q)
-
+  Q <- formatC(q$Q,digits=digits,format="f")
+  pvalue <- formatC(q$pvalue,digits=digits,format="f")
+  i2 <- formatC(pmax((q$Q-q$df)/q$Q*100,1),digits=1,format="f")
+	cat(if(q$k==1) "Uni" else "Multi","variate ","Cochran Q-test for ",
+  	if(q$residual) "residual ", "heterogeneity:","\n",sep="")
+  cat("Q = ",Q[1]," (df = ",q$df[1],"), p-value = ",pvalue[1],"\n",sep="")
+  cat("I-square statistic = ",i2[1],"%","\n\n",sep="")
+  
 ###########################################################################
 # FIT STATS
 

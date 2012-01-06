@@ -7,7 +7,7 @@ function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 	Psi[lower.tri(Psi,diag=TRUE)] <- par
 	Psi <- tcrossprod(Psi)
 
-	# GET THE ESTIMATE OF beta CONDITIONAL ON Psi_theta
+	# GET THE ESTIMATE OF coef CONDITIONAL ON Psi_theta
 	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
 		Slist,nalist,SIMPLIFY=FALSE)
 	Ulist <- lapply(Sigmalist,chol)
@@ -16,16 +16,16 @@ function(par, ylist, Slist, kXlist, nalist, nobs, k) {
 		invUlist,kXlist,SIMPLIFY=FALSE)
 	invtUylist <- mapply(function(invU,y) crossprod(invU,y),
 		invUlist,ylist,SIMPLIFY=FALSE)
-	beta <- qr.solve(rbindlist(invtUXlist),rbindlist(invtUylist))
+	coef <- qr.solve(rbindlist(invtUXlist),rbindlist(invtUylist))
 
 	# LIKELIHOOD FUNCTION
 	# CONSTANT PART
-	const <- -0.5*(nobs-length(beta))*log(2*pi)
+	const <- -0.5*(nobs-length(coef))*log(2*pi)
 	# I GUESS IN STATA:
 	#const <- -0.5*(length(ylist)-1)*ncol(Psi)*log(2*pi)
 	# RESIDUAL COMPONENT
 	res <- -0.5*sum(mapply(function(invtUy,invtUX) {
-		crossprod(invtUy-invtUX%*%beta)},invtUylist,invtUXlist))
+		crossprod(invtUy-invtUX%*%coef)},invtUylist,invtUXlist))
 	# DETERMINANT COMPONENTS
 	det1 <- -sum(sapply(Ulist,function(U) sum(log(diag(U)))))
 	tXMXtot <- sumlist(lapply(invtUXlist,function(x)crossprod(x)))

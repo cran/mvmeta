@@ -40,7 +40,7 @@ For random-effects models, if \code{interval="confidence"} (the default), standa
 }
 
 \value{
-The results may be aggregated in matrices (the default), or returned as lists, depending on the argument \code{format}. For multivariate models, the aggregation is ruled by the argument \code{aggregate}, and the results may be grouped by statistic or by outcome. If \code{vcov=TRUE}, lists are always returned.
+The results may be aggregated in matrices (the default), or returned as lists, depending on the argument \code{format}. For aggregated results of a single prediction or meta-analysis with no predictor, vectors are returned. For multivariate models, the aggregation is ruled by the argument \code{aggregate}, and the results may be grouped by statistic or by outcome. If \code{vcov=TRUE}, lists are always returned. 
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}
