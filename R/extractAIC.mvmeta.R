@@ -1,11 +1,12 @@
 ###
 ### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
 #
-vcov.mvmeta <-
-  function(object, ...) {
+extractAIC.mvmeta <-
+  function (object, ...) {
 #
 ################################################################################
+# EXTRACTS THE NUMBER OF OBSERVATIONS USED FOR FITTING. USED BY BIC
 #
-  return(object$vcov)
+   return(c(object$df$df,AIC(object)))
+#
 }
-

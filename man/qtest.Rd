@@ -9,7 +9,7 @@ This is a generic function to perform a Cochran Q test of (residual) heterogenei
 }
 
 \usage{
-qtest(object, ...)
+qtest(object, \dots)
 }
 
 \arguments{

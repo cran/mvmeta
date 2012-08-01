@@ -1,38 +1,52 @@
+###
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+#
 mvmeta.ml <-
-function(par, ylist, Slist, kXlist, nalist, nobs, k) {
-
-	# PARAMETERIZATION OF theta AS THE LOWER TRIANGULAR COMPONENTS OF
-	#	THE SQUARE ROOT OF Psi, THROUGH CHOLESKY-DECOMPOSITION
-	Psi <- matrix(0,k,k)
-	Psi[lower.tri(Psi,diag=TRUE)] <- par
-	Psi <- tcrossprod(Psi)
-
-	# COMPUTE coef BY GLS
-	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
-		Slist,nalist,SIMPLIFY=FALSE)
-	Ulist <- lapply(Sigmalist,chol)
-	invUlist <- lapply(Ulist,function(U) backsolve(U,diag(ncol(U))))
-	invtUXlist <- mapply(function(invU,kX) crossprod(invU,kX),
-		invUlist,kXlist,SIMPLIFY=FALSE)
-	invtUylist <- mapply(function(invU,y) crossprod(invU,y),	
-		invUlist,ylist,SIMPLIFY=FALSE)
-	invtUX <- rbindlist(invtUXlist)
-	invtUy <- rbindlist(invtUylist)
-	coef <- as.numeric(qr.solve(invtUX,invtUy))
-
-	# LIKELIHOOD FUNCTION
-	# CONSTANT PART
-	const <- -0.5*nobs*log(2*pi)
-	# I GUESS IN STATA:
-	#const <- -0.5*length(ylist)*ncol(Psi)*log(2*pi)
-	# RESIDUAL COMPONENT
-	res <- -0.5*crossprod(invtUy-invtUX%*%coef)
-	# DETERMINANT COMPONENT
-	det <- -sum(sapply(Ulist,function(U) sum(log(diag(U)))))
-
-	logLik <- const + det + res
-
-	# RETURN MINUS THE VALUE: optim MINIMIZES
-	return(logLik)
+  function(Xlist, ylist, Slist, nalist, k, m, nall, control) {
+#
+################################################################################
+#
+  # PRODUCE INITIAL VALUES THROUGH IGLS
+  Psi <- diag(0.001,k)
+  niter <- 10
+  for(i in 1:niter) {
+    Psi <- mvmeta.igls(Psi,Xlist,ylist,Slist,nalist,k,m)
+  }
+#    
+  # PARAMETERIZATION OF theta AS THE LOWER TRIANGULAR COMPONENTS OF
+  #  THE SQUARE ROOT OF Psi, THROUGH CHOLESKY-DECOMPOSITION
+  par <- vechMat(t(chol(Psi)))
+#  
+  # MAXIMIZE
+  opt <- optim(par,mvmeta.ml.fn,mvmeta.ml.gr,Xlist=Xlist,ylist=ylist,
+    Slist=Slist,nalist=nalist,k=k,m=m,nall=nall,method="BFGS",control=control)
+  if(!(converged <- opt$convergence==0L)) {
+    warning("convergence not reached after maximum number of iterations")
+  }
+#
+  # Psi: ESTIMATED BETWEEN-STUDY (CO)VARIANCE MATRIX
+  Psi <- matrix(0,k,k)
+  Psi[lower.tri(Psi,diag=TRUE)] <- opt$par
+  Psi <- tcrossprod(Psi)
+# 
+  # FIT BY GLS
+  gls <- .gls(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
+#
+  # COMPUTE (CO)VARIANCE MATRIX OF coef
+  qrinvtUX <- qr(gls$invtUX)
+  R <- qr.R(qrinvtUX)
+  Qty <- qr.qty(qrinvtUX,gls$invtUy)
+  vcov <- tcrossprod(backsolve(R,diag(1,ncol(gls$invtUX))))
+#
+  # COMPUTE RESIDUALS (LATER), FITTED AND RANK
+  res <- NULL
+  fitted <- lapply(Xlist,"%*%",gls$coef)
+  rank <- qrinvtUX$rank
+#
+  fit <- list(coefficients=gls$coef,vcov=vcov,Psi=Psi,residuals=res,
+    fitted.values=fitted,df.residual=nall-rank-length(par),rank=rank,
+    logLik=opt$value,converged=converged)
+#
+  return(fit)
 }
 

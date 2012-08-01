@@ -1,45 +1,67 @@
-
+#################
 # EXPORTED
-export(mvmeta)
-export(print.mvmeta,summary.mvmeta)
-export(logLik.mvmeta,AIC.mvmeta,BIC.mvmeta)
-export(coef.mvmeta,vcov.mvmeta)
-export(fitted.mvmeta,predict.mvmeta)
-export(blup,blup.mvmeta)
-export(qtest,qtest.mvmeta)
+#################
 
-# DOCUMENTED BUT NOT EXPORTED
-#export(mvmeta.ml,mvmeta.reml,mvmeta.ml.grad,mvmeta.reml.grad)
-#export(mvmeta.igls)
-#export(mvmeta.check)
-#export(gradchol)
-#export(logMat,expMat,vechMat,xpndMat)
-#export(sumlist,meanlist,rbindlist,cbindlist)
+export(
+  mvmeta, mvmeta.fit,
+  mvmeta.fixed, mvmeta.ml, mvmeta.reml,
+  mvmeta.ml.fn, mvmeta.ml.gr, mvmeta.reml.fn, mvmeta.reml.gr,
+  mvmeta.igls,
+  mvmeta.control,
+  summary.mvmeta,
+  print.mvmeta, print.summary.mvmeta,
+  predict.mvmeta, 
+  blup, blup.mvmeta,
+  qtest, qtest.mvmeta, print.qtest.mvmeta,
+  logLik.mvmeta,
+  coef.mvmeta, vcov.mvmeta,
+  model.frame.mvmeta, model.matrix.mvmeta,
+  na.omit.data.frame.mvmeta, na.exclude.data.frame.mvmeta,
+  vechMat, xpndMat
+)
 
-# NOT DOCUMENTED OR EXPORTED EITHER
-#export(print.qtest.mvmeta)
 
-# NOT INCLUDED IN THIS VERSION
-#export(simulate.mvmeta)
-#export(mvmeta.rigls,mvmeta.em)
+#################
+# NOT EXPORTED
+#################
+#
+# extractAIC, nobs.mvmeta
 
+
+#################
+# INTERNAL
+#################
+#
+# .onAttach
+# .gls, .mkS, .gradchol.ml, .gradchol.reml
+# .logMat, .expMat .sumlist
+
+
+#################
 # IMPORTED
-import(stats,graphics,grDevices)
-importFrom(utils,packageDescription)
-importFrom(Matrix,rankMatrix)
-#importFrom(metafor,blup)
+#################
 
+import(stats, graphics, grDevices)
+importFrom(utils, packageDescription)
+
+
+#################
 # METHODS
-S3method(summary, mvmeta)
-S3method(print, mvmeta)
-S3method(logLik, mvmeta)
-S3method(AIC, mvmeta)
-S3method(BIC, mvmeta)
-S3method(coef, mvmeta)
-S3method(vcov, mvmeta)
-S3method(fitted, mvmeta)
-S3method(predict, mvmeta)
+#################
+
 S3method(blup, mvmeta)
+S3method(coef, mvmeta)
+S3method(logLik, mvmeta)
+S3method(model.frame, mvmeta)
+S3method(model.matrix, mvmeta)
+S3method(nobs, mvmeta)
+S3method(predict, mvmeta)
+S3method(print, mvmeta)
 S3method(qtest, mvmeta)
+S3method(summary, mvmeta)
+S3method(vcov, mvmeta)
+
+S3method(print, summary.mvmeta)
 S3method(print, qtest.mvmeta)
-#S3method(simulate, mvmeta)
+S3method(na.omit, data.frame.mvmeta)
+S3method(na.exclude, data.frame.mvmeta)

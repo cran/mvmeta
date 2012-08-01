@@ -1,263 +1,67 @@
 \name{mvmeta.ml}
 \alias{mvmeta.ml}
 \alias{mvmeta.reml}
-\alias{mvmeta.ml.grad}
-\alias{mvmeta.reml.grad}
-\alias{mvmeta.igls}
+\alias{mvmeta.fixed}
 
 
-\title{ Internal Functions for Package mvmeta }
+\title{ Fitting Functions for mvmeta Models }
 
 \description{
-These functions are used in algorithms for fitting random-effects multivariate meta-analysis and meta-regression through (restricted) maximum likelihood. They are called internally by \code{\link{mvmeta}}, and are not meant to be directly run by the users (see Note below).
+These functions defines alternative fitting methods for multivariate and univariate meta-analysis and meta-regression. They are meant to be used internally and not directly run by the users.
 }
 
 \usage{
+mvmeta.fixed(Xlist, ylist, Slist, nalist, k, m, nall, control)
 
-mvmeta.ml(par, ylist, Slist, kXlist, nalist, nobs, k)
-mvmeta.reml(par, ylist, Slist, kXlist, nalist, nobs, k)
+mvmeta.ml(Xlist, ylist, Slist, nalist, k, m, nall, control)
 
-mvmeta.ml.grad(par, ylist, Slist, kXlist, nalist, nobs, k)
-mvmeta.reml.grad(par, ylist, Slist, kXlist, nalist, nobs, k)
-
-mvmeta.igls(Psi, ylist, Slist, kXlist, nalist, k, m)
-
+mvmeta.reml(Xlist, ylist, Slist, nalist, k, m, nall, control)
 }
 
 \arguments{
+Assuming a meta-analysis or meta-regression based on \eqn{m} studies, \eqn{k} outcomes and \eqn{p} predictors:
 
-  \item{par }{ numerical vector representing the upper triangle entries of the Cholesky decomposition of \code{Psi}, taken by row.}
-  \item{Psi }{ matrix representing the current estimate of the between-study (co)variance matrix of the outcome parameters.}
-  \item{ylist }{ a list of study-specific vectors of estimated outcome parameters. Missing values have been excluded.}
-  \item{Slist }{ a list of study-specific (co)variance matrices of estimated outcome parameters. Missing values have been excluded.}
-  \item{kXlist }{ a list of study-specific design matrices for the fixed part of the model.}
-  \item{nalist }{ a list of \eqn{k}-length study-specific logical vectors, \code{TRUE} when the related obseervation is not (set to) missing.}
-  \item{nobs, k, m, p }{ numeric scalars: number of observations (excluding missing), number of outcome parameters, number of studies included in estimation (equal to the length of lists above), number of coefficients for each outcome parameter.}
-
+  \item{Xlist }{ a \eqn{m}-dimensional list of study-specific design matrices for the fixed-effects part of the model. Rows corresponding to missing outcomes have been excluded.}
+  \item{ylist }{ a \eqn{m}-dimensional list of study-specific vectors of estimated outcomes. Entries corresponding to missing outcomes have been excluded.}
+  \item{Slist }{ a \eqn{m}-dimensional list of within-study (co)variance matrices of estimated outcomes. Rows and columns corresponding to missing outcomes have been excluded.}
+  \item{nalist }{ a \eqn{m}-dimensional list of \eqn{k}-dimensional study-specific logical vectors, identifying missing outcomes.}
+  \item{k, m, nall }{ numeric scalars: number of outcomes, number of studies included in estimation (equal to the length of lists above), number of observations (excluding missing).}
+  \item{control }{ list of parameters for controlling the fitting process, usually provided by \code{\link{glm.control}}.}
 }
 
 \details{
-In the absence of missing values, each matrix in the argument \code{kXlist} is produced by a Kronecker product between an identity matrix of dimension \eqn{k} and the transpose of the \eqn{p}-length vector of study-level predictors. In the presence of missing outcome parameters, the related row of the identity matrix is excluded. For simple multivariate meta-analysis without predictors, the vector of study-level predictors is simply the numeric scalar 1, representing the intercept. The final desing matrix is therefore an identity matrix itself.
+Fixed-effects meta-analysis and meta-regression models are fitted by \code{mvmeta.fitted}, using a generalized least square algorithm implemented in the internal function \code{.gls}. The estimation procedure focuses on the \eqn{kp} fixed-effects coefficients, while assuming \code{Psi} as a 0 matrix.
 
-Random-effects models are fitted through (restricted) maximum likelihood using a quasi-Newton iterative algorithm, in order to estimate the coefficients \eqn{beta} and the variance components of \eqn{Psi}. The procedure is based on a profiled (or concentrated) likelihood, expressing the (restricted) likelihood only in terms of the components of \eqn{Psi}, while the conditional estimate of \eqn{beta}, obtained through generalized least square, is plugged-in at every iteration. This approach reduces the number of parameters in the optimization routine, especially in meta-regression models.
+Random-effects models are fitted through profiled (restricted) maximum likelihood by the functions \code{mvmeta.ml} and \code{mvmeta.reml}. They perform a hybrid estimation procedure based first on few runs of iterative generalized least square algorithm, implemented in \code{\link{mvmeta.igls}}, and then quasi-Newton iterations until convergence, provided by the general-purpose optimizer \code{\link{optim}} based on specific \code{\link[=mvmeta.ml.fn]{likelihood functions}}. The estimation focuses on the \eqn{kp} fixed-effects coefficients and the \eqn{k(k+1)/2} variance components for the random part of the model, corresponding to the lower triangular entries of the between-study (co)variance matrix \code{Psi}.
 
-The optimization routine is performed by \code{\link{optim}}, which calls \code{mvmeta.ml}-\code{mvmeta.ml.grad} or \code{mvmeta.reml}-\code{mvmeta.reml.grad}. These functions provide the (restricted) likelihood functions and their functions of partial derivatives with respect to the model parameters.
-Although efficient, convergence of Newton methods is highly dependent on optimal starting values of the parameters, which are computed by few iterations of an iterative generalized least square algorithm provided by the function \code{mvmeta.igls}. Initial value of \eqn{Psi} for \code{mvmeta.igls} is given by a diagonal matrix with 0.001 entries.
+As explained above, the arguments of these functions are prepared by \code{\link{mvmeta.fit}} from its arguments \code{X}, \code{y} and \code{S}, plus a control list passed by \code{\link{glm.control}}. The list structure, although requiring more elaborate coding, is computationally more efficient, as it avoids the specification of sparse block-diagonal matrices, especially for meta-analysis involving a large number of studies.
 
-The parameters of \eqn{Psi} are expressed in terms of its Cholesky decomposition, in order to assure the positive-definiteness of the estimated between-study (co)variance matrix. (Restricted) likelihood and derivatives are computed as sums of study-level contributions, in order to avoid the specification of high-dimensional sparse matrices and reduce the computation burden. A second Cholesky decomposition of  \eqn{Sigma = S +Psi} is performed in order to speed up the computation of \eqn{beta} through generalized least-square at each iteration, and the calculation of matrix inverses and determinants. More details are provided in the references below.
+In the absence of missing values, each \eqn{k \times kp}{k x kp} matrix in \code{Xlist} is produced by a Kronecker product between an identity matrix of dimension \eqn{k} and the transpose of the \eqn{p}-dimensional vector of study-level predictors, corresponding to the related row of \code{X}. The \eqn{k}-dimensional vectors in \code{ylist} are simply the entries of the \eqn{m}-dimensional vector (for univariate models) or rows of the \eqn{m \times k}{m x k} matrix (for multivariate models) of outcomes \code{y}. The within-study (co)variance matrices in \code{Slit} are produced by expanding the rows of the \eqn{k \times k(k+1)/2}{k x k(k+1)/2} matrix \code{S}, stored in vectorized form.  In the presence of missing outcomes in \code{y}, the related parts of the each component of these lists are excluded, as no missing values are accepted in these fitting functions and related \code{\link[=mvmeta.ml.fn]{likelihood functions}}.
 }
 
 \value{
-\code{mvmeta.ml} and \code{mvmeta.reml} return the value of minus the (restricted) log-likelihood for a given set of parameters in \code{par}. \code{mvmeta.ml.grad} and \code{mvmeta.reml.grad} return instead the related vector of partial derivatives. \code{mvmeta.igls} returns an updated estimate of \eqn{Psi} given its initial value or the value at previous iteration.
+These functions return an intermediate list object, whose components are then processed by \code{\link{mvmeta.fit}}. Other components are added later through \code{\link{mvmeta}} to finalize an object of class \code{"mvmeta"} .
 }
 
 \references{
-Goldstein, H. (1986). "Multilevel mixed linear model analysis using iterative generalized least squares." \emph{Biometrika}. \bold{73}(1):43.
+Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. Epub ahead of print (doi 10.1002/sim.5471). [Freely available \href{http://onlinelibrary.wiley.com/doi/10.1002/sim.5471/pdf}{\bold{here}}].
 
-Lindstrom, M. J. and D. M. Bates (1988). "Newton-Raphson and EM algorithms for linear mixed-effects models for repeated-measures data." \emph{Journal of the American Statistical Association}. \bold{83}(404):1014-1022.
+Goldstein H (1986). Multilevel mixed linear model analysis using iterative generalized least squares. \emph{Biometrika}. \bold{73}(1):43.
 
-Pinheiro, J. C. and D. M. Bates (2000). Mixed-Effects Models in S and S-PLUS. New York, Springer Verlag.
+Pinheiro JC and Bates DM (2000). Mixed-Effects Models in S and S-PLUS. New York, Springer Verlag.
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}
 
-\note{As stated earlier, these functions are called internally within the \pkg{mvmeta} package, and are not meant to be used directly. In particular, their code does not contain any check on the arguments provided, which are expected in specific formats. Although not exported (included in the namespace), they are documented in order to facilitate inspection and intepretation of the package code. Their code is reported below.
+\note{
+As stated earlier, these functions are called internally by \code{\link{mvmeta.fit}}, and are not meant to be used directly. In particular, their code does not contain any check on the arguments provided, which are expected in specific formats. They are however exported in the namespace and documented for completeness.
 }
 
 \seealso{
-See \code{\link{mvmeta-package}} and \code{\link{mvmeta}} for an overview of the package and modelling framework.
+See \code{\link{mvmeta.fit}} and the \code{\link[=mvmeta.ml.fn]{likelihood functions}} for additional info on the fitting procedures. See the function \code{\link{getAnywhere}} to access the code of the internal functions, such as \code{.gls}. See \code{\link{mvmeta-package}} for an overview of the package and modelling framework.
 }
 
-\examples{
-mvmeta.ml <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
-	# PARAMETERIZATION OF theta AS THE LOWER TRIANGULAR COMPONENTS OF
-	#	THE SQUARE ROOT OF Psi, THROUGH CHOLESKY-DECOMPOSITION
-	Psi <- matrix(0,k,k)
-	Psi[lower.tri(Psi,diag=TRUE)] <- par
-	Psi <- tcrossprod(Psi)
 
-	# COMPUTE coef BY GLS
-	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
-		Slist,nalist,SIMPLIFY=FALSE)
-	Ulist <- lapply(Sigmalist,chol)
-	invUlist <- lapply(Ulist,function(U) backsolve(U,diag(ncol(U))))
-	invtUXlist <- mapply(function(invU,kX) crossprod(invU,kX),
-		invUlist,kXlist,SIMPLIFY=FALSE)
-	invtUylist <- mapply(function(invU,y) crossprod(invU,y),	
-		invUlist,ylist,SIMPLIFY=FALSE)
-	invtUX <- rbindlist(invtUXlist)
-	invtUy <- rbindlist(invtUylist)
-	coef <- as.numeric(qr.solve(invtUX,invtUy))
-	# LIKELIHOOD FUNCTION
-	# CONSTANT PART
-	const <- -0.5*nobs*log(2*pi)
-	# I GUESS IN STATA:
-	#const <- -0.5*length(ylist)*ncol(Psi)*log(2*pi)
-	# RESIDUAL COMPONENT
-	res <- -0.5*crossprod(invtUy-invtUX\%*\%coef)
-	# DETERMINANT COMPONENT
-	det <- -sum(sapply(Ulist,function(U) sum(log(diag(U)))))
-	logLik <- const + det + res
-	# RETURN THE VALUE
-	return(logLik)
-}
-
-mvmeta.reml <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
-	# PARAMETERIZATION OF theta AS THE LOWER TRIANGULAR COMPONENTS OF
-	#	THE SQUARE ROOT OF Psi, THROUGH CHOLESKY-DECOMPOSITION
-	Psi <- matrix(0,k,k)
-	Psi[lower.tri(Psi,diag=TRUE)] <- par
-	Psi <- tcrossprod(Psi)
-	# GET THE ESTIMATE OF coef CONDITIONAL ON Psi_theta
-	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
-		Slist,nalist,SIMPLIFY=FALSE)
-	Ulist <- lapply(Sigmalist,chol)
-	invUlist <- lapply(Ulist,function(U) backsolve(U,diag(ncol(U))))
-	invtUXlist <- mapply(function(invU,kX) crossprod(invU,kX),
-		invUlist,kXlist,SIMPLIFY=FALSE)
-	invtUylist <- mapply(function(invU,y) crossprod(invU,y),
-		invUlist,ylist,SIMPLIFY=FALSE)
-	coef <- qr.solve(rbindlist(invtUXlist),rbindlist(invtUylist))
-	# LIKELIHOOD FUNCTION
-	# CONSTANT PART
-	const <- -0.5*(nobs-length(coef))*log(2*pi)
-	# I GUESS IN STATA:
-	#const <- -0.5*(length(ylist)-1)*ncol(Psi)*log(2*pi)
-	# RESIDUAL COMPONENT
-	res <- -0.5*sum(mapply(function(invtUy,invtUX) {
-		crossprod(invtUy-invtUX\%*\%coef)},invtUylist,invtUXlist))
-	# DETERMINANT COMPONENTS
-	det1 <- -sum(sapply(Ulist,function(U) sum(log(diag(U)))))
-	tXMXtot <- sumlist(lapply(invtUXlist,function(x)crossprod(x)))
-	det2 <- -sum(log(diag(chol(tXMXtot))))
-	logLik <- const + det1 + det2 + res
-	# RETURN THE VALUE
-	return(logLik)
-}
-
-mvmeta.ml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
-	# RETRIEVE THE UPPER TRIANGULAR CHOLESKY MATRIX AND Psi
-	L <- matrix(0,k,k)
-	L[lower.tri(L,diag=TRUE)] <- par
-	U <- t(L)
-	Psi <- crossprod(U)
-	# GET THE ESTIMATE OF coef CONDITIONAL ON Psi_theta
-	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
-		Slist,nalist,SIMPLIFY=FALSE)
-	Ulist <- lapply(Sigmalist,chol)
-	invUlist <- lapply(Ulist,function(U) backsolve(U,diag(ncol(U))))
-	invtUXlist <- mapply(function(invU,kX) crossprod(invU,kX),
-		invUlist,kXlist,SIMPLIFY=FALSE)
-	invtUylist <- mapply(function(invU,y) crossprod(invU,y),	
-		invUlist,ylist,SIMPLIFY=FALSE)
-	invtUX <- rbindlist(invtUXlist)
-	invtUy <- rbindlist(invtUylist)
-	coef <- as.numeric(qr.solve(invtUX,invtUy))
-	# COMPUTE THE MATRIX DERIVATIVES OF EACH PARAMETER
-	Dlist <- lapply(seq(length(par)),gradchol,k,U)
-	# FUNCTION TO COMPUTE THE GRADIENT COMPONENTS FOR A GIVEN PARAMETER
-	fgrad <- function(D,y,kX,invU,na) {
-		sum(mapply(function(y,kX,invU,na) {
-			invSigma <- tcrossprod(invU)
-			res <- as.numeric(y-kX\%*\%coef)
-			A <- crossprod(res,invSigma)\%*\%D[na,na]%*%invSigma\%*\%res
-			B <- sum(diag(invSigma\%*\%D[na,na]))
-			return(as.numeric(0.5*(A-B)))},y,kX,invU,na))
-	}
-	# REPEAT FOR ALL THE PARAMETERS 
-	grad <- sapply(Dlist,fgrad,y=ylist,kX=kXlist,invU=invUlist,nalist)
-	return(grad)
-}
-
-mvmeta.reml.grad <- function(par, ylist, Slist, kXlist, nalist, nobs, k) {
-	# RETRIEVE THE UPPER TRIANGULAR CHOLESKY MATRIX AND Psi
-	L <- matrix(0,k,k)
-	L[lower.tri(L,diag=TRUE)] <- par
-	U <- t(L)
-	Psi <- crossprod(U)
-	# GET THE ESTIMATE OF coef CONDITIONAL ON Psi_theta
-	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
-		Slist,nalist,SIMPLIFY=FALSE)
-	Ulist <- lapply(Sigmalist,chol)
-	invUlist <- lapply(Ulist,function(U) backsolve(U,diag(ncol(U))))
-	invtUXlist <- mapply(function(invU,kX) crossprod(invU,kX),
-		invUlist,kXlist,SIMPLIFY=FALSE)
-	invtUylist <- mapply(function(invU,y) crossprod(invU,y),
-		invUlist,ylist,SIMPLIFY=FALSE)
-	coef <- qr.solve(rbindlist(invtUXlist),rbindlist(invtUylist))
-
-	tXMXtot <- sumlist(lapply(invtUXlist,function(x)crossprod(x)))
-	invtXMXtot <- chol2inv(chol(tXMXtot))
-	# COMPUTE THE MATRIX DERIVATIVES OF EACH PARAMETER
-	Dlist <- lapply(seq(length(par)),gradchol,k,U)
-	# FUNCTION TO COMPUTE THE GRADIENT COMPONENTS FOR A GIVEN PARAMETERS
-	fgrad <- function(D,y,kX,invU,na) {
-		sum(mapply(function(y,kX,invU,na) {
-			invSigma <- tcrossprod(invU)
-			MDM <- invSigma\%*\%D[na,na]\%*\%invSigma
-			res <- as.numeric(y-kX\%*\%coef)
-			A <- crossprod(res,MDM)\%*\%res
-			B <- sum(diag(invSigma\%*\%D[na,na]))
-			C <- sum(diag(invtXMXtot\%*\%crossprod(kX,MDM)\%*\%kX))
-			return(as.numeric(0.5*(A-B+C)))},y,kX,invU,na))
-	}
-	# REPEAT FOR ALL THE PARAMETERS 
-	grad <- sapply(Dlist,fgrad,y=ylist,kX=kXlist,invU=invUlist,nalist)
-	return(grad)
-}
-
-mvmeta.igls <- function(Psi, ylist, Slist, kXlist, nalist, k, m) {
-	# COMPUTE coef BY GLS
-	Sigmalist <- mapply(function(S,na) S+Psi[na,na,drop=FALSE],
-		Slist,nalist,SIMPLIFY=FALSE)
-	Ulist <- lapply(Sigmalist,chol)
-	invUlist <- lapply(Ulist,function(U) backsolve(U,diag(ncol(U))))
-	invtUXlist <- mapply(function(invU,kX) crossprod(invU,kX),
-		invUlist,kXlist,SIMPLIFY=FALSE)
-	invtUylist <- mapply(function(invU,y) crossprod(invU,y),	
-		invUlist,ylist,SIMPLIFY=FALSE)
-	invtUX <- rbindlist(invtUXlist)
-	invtUy <- rbindlist(invtUylist)
-	coef <- as.numeric(qr.solve(invtUX,invtUy))
-	# CREATE A MATRIX WITH INDICATOR OF (CO)VAR COMPONENTS
-	npar <- k*(k+1)/2
-	indMat <- xpndMat(seq(npar))
-	# CREATE THE TRANSFORMED OBJECTS IN IGLS STRUCTURE
-	# EXPANDED (CO)VARIANCE MATRIX
-	Sigmalist <- mapply(function(na,S) {
-		V <- Psi[na,na,drop=FALSE]+S
-		return(V\%x\%V)},nalist,Slist,SIMPLIFY=FALSE)
-	# RESPONSE VECTORS WITH RESIDUALS MINUS THE WITHIN (CO)VARIANCE
-	#	COMPONENTS, CONSIDERED FIXED
-	flist <- mapply(function(y,S,kX) {
-		return(as.numeric(tcrossprod(y-kX\%*\%coef))-as.numeric(S))},
-		ylist,Slist,kXlist,SIMPLIFY=FALSE)
-	# DESIGN MATRIX MAPPING THE PARAMETERS TO BE ESTIMATED
-	#	IT AUTOMATICALLY CREATES 0 COLUMNS FOR MISSING OBSERVATIONS
-	Zlist <- lapply(nalist,function(na) {
-		z <- as.numeric(indMat[na,na,drop=FALSE])
-		Z <- lapply(seq(npar),function(x) as.numeric(z==x))
-		return(cbindlist(Z))})
-	# CREATE TRANFORMED OBJECTS FOR WEIGHTED LEAST-SQUARE THROUGH CHOLESKY
-	Ulist <- lapply(Sigmalist,chol)
-	invUlist <- lapply(Ulist,function(U) backsolve(U,diag(ncol(U))))
-	invtUZlist <- mapply(function(invU,Z) crossprod(invU,Z),
-		invUlist,Zlist,SIMPLIFY=FALSE)
-	invtUflist <- mapply(function(invU,f) crossprod(invU,f),
-		invUlist,flist,SIMPLIFY=FALSE)
-	invtUZ <- rbindlist(invtUZlist)
-	invtUf <- rbindlist(invtUflist)
-	# ESTIMATE THE COMPONENTS
-	theta <- as.numeric(qr.solve(invtUZ,invtUf))
-	Psi <- xpndMat(theta)
-	# FORCING POSITIVE-DEFINITENESS
-	Psi <- expMat(logMat(Psi,positive=TRUE))
-	return(Psi)
-}
-
-}
-
-\keyword{internal}
 \keyword{models}
 \keyword{regression}
 \keyword{multivariate}

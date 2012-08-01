@@ -1,44 +1,40 @@
+###
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+#
 print.mvmeta <-
-function(x, digits=4, ...) {
-
-	# CREATE USEFUL OBJECTS
-	methodname <- c("reml","ml","fixed")
-	methodlabel <- c("REML","ML","Fixed")
-	p <- x$dim$p
-	int <- x$int
-
-###########################################################################
-# HEADING AND SUBHEADING
-
+  function(x, digits=4, ...) {
+#
+################################################################################
+#
+  # CREATE USEFUL OBJECTS
+  methodname <- c("reml","ml","fixed")
+  methodlabel <- c("REML","ML","Fixed")
+  int <- attr(x$terms,"intercept")==1L
+#
+################################################################################
+# HEADING AND SUB-HEADING
+#
   # HEADING
-  cat("call:\n")
-  print(x$call)
+  cat("Call:  ",paste(deparse(x$call),sep="\n",collapse="\n"),"\n\n",sep="")
+#
+  # SUB-HEADING
+  cat("Fixed-effects coefficients:","\n",sep="")
+  table <- formatC(x$coefficients,digits=digits,format="f")
+  print(table,quote=FALSE,right=TRUE,print.gap=2)
   cat("\n")
-
-	# SUB-HEADING
-  cat(if(x$dim$k==1)"Uni" else "Multi","variate ",
-		ifelse(x$method=="fixed","fixed","random"),"-effects meta-",
-		ifelse(p-int>0,"regression","analysis"),"\n",sep="")
-	# CHECK LATER FOR CHOICE META-ANALYSIS OR METAREGRESSION
-	cat("Dimension: ",x$dim$k,"\n","Studies: ",x$dim$m,"\n",sep="")
-	if(x$method!="fixed") {
-		cat("Estimation method: ",
-			methodlabel[which(x$method==methodname)],"\n",sep="")
-		cat("Variance-covariance matrix Psi: ","unstructured","\n",sep="")
-	}
-	cat("\n")
-
-###########################################################################
-###########################################################################
+#
+################################################################################
 # FIT STATS
-
-  cat(x$df$nobs," observations, ",x$df$fixed," fixed and ",
-		x$df$random," random parameters","\n",sep="")
-	table <- c(logLik(x),AIC(x),BIC(x))
-	names(table) <- c("logLik","AIC","BIC")
-	table <- formatC(table,digits=digits,format="f")
-	print(table,quote=FALSE,right=TRUE,print.gap=2)
-	cat("\n")
-
+#
+  cat(x$dim$m," studies, ",x$df$nall," observations, ",x$df$fixed," fixed and ",
+    x$df$random," random-effects parameters","\n",sep="")
+  if(na <- length(x$na.action)) cat(" (",na," stud",ifelse(na>1L,"ies","y"),
+    " removed due to missingness",")\n",sep="")
+  table <- c(x$logLik,AIC(x),BIC(x))
+  names(table) <- c("logLik","AIC","BIC")
+  table <- formatC(table,digits=digits,format="f")
+  print(table,quote=FALSE,right=TRUE,print.gap=2)
+  cat("\n")
+#
 }
 

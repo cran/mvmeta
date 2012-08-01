@@ -2,16 +2,16 @@
 \alias{predict.mvmeta}
 
 
-\title{ Predicted Values for mvmeta Objects }
+\title{ Predicted Values from mvmeta Models }
 
 \description{
-This method function computes model prediction for objects of class \code{"mvmeta"}, optionally for a new set of predictor values in meta-regression models. The function also returns standard errors, confidence intervals or the entire (co)variance matrix of the predicted outcome parameters.
+This method function computes predictions from fitted univariate or multivariate meta-analytical models represented in objects of class \code{"mvmeta"}, optionally for a new set of predictor values in meta-regression models. Predictions are optionally accompained by standard errors, confidence intervals or the entire (co)variance matrix of the predicted outcomes.
 }
 
 \usage{
 \method{predict}{mvmeta}(object, newdata, se=FALSE, ci=FALSE, vcov=FALSE,
-	interval=c("confidence","prediction"), ci.level=0.95,
-	format=c("matrix","list"), aggregate=c("stat","y"), na.action, ...)
+  interval=c("confidence","prediction"), ci.level=0.95,
+  format=c("matrix","list"), aggregate=c("stat","y"), na.action=na.pass, \dots)
 }
 
 \arguments{
@@ -31,39 +31,45 @@ This method function computes model prediction for objects of class \code{"mvmet
 }
 
 \details{
-For both fixed and random-effects models, estimated predictions are only based on the fixed part of the model, ignoring study-specific deviations, differently from \code{\link[mvmeta:blup.mvmeta]{blup}}.
+The method function \code{predict} produces predicted values from \code{mvmeta} objects, obtained by evaluating the original call to \code{\link{mvmeta}} in the frame \code{newdata}. For both fixed and random-effects models, estimated predictions are only based on the fixed part of the model, ignoring study-specific deviations, differently from \code{\link[=blup.mvmeta]{blup}}.
 
-For multivariate meta-analysis, the results are identical to the estimated coefficients and those returned by \code{\link[mvmeta:fitted.mvmeta]{fitted}}, but a single value is returned. Interpretation of fixed and random-effects models simply follows. In meta-regression models, results of random-effects models are interpreted as the estimated average outcome parameters of a set of studies characterized by the same specified values of predictors, sampled from the same (hypothetical) population the original studies included in the analysis have been selected from. Interpretation of predictions from fixed-effects meta-regression models is not straightforward (or even meaningful).
+For random-effects models, if \code{interval="confidence"} (the default), standard errors, confidence intervals and (co)variance matrix of the predicted values are computed only using the estimated (co)variance matrix of the fixed-effects coefficients. If \code{interval="prediction"}, the estimated between-study (co)variance matrix, stored in the \code{Psi} component of \code{mvmeta} objects, is also added. In this case, interpretation of the uncertainty reflects that of a new single study sampled from the same population.
 
-For random-effects models, if \code{interval="confidence"} (the default), standard errors, confidence intervals and (co)variance matrix of the predicted values are computed only using the estimated (co)variance matrix of the coefficients \eqn{beta}, coherently with the interpretation given above. If \code{interval="prediction"}, the estimated between-study (co)variance matrix \eqn{Psi} is also added. In this case, interpretation of the uncertainty reflects that of a new single study sampled from the same population.
-
+If \code{newdata} is omitted, the predictions are based on the data used for the fit. In that case how to handle predictions for studies removed from estimation due to invalid missing pattern is determined by the \code{na.action} argument used in \code{\link{mvmeta}} to produce \code{object}. If \code{na.action=na.omit}, studies excluded from estimation will not appear, whereas if \code{na.action=na.exclude} they will appear, with values set to \code{NA} for all the outcomes. This step is performed by \code{\link{napredict}}. See Notes.
 }
 
-\value{
-The results may be aggregated in matrices (the default), or returned as lists, depending on the argument \code{format}. For aggregated results of a single prediction or meta-analysis with no predictor, vectors are returned. For multivariate models, the aggregation is ruled by the argument \code{aggregate}, and the results may be grouped by statistic or by outcome. If \code{vcov=TRUE}, lists are always returned. 
+\references{
+Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. Epub ahead of print (doi 10.1002/sim.5471). [Freely available \href{http://onlinelibrary.wiley.com/doi/10.1002/sim.5471/pdf}{\bold{here}}].
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}
 
 \note{
-This method function has a slightly different behaviour in the presence of missing values, if compared to the same method for other classes. Specifically, the predicted values are set to \code{NA} if at least one of the predictor values is missing in meta-regression models. In constrast, the function computes the predicted values in the presence of missing outcomes parameters estimates or entries of the within-study (co)variance matrices (left-hand side of \code{formula} and \code{S} in \code{\link{mvmeta}}, respectively).
+The definition of missing in model frames used for estimation in \code{\link{mvmeta}} is different than that commonly adopted in other regression models such as \code{\link{lm}} or \code{\link{glm}}. See info on \code{\link[=na.omit.data.frame.mvmeta]{missing values}} in \code{\link{mvmeta}}.
 }
 
 \seealso{ 
-The method function \code{\link[mvmeta:blup.mvmeta]{blup}} provides best linear unbiased pridictions for the set of studies included in the analysis. The method function \code{\link[mvmeta:fitted.mvmeta]{fitted}} computes the fitted values. See \code{\link{mvmeta-package}} and \code{\link{mvmeta}} for an overview of the package and modelling framework.
+See \code{\link[=blup.mvmeta]{blup}} for best linear unbiased predictions. See the default method \code{\link{predict}}. See \code{\link{mvmeta-package}} for an overview of the package and modelling framework.
 }
 
 \examples{
 # RUN THE MODEL
-model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[6:8],data=berkey98)
+model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[5:7],data=berkey98)
 
-# PREDICTED AVERAGED OUTOCOMES AND SE FROM YEAR 1985 TO 1987
-newdata <- data.frame(pubyear=1985:1987)
+# PREDICTED FROM YEAR 1985 TO 1987, WITH LABELS
+newdata <- data.frame(pubyear=1985:1987,row.names=1985:1987)
+
+# AVERAGED OUTOCOMES AND SE
 predict(model,newdata,se=TRUE)
+
 # SAME AS ABOVE, AGGREGATED BY OUTCOME
 predict(model,newdata,se=TRUE,aggregate="y")
+
 # SAME AS ABOVE, WITH PREDICTION INTERVALS
 predict(model,newdata,se=TRUE,aggregate="y",interval="prediction")
+
+# WITH VCOV, FORCED TO A LIST
+predict(model,newdata,se=TRUE,vcov=TRUE,aggregate="y")
 }
 
 \keyword{models}

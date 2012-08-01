@@ -1,3 +1,4 @@
-qtest <-
-function (object, ...) UseMethod("qtest")
+qtest <- 
+  function (object, ...)
+  UseMethod("qtest")
 

@@ -1,11 +1,11 @@
 ###
 ### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
 #
-vcov.mvmeta <-
+model.matrix.mvmeta <-
   function(object, ...) {
 #
 ################################################################################
 #
-  return(object$vcov)
+  data <- model.frame(object,xlev=object$xlevels, ...)
+  NextMethod("model.matrix",data=data,contrasts.arg=object$contrasts)
 }
-

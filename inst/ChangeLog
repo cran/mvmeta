@@ -1,6 +1,58 @@
 ==============================================================================
+Changes in mvmeta 0.3.0 (01 Aug 2012)
+=====================================
+
+Major changes
+-------------
+
+    o The internal structure of the package has been substantially revised, with
+      the aim to improve efficiency, stability and reliability. The function
+      mvmeta() now resembles the standard regression functions such as lm() and
+      glm(). These changes will also hopefully make easier further extensions
+      and improvements. Specific changes are described below.
+
+    o	Estimation procedure divided in steps: mvmeta() calls mvmeta.fit(), a
+      wrapper for specific fitting functions mvmeta.fixed(), mvmeta.ml(), and
+      mvmeta.reml(). The last two in turns call optim(), based on new likelihood
+      functions with suffix .fn and .gr to compute the likelihood and the
+      partial derivatives. The procedure is 15-25% faster.
+
+    o	The structure of mvmeta() now is that of a proper regression function,
+      properly based on model frames and terms objects. This allows icluding
+      offset, extracting residuals, fitted values and the model matrix, among
+      other benfits. Several default methods for regression functions are now
+      available for mvmeta objects.
+
+    o Handling of missing values exploits the new structure based on model
+      frame with additional class "data.frame.mvmeta". Method function na.omit()
+      and na.exclude() have been added to properly define missing observations.
+
+    o	The method summary() now returns an object of class "summary.mvmeta", with
+      a similar structure and printing methods of those of lm() and glm().
+
+    o New function mvmeta.control() to provide different options in several
+      steps of the model fitting. Likely to be extended in future versions.
+
+    o Several new internal functions have been added but not exported in the
+      namespace. All the method functions are now exported and documented.
+	
+Minor changes
+-------------
+
+    o Changed dependencies: not based anymore on functions in package Matrix.
+
+    o AIC() and BIC() are now based on the default methods.
+
+    o Coefficients are now reported in matrix form.
+
+    o Labels are now internally defined and handled.
+
+    o	The help page mvmetaObjects have been added.
+
+
+==============================================================================
 Changes in mvmeta 0.2.4 (06 Jan 2011)
-===================================
+=====================================
 
 Minor changes
 -------------
@@ -37,10 +89,10 @@ Major changes
 -------------
 
     o	The argument 'formula' now accept also matrix-type objects for simple
-	meta-analysis.
+	    meta-analysis.
 
     o	Included 'fnscale=-1' for optim() and changed the sign of the
-	estimation algorithms: now the function maximizes.
+	    estimation algorithms: now the function maximizes.
 
     o	Also 'S' and 'mlab' now can be stored in 'data'.
 
@@ -72,24 +124,24 @@ Major changes
 -------------
 
     o	The arguments 'y' and 'X' has been replaced by 'formula' in mvmeta().
-	Now the model is specified through a formula, making easier the 
-	inclusion of factors and other variable transformation.
+	    Now the model is specified through a formula, making easier the 
+	    inclusion of factors and other variable transformation.
 
     o	The objects 'class', 'contrasts' and 'model' have been added to mvmeta
-	objects, storing info about the fitted model. In particular, method
-	functions such as predict now use model.matrix() and other functions
-	to re-build the model.
+      objects, storing info about the fitted model. In particular, method
+      functions such as predict now use model.matrix() and other functions
+      to re-build the model.
 
     o	The function kXlistmk() has been excluded from the package. Now the 
-	Kronecker expansion is performed directly in the code. The argument 
-	'cen' has been excluded from 'mvmeta().
+      Kronecker expansion is performed directly in the code. The argument 
+      'cen' has been excluded from 'mvmeta().
 	
 Minor changes
 -------------
 
     o	Changes in dependencies: created a new generic for blup(), in order
-	to avoid the loading of metafor and its initial message. Function
-	rankMatrix() imported from Matrix to check full-rank of desing matrix.
+      to avoid the loading of metafor and its initial message. Function
+      rankMatrix() imported from Matrix to check full-rank of desing matrix.
 
     o	Documentation changed accordingly.
 
