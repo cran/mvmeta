@@ -149,7 +149,7 @@
     if(!is.null(na.action)) S <- S[-na.action]
     if(length(S)!=m) stop(mes)
     if(any(sapply(S,dim)!=k)) stop(mes)
-    S <- t(sapply(S,vechMat))
+    S <- if(k==1L) as.matrix(sapply(S,vechMat)) else t(sapply(S,vechMat))
   }
 #
   # NAMES

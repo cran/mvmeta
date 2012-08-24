@@ -1,10 +1,10 @@
-5d9abe0bd80d0ceaca5b6c868d110c9c *DESCRIPTION
-ed1dbe7c37bc24d5ac7fe752a72e6b54 *NAMESPACE
+9933d8485d9115c6a9e557b66c03776d *DESCRIPTION
+2aafd5ba6fbc43a8dbf55917c58b721d *NAMESPACE
 9c71782dfe63c34c97b12bd4ed9d2ade *R/blup.R
 ac31bd8a378dc1d57b9ab2f0049797e6 *R/blup.mvmeta.R
 7431f341bf3e5fc8a7760f4c26b1c9c5 *R/coef.mvmeta.R
 21744f739f67ea3d3dc6cf3503721ec5 *R/extractAIC.mvmeta.R
-55eb6b0fbd141c1669a54963d48aba6b *R/internal.R
+5512a0cb444676ff7dbc7ad436d7075f *R/internal.R
 e8aa8aaf3fd557dd490cd72dbf7a2f59 *R/logLik.mvmeta.R
 bb631f9e90b10b5a13f62a4791e6287c *R/model.frame.mvmeta.R
 84f63b441a2aa0e433cb33a0a5f85ae9 *R/model.matrix.mvmeta.R
@@ -34,7 +34,7 @@ dfb8ef5bf09c704d5e3786e5788228de *R/summary.mvmeta.R
 cb8724e79aac49f43d5c21503710a961 *R/xpndMat.R
 14dddd5fa3ccb3498842f55d1f4064ec *data/berkey98.rda
 b6512621b0dbc04677e3b73d3dc2ae02 *inst/CITATION
-85bbbee265aa730e38c6ea901f655e79 *inst/ChangeLog
+3b091824d4b91fafc2ce228138611e20 *inst/ChangeLog
 d6666efe706f69331c1c68604089559d *man/berkey98.Rd
 2d5e622da178905cdba6c91d017450a0 *man/blup.mvmeta.Rd
 fad637c9601154ab0eb0a8833c33023d *man/coef.mvmeta.Rd
