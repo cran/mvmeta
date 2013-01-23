@@ -15,8 +15,8 @@ The dataset contains the results of 5 published trials comparing surgical and no
   \describe{
     \item{\code{pubyear} }{publication year of the trial.}
     \item{\code{npat} }{ number of patients included in the trial.}
-    \item{\code{PD}}{ estimated improvement of surgical vs. non-surgical treatments in probing depth (mm).}
-    \item{\code{AL}}{ estimated improvement of surgical vs. non-surgical treatments in attachment level (mm).}
+    \item{\code{PD}}{ estimated improvement of surgical versus non-surgical treatments in probing depth (mm).}
+    \item{\code{AL}}{ estimated improvement of surgical versus non-surgical treatments in attachment level (mm).}
     \item{\code{var_PD}}{ variance of the estimated outcome for \code{PD}.}
     \item{\code{cov_PD_AL}}{ variance of the estimated outcome for \code{AL}.}
     \item{\code{var_AL}}{ covariance of the estimated outcomes for \code{PD} and \code{AL}.}

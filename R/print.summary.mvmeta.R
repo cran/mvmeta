@@ -1,14 +1,14 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-print.summary.mvmeta <-  
-  function(x, digits=4, ...) {
+`print.summary.mvmeta` <-  
+function(x, digits=4, ...) {
 #
 ################################################################################
 #
   # CREATE USEFUL OBJECTS
-  methodname <- c("reml","ml","fixed")
-  methodlabel <- c("REML","ML","Fixed")
+  methodname <- c("reml","ml","fixed","mm")
+  methodlabel <- c("REML","ML","Fixed","Method of moments")
   int <- attr(x$terms,"intercept")==1L
 #
 ################################################################################
@@ -99,12 +99,17 @@ print.summary.mvmeta <-
 #
   cat(x$dim$m," studies, ",x$df$nall," observations, ",x$df$fixed," fixed and ",
     x$df$random," random-effects parameters","\n",sep="")
-  if(na <- length(x$na.action)) cat(" (",na," stud",ifelse(na>1L,"ies","y"),
+  if(na <- length(x$na.action)) cat("(",na," stud",ifelse(na>1L,"ies","y"),
     " removed due to missingness",")\n",sep="")
-  table <- c(x$logLik,x$AIC,x$BIC)
-  names(table) <- c("logLik","AIC","BIC")
-  table <- formatC(table,digits=digits,format="f")
-  print(table,quote=FALSE,right=TRUE,print.gap=2)
+  if(x$method!="mm") {
+    table <- c(x$logLik,x$AIC,x$BIC)
+    names(table) <- c("logLik","AIC","BIC")
+    table <- formatC(table,digits=digits,format="f")
+    print(table,quote=FALSE,right=TRUE,print.gap=2)
+  } else if(!is.null(x$negeigen)) {
+    cat("(Estimated variance components with ",x$negeigen,
+      " negative eigenvalues - set to 0)",sep="")
+  }
   cat("\n")
 #
 }

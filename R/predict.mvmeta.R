@@ -1,10 +1,10 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-predict.mvmeta <-
-  function(object, newdata, se=FALSE, ci=FALSE, vcov=FALSE,
-    interval=c("confidence","prediction"), ci.level=0.95,
-    format=c("matrix","list"), aggregate=c("stat","y"), na.action=na.pass, ...) {
+`predict.mvmeta` <-
+function(object, newdata, se=FALSE, ci=FALSE, vcov=FALSE,
+  interval=c("confidence","prediction"), ci.level=0.95,
+  format=c("matrix","list"), aggregate=c("stat","y"), na.action=na.pass, ...) {
 #
 ################################################################################
 # CREATE DESIGN MATRIX X AND OFFSET

@@ -1,15 +1,14 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-mvmeta.ml <-
-  function(Xlist, ylist, Slist, nalist, k, m, nall, control) {
+`mvmeta.ml` <-
+function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
 #
 ################################################################################
 #
   # PRODUCE INITIAL VALUES THROUGH IGLS
   Psi <- diag(0.001,k)
-  niter <- 10
-  for(i in 1:niter) {
+  for(i in seq(control$igls.niter)) {
     Psi <- mvmeta.igls(Psi,Xlist,ylist,Slist,nalist,k,m)
   }
 #    
@@ -19,7 +18,8 @@ mvmeta.ml <-
 #  
   # MAXIMIZE
   opt <- optim(par,mvmeta.ml.fn,mvmeta.ml.gr,Xlist=Xlist,ylist=ylist,
-    Slist=Slist,nalist=nalist,k=k,m=m,nall=nall,method="BFGS",control=control)
+    Slist=Slist,nalist=nalist,k=k,m=m,nall=nall,method="BFGS",
+    control=control$optim)
   if(!(converged <- opt$convergence==0L)) {
     warning("convergence not reached after maximum number of iterations")
   }
@@ -45,7 +45,7 @@ mvmeta.ml <-
 #
   fit <- list(coefficients=gls$coef,vcov=vcov,Psi=Psi,residuals=res,
     fitted.values=fitted,df.residual=nall-rank-length(par),rank=rank,
-    logLik=opt$value,converged=converged)
+    logLik=opt$value,converged=converged,control=control)
 #
   return(fit)
 }

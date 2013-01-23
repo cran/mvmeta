@@ -1,8 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-mvmeta.ml.fn <-
-  function(par, Xlist, ylist, Slist, nalist, k, m, nall) {
+`mvmeta.ml.fn` <-
+function(par, Xlist, ylist, Slist, nalist, k, m, nall) {
 #
 ################################################################################
 #

@@ -1,9 +1,9 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-mvmeta <-
-  function(formula, S, data, subset, method="reml", model=TRUE, contrasts=NULL,
-    offset, na.action, control=list()) {
+`mvmeta` <-
+function(formula, S, data, subset, method="reml", model=TRUE, contrasts=NULL,
+  offset, na.action, control=list()) {
 #
 ################################################################################
 # CREATE THE CALL
@@ -38,7 +38,7 @@ mvmeta <-
   if(missing(na.action)) na.action <- getOption("na.action")
   if(length(na.action)) mf <- do.call(na.action,list(mf))
   # RETURN mf IF REQUIRED
-  method <- match.arg(method,c("fixed","ml","reml","model.frame"))
+  method <- match.arg(method,c("fixed","ml","reml","mm","model.frame"))
   if(method=="model.frame") return(mf)
   # EMPTY MODEL?
   if(is.empty.model(mf)) stop("empty model not allowed")
@@ -57,7 +57,8 @@ mvmeta <-
   }
   # CREATE S (AS A MATRIX OF VECTORIZED COVAR)
   S <- eval(call$S,if(missing(data)) parent.frame() else data)
-  S <- .mkS(S,y,attr(mf,"na.action"),if(missing(subset)) NULL else subset)
+  S <- .mkS(S,y,attr(mf,"na.action"), if(missing(subset)) NULL else 
+    eval(call$subset,if(missing(data)) parent.frame() else data))
   if(nrow(y)<2L) stop("less than 2 valid studies after exclusion of missing")
 #
 ################################################################################
@@ -76,7 +77,6 @@ mvmeta <-
   fit$formula <- formula
   fit$terms <- terms
   fit$offset <- offset 
-  fit$control <- control
   fit$method <- method
   fit$contrasts <- attr(X,"contrasts")
   fit$xlevels <- .getXlevels(terms,mf)

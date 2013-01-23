@@ -22,15 +22,15 @@ Assuming a meta-analysis or meta-regression based on \eqn{m} studies, \eqn{k} ou
   \item{formula }{ an object of class \code{"\link{formula}"} (or one that can be coerced to that class) offering a symbolic description of the linear predictor of the model to be fitted to each outcome. Alternatively, for meta-analysis with no predictor, a single  vector (for univariate models) or matrix-type object (for multivariate models). Terms in \code{formula} must be vector or matrix-type objects, optionally provided in the \code{data} argument below. See Details.}
   \item{X }{ a \eqn{m \times p}{m x p} design matrix containing the study-specific predictors. Usually produced internally by \code{mvmeta} from \code{formula} above.}
   \item{y }{ a \eqn{m}-dimensional vector (for univariate models) or \eqn{m \times k}{m x k} matrix (for multivariate models) of outcomes. Usually produced internally by \code{mvmeta} from \code{formula} above.}
-  \item{S }{ series of within-study (co)variance matrices of the estimated outcome for each one of the \eqn{m} studies. Accepted formats by \code{mvmeta} are a \eqn{m}-dimensional list of \eqn{k \times k}{k x k} matrices; a tri-dimensional \eqn{k \times k \times m}{k x k x m} array; or a \eqn{m \times k(k+1)/2}{m x k(k+1)/2} matrix or dataframe where each row represents the vectorized entries of the lower triangle of the related (co)variance matrix, taken by column (see \code{\link{xpndMat}}). Optionally, terms may be provided in the \code{data} argument below. \code{mvmeta.fit} accepts only the last option.}
+  \item{S }{ series of within-study (co)variance matrices of the estimated outcomes for each one of the \eqn{m} studies. Accepted formats by \code{mvmeta} are a \eqn{m}-dimensional list of \eqn{k \times k}{k x k} matrices; a tri-dimensional \eqn{k \times k \times m}{k x k x m} array; or a \eqn{m \times k(k+1)/2}{m x k(k+1)/2} matrix or data frame where each row represents the vectorized entries of the lower triangle of the related (co)variance matrix, taken by column (see \code{\link{xpndMat}}). Optionally, terms may be provided in the \code{data} argument below. \code{mvmeta.fit} accepts only the last option.}
   \item{data }{ an optional data frame, list or environment (or object coercible by \code{\link{as.data.frame}} to a data frame) containing the variables in \code{formula}. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which \code{mvmeta} is called.}
   \item{subset }{ an optional vector specifying a subset of observations to be used in the fitting process.}
-  \item{method }{ estimation method: \code{"fixed"} for fixed-effects models, \code{"ml"} or \code{"reml"} for random-effects models through (restricted) maximum likelihood. If \code{"model.frame"}, the model frame is returned. See \code{\link{lm}} or \code{\link{glm}}.}
+  \item{method }{ estimation method: \code{"fixed"} for fixed-effects models, \code{"ml"} or \code{"reml"} for random-effects models fitted through (restricted) maximum likelihood, and \code{"mm"} for random-effects models fitted through method of moments. If \code{"model.frame"}, the model frame is returned. See \code{\link{lm}} or \code{\link{glm}}.}
   \item{model }{ a logical value indicating whether the model frame should be included as a component of the returned value. See the \code{\link[=model.frame.mvmeta]{model.frame}} method function.}
   \item{contrasts }{ an optional list. See the \code{contrasts.arg} of \code{\link{model.matrix}}.}
   \item{offset }{ optionally, a \eqn{m}-dimensional numeric vector used to specify an a priori known component in the linear predictor. One or more \code{\link{offset}} terms can be included in the formula instead or as well. See \code{\link{model.offset}}.}
   \item{na.action }{ a function which indicates what should happen when the data contain \code{NA}s. Default to \code{na.action} setting of \code{\link{options}}, usually \code{\link[=na.omit.data.frame.mvmeta]{na.omit}}. \code{\link[=na.exclude.data.frame.mvmeta]{na.exclude}} can be useful. See details on \code{\link[=na.omit.data.frame.mvmeta]{missing values}} in \code{mvmeta}.}
-  \item{control }{ list of parameters for controlling the fitting process. These are passed to  \code{\link{glm.control}} by \code{mvmeta.fit} to replace otherwise selected default values.}
+  \item{control }{ list of parameters for controlling the fitting process. These are passed to  \code{\link{mvmeta.control}} by \code{mvmeta.fit} to replace otherwise selected default values.}
 }
 
 \details{
@@ -38,9 +38,9 @@ The function \code{mvmeta} resembles standard regression functions in \R (see \c
 
 The model is specified through a regression formula. Simple meta-analysis is specified with the formula \code{y ~ 1}, where the left-hand side is a vector (in univariate models) or a matrix (in multivariate models), optionally of form \code{cbind(y1,...,yk)}, with terms stored in \code{data}. Alternatively, matrix or vector objects are allowed, and the formula is retrieved internally adding \code{~ 1}. In meta-regression, other terms are added in the right-hand side of the formula, defining the linear predictor common to all outcomes. Factors, variable transformations and interactions are allowed, following the standard formula specification. Labels are automatically retrieved from the objects in \code{formula}. See \code{\link{formula}} for further details. See \code{\link{lm}} or \code{\link{glm}} for info on the other arguments.
 
-Fixed-effects models are estimated through generalized least square given the within-study (co)variance matrices \code{S}. Random-effects models are estimated through (restricted) maximum likelihood, with quasi-Newton iterative optimization algorithms provided by the function \code{\link{optim}} and based on specific \code{\link[=mvmeta.ml.fn]{likelihood functions}}.
+Different estimation methods are available for random-effects meta-analysis and meta-regression. Models can be fitted through maximum likelihood, restricted maximum likelihood or method of moments. Further details on the fitting procedures are provided in the help pages for the \code{\link[=mvmeta.ml]{fitting functions}} and the \code{\link[=mvmeta.ml.fn]{likelihood functions}}.
 
-Missing values are allowed in both sides of \code{formula}. In the case of missing predictors (right-hand side of \code{formula}), the related study is entirely excluded from estimation. In constrast, a study still contributes to estimation if at least outcome is non-missing. This behaviour is different than in standard regression functions such as \code{\link{lm}} or \code{\link{glm}}. Before the call to \code{mvmeta.fit}, studies matching such missing definition are removed from the the model frame. The missing pattern in \code{S} must be consistent with that in \code{y}. See further details on handling \code{\link[=na.omit.data.frame.mvmeta]{missing values}} in \code{mvmeta}.
+Missing values are allowed in both sides of \code{formula}. In the case of missing predictors (right-hand side of \code{formula}), the related study is entirely excluded from estimation. In contrast, a study still contributes to estimation if at least outcome is non-missing. This behaviour is different than in standard regression functions such as \code{\link{lm}} or \code{\link{glm}}. Before the call to \code{mvmeta.fit}, studies matching such missing definition are removed from the the model frame. The missing pattern in \code{S} must be consistent with that in \code{y}. See further details on handling \code{\link[=na.omit.data.frame.mvmeta]{missing values}} in \code{mvmeta}.
 
 The fitting procedure can be controlled through the additional terms specified in \code{control}, which are passed to the function \code{\link{mvmeta.control}}, called internally by \code{mvmeta.fit}. In the current versions, these are limited to the terms of the \code{control} argument of the function \code{\link{optim}} in random-effects models.
 }
@@ -54,15 +54,17 @@ Several method functions for regression objects are available, either default or
 }
 
 \references{
-Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. Epub ahead of print (doi 10.1002/sim.5471). [Freely available \href{http://onlinelibrary.wiley.com/doi/10.1002/sim.5471/pdf}{\bold{here}}].
+Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. \bold{31}(29):3821--3839. [Freely available \href{http://www.ag-myresearch.com/statmed2012.html}{\bold{here}}].
 
 Jackson D, Riley R, White IR (2011). Multivariate meta-analysis: Potential and promise. \emph{Statistics in Medicine}. \bold{30}(20);2481--2498.
 
 Berkey, CS, Hoaglin DC, et al. (1998). Meta-analysis of multiple outcomes by regression with random effects. \emph{Statistics in Medicine}. \bold{17}(22):2537--2550.
 
+Jackson D, White IR, Riley RD (2013). A matrix based method of moments for fitting the multivariate random effects model for meta-analysis and meta-regression. \emph{Biometrical Journal}. To be published.
+
 White IR (2009). Multivariate random-effects meta-analysis. \emph{Stata Journal}. \bold{9}(1):40--56.
 
-White IR (2009). Multivariate random-effects meta-regression: updates to mvmeta. \emph{Stata Journal}. \bold{11}(2):255-270.
+White IR (2011). Multivariate random-effects meta-regression: updates to mvmeta. \emph{Stata Journal}. \bold{11}(2):255-270.
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}
@@ -103,10 +105,10 @@ blup(model,pi=TRUE,aggregate="y",pi.level=0.90)
 
 ### SECOND EXAMPLE
 ### MULTIVARIATE META-REGRESSION
-### ESTIMATED THROUGH ML
+### ESTIMATED THROUGH METHOD OF MOMENTS
 
 # RUN THE MODEL AND SUMMARIZE THE RESULTS
-model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[5:7],data=berkey98,method="ml")
+model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[5:7],data=berkey98,method="mm")
 summary(model)
 
 # MULTIVARIATE COCHRAN Q TEST FOR RESIDUAL HETEROGENEITY

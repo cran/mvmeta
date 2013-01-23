@@ -1,8 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-mvmeta.reml.gr <-
-  function(par, Xlist, ylist, Slist, nalist, k, m, nall) {
+`mvmeta.reml.gr` <-
+function(par, Xlist, ylist, Slist, nalist, k, m, nall) {
 #
 ################################################################################
 #
@@ -17,8 +17,9 @@ mvmeta.reml.gr <-
   gls <- .gls(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
 #
   # COMPUTE QUANTITIES
-  tXMXtot <- .sumlist(lapply(gls$invtUXlist,function(x)crossprod(x)))
-  invtXMXtot <- chol2inv(chol(tXMXtot))
+  tXWXlist <- lapply(gls$invtUXlist,crossprod)
+  tXWXtot <- .sumlist(lapply(gls$invtUXlist,crossprod))
+  invtXWXtot <- chol2inv(chol(tXWXtot))
   invSigmalist <- lapply(gls$invUlist,tcrossprod)
   reslist <- mapply(function(X,y) y-X%*%gls$coef,
     Xlist,ylist,SIMPLIFY=FALSE)
@@ -26,7 +27,7 @@ mvmeta.reml.gr <-
   ind2 <- unlist(sapply(1:k,seq,to=k))
 #
   # COMPUTE THE MATRIX DERIVATIVES OF EACH PARAMETER
-  grad <- .gradchol.reml(par,U,invtXMXtot,ind1,ind2,Xlist,invSigmalist,
+  grad <- .gradchol.reml(par,U,invtXWXtot,ind1,ind2,Xlist,invSigmalist,
     reslist,nalist,k,m)
 #
   return(grad)

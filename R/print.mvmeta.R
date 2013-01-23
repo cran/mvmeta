@@ -1,15 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-print.mvmeta <-
-  function(x, digits=4, ...) {
-#
-################################################################################
-#
-  # CREATE USEFUL OBJECTS
-  methodname <- c("reml","ml","fixed")
-  methodlabel <- c("REML","ML","Fixed")
-  int <- attr(x$terms,"intercept")==1L
+`print.mvmeta` <-
+function(x, digits=4, ...) {
 #
 ################################################################################
 # HEADING AND SUB-HEADING
@@ -30,10 +23,12 @@ print.mvmeta <-
     x$df$random," random-effects parameters","\n",sep="")
   if(na <- length(x$na.action)) cat(" (",na," stud",ifelse(na>1L,"ies","y"),
     " removed due to missingness",")\n",sep="")
-  table <- c(x$logLik,AIC(x),BIC(x))
-  names(table) <- c("logLik","AIC","BIC")
-  table <- formatC(table,digits=digits,format="f")
-  print(table,quote=FALSE,right=TRUE,print.gap=2)
+  if(x$method!="mm") {
+    table <- c(x$logLik,AIC(x),BIC(x))
+    names(table) <- c("logLik","AIC","BIC")
+    table <- formatC(table,digits=digits,format="f")
+    print(table,quote=FALSE,right=TRUE,print.gap=2)
+  }
   cat("\n")
 #
 }

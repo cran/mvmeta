@@ -1,5 +1,8 @@
-mvmeta.reml.fn <-
-  function(par, Xlist, ylist, Slist, nalist, k, m, nall) {
+###
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+#
+`mvmeta.reml.fn` <-
+function(par, Xlist, ylist, Slist, nalist, k, m, nall) {
 #
 ################################################################################
 #
@@ -21,8 +24,8 @@ mvmeta.reml.fn <-
   pres <- -0.5*(crossprod(gls$invtUy-gls$invtUX%*%gls$coef))
   # DETERMINANT COMPONENTS
   pdet1 <- -sum(sapply(gls$Ulist,function(U) sum(log(diag(U)))))
-  tXMXtot <- .sumlist(lapply(gls$invtUXlist,function(x)crossprod(x)))
-  pdet2 <- -sum(log(diag(chol(tXMXtot))))
+  tXWXtot <- .sumlist(lapply(gls$invtUXlist,crossprod))
+  pdet2 <- -sum(log(diag(chol(tXWXtot))))
 #
   logLik <- as.numeric(pconst + pdet1 + pdet2 + pres)
 #  

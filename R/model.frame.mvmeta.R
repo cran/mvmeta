@@ -1,8 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-model.frame.mvmeta <- 
-  function(formula, ...) {
+`model.frame.mvmeta` <- 
+function(formula, ...) {
 #
 ################################################################################
 #

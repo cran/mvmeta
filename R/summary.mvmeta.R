@@ -1,8 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-summary.mvmeta <-
-  function(object, ci.level=0.95, ...) {
+`summary.mvmeta` <-
+function(object, ci.level=0.95, ...) {
 #
 ################################################################################
 #
@@ -51,8 +51,8 @@ summary.mvmeta <-
 ###########################################################################
 # 
   # DEFINE THE LIST
-  keep <- match(c("vcov","Psi","df.res","rank","logLik","converged","dim","df",
-    "lab","na.action","call","terms","method"),names(object),0L)
+  keep <- match(c("vcov","Psi","df.res","rank","logLik","negeigen","converged",
+    "dim","df","lab","na.action","call","terms","method"),names(object),0L)
   out <- c(list(coefficients=tabfixed),object[keep],list(AIC=AIC(object),
     BIC=BIC(object),corFixed=corFixed,corRandom=corRandom,qstat=qstat,
     ci.level=ci.level))

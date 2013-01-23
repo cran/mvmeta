@@ -5,7 +5,7 @@
 \title{ Predicted Values from mvmeta Models }
 
 \description{
-This method function computes predictions from fitted univariate or multivariate meta-analytical models represented in objects of class \code{"mvmeta"}, optionally for a new set of predictor values in meta-regression models. Predictions are optionally accompained by standard errors, confidence intervals or the entire (co)variance matrix of the predicted outcomes.
+This method function computes predictions from fitted univariate or multivariate meta-analytical models represented in objects of class \code{"mvmeta"}, optionally for a new set of predictor values in meta-regression models. Predictions are optionally accompanied by standard errors, confidence intervals or the entire (co)variance matrix of the predicted outcomes.
 }
 
 \usage{
@@ -38,8 +38,12 @@ For random-effects models, if \code{interval="confidence"} (the default), standa
 If \code{newdata} is omitted, the predictions are based on the data used for the fit. In that case how to handle predictions for studies removed from estimation due to invalid missing pattern is determined by the \code{na.action} argument used in \code{\link{mvmeta}} to produce \code{object}. If \code{na.action=na.omit}, studies excluded from estimation will not appear, whereas if \code{na.action=na.exclude} they will appear, with values set to \code{NA} for all the outcomes. This step is performed by \code{\link{napredict}}. See Notes.
 }
 
+\value{
+The results may be aggregated in matrices (the default), or returned as lists, depending on the argument \code{format}. For multivariate models, the aggregation is ruled by the argument \code{aggregate}, and the results may be grouped by statistic or by outcome. If \code{vcov=TRUE}, lists are always returned.
+}
+
 \references{
-Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. Epub ahead of print (doi 10.1002/sim.5471). [Freely available \href{http://onlinelibrary.wiley.com/doi/10.1002/sim.5471/pdf}{\bold{here}}].
+Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. \bold{31}(29):3821--3839. [Freely available \href{http://www.ag-myresearch.com/statmed2012.html}{\bold{here}}].
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}

@@ -21,12 +21,12 @@ Print and summary method functions for fitted univariate or multivariate meta-an
   \item{object }{ an object of class \code{"mvmeta"} produced by a call to \code{\link{mvmeta}}.}
   \item{x }{ an object of class \code{"mvmeta"} or \code{"summary.mvmeta"}, produced by calls to \code{\link{mvmeta}} or \code{summary.mvmeta}, respectively.}
   \item{ci.level }{ a numerical value between 0 and 1, specifying the confidence level for the computation of confidence intervals.}
-  \item{digits }{ an integer specyfing the number of digits to which printed results must be rounded.}
+  \item{digits }{ an integer specifying the number of digits to which printed results must be rounded.}
   \item{\dots }{ further arguments passed to or from other methods.}
 }
 
 \details{
-The \code{print} method function for class \code{"mvmeta"} only returns basic information on the fitted moded, namely the call, estimated fixed-effects coefficients, dimensions and fit statistics (log-likelihood, AIC, BIC).
+The \code{print} method function for class \code{"mvmeta"} only returns basic information on the fitted model, namely the call, estimated fixed-effects coefficients, dimensions and fit statistics (log-likelihood, AIC, BIC).
 
 The \code{summary} method function computes additional statistics and tests, and produces a list object of class \code{"summary.mvmeta"}. The \code{print} method function for this class shows additional information, such as tables reporting the estimates for the fixed and random-effects parts of the model, Cochran Q test for heterogeneity and \eqn{I^2}. 
 }
@@ -46,7 +46,7 @@ As usual, the \code{print} method functions for classes \code{"mvmeta"} and \cod
 }
 
 \references{
-Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. Epub ahead of print (doi 10.1002/sim.5471). [Freely available \href{http://onlinelibrary.wiley.com/doi/10.1002/sim.5471/pdf}{\bold{here}}].
+Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. \bold{31}(29):3821--3839. [Freely available \href{http://www.ag-myresearch.com/statmed2012.html}{\bold{here}}].
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}

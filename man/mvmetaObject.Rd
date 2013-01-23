@@ -19,6 +19,7 @@ Objects of class \code{"mvmeta"} are lists with defined components. Dimensions o
   \item{df.residual }{ the residual degrees of freedom.}
   \item{rank }{ the numeric rank of the fitted model.}
   \item{logLik }{ the (restricted) log-likelihood of the fitted model.}
+  \item{negeigen }{ for models fitted through method of moments, the number of negative eigenvalues in the estimated between-study (co)variance matrix, then set to 0.}
   \item{converged }{ for ML or REML models, logical scalar indicating if the quasi-Newton algorithm eventually converged.}
   \item{dim }{ list with the following scalar components: \code{m} (number of studies included in estimation, which could be lower than the total number in the presence of missing values), \code{k} (number of outcome parameters), \code{p} (number of coefficients for each outcome parameter).}
   \item{df }{ list with the following scalar components: \code{nall} (number of observations used for estimation, excluding missing values), \code{nobs} (equal to \code{nall}, minus the number of fixed-effects coefficients in REML models), \code{fixed} (number of estimated fixed-effects coefficients), \code{random} (number of estimated (co)variance terms).}
@@ -39,7 +40,7 @@ Objects of class \code{"mvmeta"} are lists with defined components. Dimensions o
 \section{Methods}{
 A number of methods functions are available for \code{mvmeta} objects, most of them common to other regression functions.
 
-Specifically-written method functions are defined for \code{\link[=predict.mvmeta]{predict}} (standard predictions) and \code{\link[=blup.mvmeta]{blup}} (best linear unbiased predictions). The method function \code{\link[=qtest.mvmeta]{qtest}} performs the Cochran Q test for heterogeneity. Other methods have been produced for \code{\link[=summary.mvmeta]{summary}}, \code{\link[=logLik.mvmeta]{logLik}}, \code{\link[=coef.mvmeta]{coef}}, and \code{\link[=vcov.mvmeta]{vcov}}.
+Specifically-written method functions are defined for \code{\link[=predict.mvmeta]{predict}} (standard predictions) and \code{\link[=blup.mvmeta]{blup}} (best linear unbiased predictions). The method function \code{\link[=simulate.mvmeta]{simulate}} produces simulated outcomes from a fitted model, while \code{\link[=qtest.mvmeta]{qtest}} performs the Cochran Q test for heterogeneity. Other methods have been produced for \code{\link[=summary.mvmeta]{summary}}, \code{\link[=logLik.mvmeta]{logLik}}, \code{\link[=coef.mvmeta]{coef}}, and \code{\link[=vcov.mvmeta]{vcov}}.
 
 Specific methods are also available for \code{\link[=model.frame.mvmeta]{model.frame}} and \code{\link[=model.matrix.mvmeta]{model.matrix}}. In particular, the former produces the model frame (a data frame with special attributes storing the variables used for fitting) with the additional class \code{"data.frame.mvmeta"}. Methods \code{\link[=na.omit.data.frame.mvmeta]{na.omit}} and \code{\link[=na.exclude.data.frame.mvmeta]{na.exclude}} for this class are useful for the handling of missing values in \code{mvmeta} objects.
 
@@ -49,7 +50,7 @@ All the methods above are visible (exported from the namespace) and documented. 
 }
 
 \references{
-Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. Epub ahead of print (doi 10.1002/sim.5471). [Freely available \href{http://onlinelibrary.wiley.com/doi/10.1002/sim.5471/pdf}{\bold{here}}].
+Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. \bold{31}(29):3821--3839. [Freely available \href{http://www.ag-myresearch.com/statmed2012.html}{\bold{here}}].
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}

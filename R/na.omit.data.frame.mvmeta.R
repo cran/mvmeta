@@ -1,8 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-na.omit.data.frame.mvmeta <-
-  function (object, ...) {
+`na.omit.data.frame.mvmeta` <-
+function (object, ...) {
 #
 ################################################################################
 # FUNCTION TO HANDLE MISSING

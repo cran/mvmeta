@@ -18,13 +18,13 @@ This method function performs a Cochran Q test of (residual) heterogeneity on fi
 \arguments{
 
   \item{object, x}{ objects of classes \code{"mvmeta"} and \code{"qtest.mvmeta"}, respectively.}
-  \item{digits }{  an integer specyfing the number of digits to which printed results must be rounded.}
+  \item{digits }{  an integer specifying the number of digits to which printed results must be rounded.}
   \item{\dots}{ further arguments passed to or from other methods.}
 
 }
 
 \details{
-In this context, the test assesses the null hypothesis that the variability in the multivariate distribution of the outcomes is explained only in terms of estimation error in each study, measured by the within-study (co)variance matrices stored in the component \code{S} of \code{mvmeta} objects. This is equal to test the hypothesis that the between-study covariance matrix \code{Psi} is a zero matrix, and there is no random deviation in study-specific estimates. This test reduces to the standard Q test in univariate models. For multuivariate models, tests for single outcome parameters, comparable to estimates from multiple univariate meta-analysis, are also reported.
+In this context, the test assesses the null hypothesis that the variability in the multivariate distribution of the outcomes is explained only in terms of estimation error in each study, measured by the within-study (co)variance matrices stored in the component \code{S} of \code{mvmeta} objects. This is equal to test the hypothesis that the between-study covariance matrix \code{Psi} is a zero matrix, and there is no random deviation in study-specific estimates. This test reduces to the standard Q test in univariate models. For multivariate models, tests for single outcome parameters, comparable to estimates from multiple univariate meta-analysis, are also reported.
 
 The function compute the statistics by actually fitting the related fixed-effects model, re-evaluating the call of the model with \code{method} changed to \code{"fixed"}.
 }
@@ -42,7 +42,7 @@ As usual, the \code{print} method function for class \code{"qtest.mvmeta"} does 
 }
 
 \references{
-Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. Epub ahead of print (doi 10.1002/sim.5471). [Freely available \href{http://onlinelibrary.wiley.com/doi/10.1002/sim.5471/pdf}{\bold{here}}].
+Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. \bold{31}(29):3821--3839. [Freely available \href{http://www.ag-myresearch.com/statmed2012.html}{\bold{here}}].
 
 Berkey, CS, Hoaglin DC, et al. (1998). Meta-analysis of multiple outcomes by regression with random effects. \emph{Statistics in Medicine}. \bold{17}(22):2537--2550.
 

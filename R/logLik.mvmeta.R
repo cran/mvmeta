@@ -1,8 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-logLik.mvmeta <-
-  function(object, ...) {
+`logLik.mvmeta` <-
+function(object, ...) {
 #
 ################################################################################
 #

@@ -1,8 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-mvmeta.fit <- 
-  function(X, y, S, offset=NULL, method="reml", control=list()) {
+`mvmeta.fit` <- 
+function(X, y, S, offset=NULL, method="reml", control=list()) {
 #
 ################################################################################
 # PREPARE THE DATA
@@ -33,15 +33,15 @@ mvmeta.fit <-
     return(Si)
   })
   nalist <- lapply(seq(m),function(i) nay[i,])
-#    
+#
 ################################################################################
 # FIT THE MODEL AND SET OBJECTS
 #
   # SELECT THE ESTIMATION METHOD
   control <- do.call("mvmeta.control",control)
-  fun <- paste("mvmeta",match.arg(method,c("fixed","ml","reml")),sep=".")
+  fun <- paste("mvmeta",match.arg(method,c("fixed","ml","reml","mm")),sep=".")
   fit <- do.call(fun,list(Xlist=Xlist,ylist=ylist,Slist=Slist,nalist=nalist,
-    k=k,m=m,nall=nall,control=control))
+    k=k,m=m,p=p,nall=nall,control=control))
 #  
   # DEFINE DIMENSIONS, DF AND LABELS
   fit$dim <- list(k=k,m=m,p=p)

@@ -1,11 +1,46 @@
 ==============================================================================
+Changes in mvmeta 0.3.4 (23 Jan 2013)
+=====================================
+
+Major changes
+-------------
+
+    o An estimation method based on method of moments has been added, using
+      method="mm" in mvmeta(). The algorithm is implemented in the function
+      mvmeta.mm().
+
+    o Function metaSim() and method simulate.mvmeta() added. These functions
+      simulate data for multivariate and univariate meta-analysis from
+      used-defined data or from a fitted model, respectively.
+
+    o New control parameters added in mvmeta.control().
+
+Minor changes
+-------------
+
+    o Bug fixed in mvmeta() with subset.
+
+    o Documentation changed accordingly.
+
+
+==============================================================================
+Changes in mvmeta 0.3.2 (25 Aug 2012)
+=====================================
+
+Minor changes
+-------------
+
+    o Bug fixed in coef.mvmeta() when k=1.
+
+
+==============================================================================
 Changes in mvmeta 0.3.1 (24 Aug 2012)
 =====================================
 
 Minor changes
 -------------
 
-    o Bug fixed in .mkS when k=1 and S is a list.
+    o Bug fixed in .mkS() when k=1 and S is a list.
 
 
 ==============================================================================

@@ -5,7 +5,7 @@
 \title{ Best Linear Unbiased Predictions from mvmeta Models }
 
 \description{
-This method function computes (empirical) best linear unbiased predictions from fitted univariate or multivariate meta-analytical models represented in objects of class \code{"mvmeta"}. Such predictions are optionally accompained by standard errors, prediction intervals or the entire (co)variance matrix of the predicted outcomes.
+This method function computes (empirical) best linear unbiased predictions from fitted univariate or multivariate meta-analytical models represented in objects of class \code{"mvmeta"}. Such predictions are optionally accompanied by standard errors, prediction intervals or the entire (co)variance matrix of the predicted outcomes.
 }
 
 \usage{
@@ -41,7 +41,7 @@ The results may be aggregated in matrices (the default), or returned as lists, d
 }
 
 \references{
-Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. Epub ahead of print (doi 10.1002/sim.5471). [Freely available \href{http://onlinelibrary.wiley.com/doi/10.1002/sim.5471/pdf}{\bold{here}}].
+Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. \bold{31}(29):3821--3839. [Freely available \href{http://www.ag-myresearch.com/statmed2012.html}{\bold{here}}].
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}

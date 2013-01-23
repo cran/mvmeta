@@ -1,25 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-.expMat <-
-  function(x) {
-#
-################################################################################
-# FUNCTION TO COMPUTE THE MATRIX EXPONENTIAL
-#
-  if(is.data.frame(x)) x <- as.matrix(x)
-  if(is.matrix(x)) {
-    logA <- x
-  } else logA <- xpndMat(x)
-  eig <- eigen(logA)
-  B <- diag(exp(eig$val),nrow(logA))
-  A <- eig$vec%*%tcrossprod(B,eig$vec)
-  return(A)
-}
-###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
-#
-.gls <- function(Xlist, ylist, Slist, nalist, Psi, onlycoef=TRUE)  {
+`.gls` <-
+function(Xlist, ylist, Slist, nalist, Psi, onlycoef=TRUE)  {
 #
 ################################################################################
 # FUNCTION TO COMPUTE THE GLS ESTIMATE + OPTIONAL INTERMEDIATE PRODUCTS
@@ -42,10 +25,10 @@
 }
 #
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-.gradchol.ml <-
-  function(par,U,ind1,ind2,invSigmalist,reslist,nalist,k,m) {
+`.gradchol.ml` <-
+function(par,U,ind1,ind2,invSigmalist,reslist,nalist,k,m) {
 #
 ################################################################################
 # FUNCTION TO COMPUTE THE MATRIX DERIVATIVES IN TERMS OF PARAMETERS OF
@@ -67,10 +50,10 @@
   return(grad)
 }
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-.gradchol.reml <-
-  function(par,U,invtXMXtot,ind1,ind2,Xlist,invSigmalist,reslist,nalist,k,m) {
+`.gradchol.reml` <-
+function(par,U,invtXWXtot,ind1,ind2,Xlist,invSigmalist,reslist,nalist,k,m) {
 #
 ################################################################################
 # FUNCTION TO COMPUTE THE MATRIX DERIVATIVES IN TERMS OF PARAMETERS OF
@@ -87,36 +70,17 @@
       E <- invSigma%*%D[!na,!na]%*%invSigma
       F <- crossprod(res,E)%*%res
       G <- sum(diag(invSigma%*%D[!na,!na]))
-      H <- sum(diag(invtXMXtot%*%crossprod(X,E)%*%X))
+      H <- sum(diag(invtXWXtot%*%crossprod(X,E)%*%X))
       return(as.numeric(0.5*(F-G+H)))},Xlist,invSigmalist,reslist,nalist))
   })
 #
   return(grad)
 }
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-.logMat <-
-  function(x, positive=FALSE) {
-#
-################################################################################
-# FUNCTION TO COMPUTE THE MATRIX LOGARITHM
-#
-  if(is.data.frame(x)) x <- as.matrix(x)
-  if(is.matrix(x)) {
-    expA <- x
-  } else expA <- xpndMat(x)
-  eig <- eigen(expA)
-  if(positive) eig$val[eig$val<10^-9] <- 10^-9
-  B <- diag(log(eig$val),nrow(expA))
-  A <- eig$vec%*%tcrossprod(B,eig$vec)
-  return(A)
-}
-###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
-#
-.mkS <- 
-  function(S, y, na.action=NULL, subset=NULL) {
+`.mkS` <- 
+function(S, y, narm=NULL, subset=NULL) {
 #
 ################################################################################
 # TRANSFORM S IN A MATRIX OF VECTORIZED VCOV MATRICES
@@ -139,14 +103,14 @@
     if(length(dim(S))==3L) S <- t(apply(S,3,vechMat))
     # FINALLY, IF A MATRIX
     if(!is.null(subset)) S <- S[subset,,drop=FALSE]
-    if(!is.null(na.action)) S <- S[-na.action,,drop=FALSE]
+    if(!is.null(narm)) S <- S[-narm,,drop=FALSE]
     if(dim(S)[1]!=m || dim(S)[2]!=k*(k+1)/2) stop(mes)    
   }
 #
   # IF A LIST
   if(is.list(S)) {
     if(!is.null(subset)) S <- S[subset]
-    if(!is.null(na.action)) S <- S[-na.action]
+    if(!is.null(narm)) S <- S[-narm]
     if(length(S)!=m) stop(mes)
     if(any(sapply(S,dim)!=k)) stop(mes)
     S <- if(k==1L) as.matrix(sapply(S,vechMat)) else t(sapply(S,vechMat))
@@ -160,25 +124,55 @@
   return(S)
 }
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-.onAttach <- function(lib, pkg) {
+`.mvsim` <- 
+function(nsim=1, mu, Sigma, posdeftol=sqrt(.Machine$double.eps), drop=TRUE) {
+#
+  # DIMENSIONS
+  k <- length(mu)
+  eigen <- eigen(Sigma,symmetric=TRUE)
+  # EIGENVALUE DECOMPOSITION
+  ev <- eigen$values
+#
+  # CHECK POSITIVE DEFINITENESS
+  if(any(ev < -posdeftol*abs(max(ev)))) stop("lack of positive definiteness")
+#
+  # SIMULATE
+  X <- matrix(rnorm(k*nsim),nsim)
+  sim <- drop(mu) + eigen$vectors %*% diag(sqrt(pmax(ev,0)),k) %*% t(X)
+#
+  if(drop) return(drop(t(sim))) else return(t(sim)) 
+}
+###
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+#
+`.onAttach` <-
+function(lib, pkg) {
+#
   meta <- packageDescription("mvmeta")
   attachmsg <- paste("This is mvmeta ",meta$Version,
     ". For an overview type: help('mvmeta-package').",sep="")
   packageStartupMessage(attachmsg, domain = NULL, appendLF = TRUE)
 }
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-.sumlist <-
-  function(list) {
-#
-################################################################################
-# FUNCTION TO SUM THE COMPONENTS OF A LIST
-  #
-  n <- length(list)
+`.sumlist` <-
+function(list) {
   res <- 0
-  for (i in seq(n)) res <- res+list[[i]]
+  for(i in seq(list)) res <- res + list[[i]]
   return(res)
+}
+###
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+#
+`.fbtr` <- 
+function(A,k) {
+  btrA <- 0
+  for(i in seq(dim(A)[1]/k)) {
+    ind <- (i-1)*k+1:k
+    btrA <- btrA + A[ind,ind]
+  }
+  return(btrA)
 }

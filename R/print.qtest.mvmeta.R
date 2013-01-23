@@ -1,8 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-print.qtest.mvmeta <-
-  function(x, digits=3, ...) {
+`print.qtest.mvmeta` <-
+function(x, digits=3, ...) {
 #
 ################################################################################
 # 

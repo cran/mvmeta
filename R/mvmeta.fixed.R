@@ -1,8 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-mvmeta.fixed <-
-  function(Xlist, ylist, Slist, nalist, k, m, nall, control) {
+`mvmeta.fixed` <-
+function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
 #
 ################################################################################
 #
@@ -34,7 +34,7 @@ mvmeta.fixed <-
   logLik <- as.numeric(pconst + pdet + pres)
 #
   fit <- list(coefficients=gls$coef,vcov=vcov,residuals=res,fitted.values=fitted,
-    df.residual=nall-rank,rank=rank,logLik=logLik)
+    df.residual=nall-rank,rank=rank,logLik=logLik,control=control)
 #
   return(fit)
 }

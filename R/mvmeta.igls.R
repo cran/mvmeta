@@ -1,8 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
 #
-mvmeta.igls <-
-  function(Psi, Xlist, ylist, Slist, nalist, k, m) {
+`mvmeta.igls` <-
+function(Psi, Xlist, ylist, Slist, nalist, k, m) {
 #
 ################################################################################
 #
@@ -44,7 +44,9 @@ mvmeta.igls <-
   theta <- as.numeric(qr.solve(invteUZ,invteUf))
   Psi <- xpndMat(theta)
   # FORCING POSITIVE-DEFINITENESS
-  Psi <- .expMat(.logMat(Psi,positive=TRUE))
+  eig <- eigen(Psi)
+  eig$values <- pmax(eig$values,10^-8)
+  Psi <- eig$vectors %*% diag(eig$values,k) %*% t(eig$vectors)
 #
   return(Psi)
 }
