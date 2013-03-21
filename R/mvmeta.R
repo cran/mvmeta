@@ -10,7 +10,6 @@ function(formula, S, data, subset, method="reml", model=TRUE, contrasts=NULL,
 #
   call  <- match.call()
   mcall <- match.call(expand.dots=FALSE)
-  mn <- match(c("formula","data","constrasts"), names(mcall), 0L)
   mn <- match(c("formula", "data", "subset", "weights", "na.action", 
     "offset"), names(mcall), 0L)
   mcall <- mcall[c(1L, mn)]
@@ -38,7 +37,6 @@ function(formula, S, data, subset, method="reml", model=TRUE, contrasts=NULL,
   if(missing(na.action)) na.action <- getOption("na.action")
   if(length(na.action)) mf <- do.call(na.action,list(mf))
   # RETURN mf IF REQUIRED
-  method <- match.arg(method,c("fixed","ml","reml","mm","model.frame"))
   if(method=="model.frame") return(mf)
   # EMPTY MODEL?
   if(is.empty.model(mf)) stop("empty model not allowed")

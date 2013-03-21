@@ -14,7 +14,7 @@ function(par, Xlist, ylist, Slist, nalist, k, m, nall) {
 #  
   # FIT BY GLS
   gls <- .gls(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
-#  
+#
   # LIKELIHOOD FUNCTION
   # CONSTANT PART
   pconst <- -0.5*nall*log(2*pi)

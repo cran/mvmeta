@@ -1,4 +1,27 @@
 ==============================================================================
+Changes in mvmeta 0.3.5 (08 Dec 2013)
+=====================================
+
+Major changes
+-------------
+
+    o A new estimation method based on variance components has been added.
+
+    o New arguments 'sd' and 'cor' added to mvmetaSim().
+
+Minor changes
+-------------
+
+    o Modified print method for summary.mvmeta objects.
+
+    o summary.mvmeta() and its print method improved.
+
+    o Argument set.negeigen added to mvmeta.control().
+
+    o Documentation changed accordingly.
+
+
+==============================================================================
 Changes in mvmeta 0.3.4 (23 Jan 2013)
 =====================================
 

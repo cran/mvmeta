@@ -7,7 +7,7 @@ function(object, nsim=1, seed=NULL, ...) {
 ################################################################################
 #
   # ERROR FOR FUTURE IMPLEMENTATION OF MIKE'S MODEL
-  if(!object$method%in%c("fixed","ml","reml","mm"))
+  if(!object$method%in%c("fixed","ml","reml","mm","vc"))
     stop("Simulating responses not allowed for estimation method used in model fitting")
 #
   # DEFINE THE SEED (FROM simulate.lm)

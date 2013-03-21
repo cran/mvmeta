@@ -19,8 +19,8 @@ Objects of class \code{"mvmeta"} are lists with defined components. Dimensions o
   \item{df.residual }{ the residual degrees of freedom.}
   \item{rank }{ the numeric rank of the fitted model.}
   \item{logLik }{ the (restricted) log-likelihood of the fitted model.}
+  \item{converged, niter }{ for models with iterative estimation methods, logical scalar indicating if the algorithm eventually converged, and number of iterations.}
   \item{negeigen }{ for models fitted through method of moments, the number of negative eigenvalues in the estimated between-study (co)variance matrix, then set to 0.}
-  \item{converged }{ for ML or REML models, logical scalar indicating if the quasi-Newton algorithm eventually converged.}
   \item{dim }{ list with the following scalar components: \code{m} (number of studies included in estimation, which could be lower than the total number in the presence of missing values), \code{k} (number of outcome parameters), \code{p} (number of coefficients for each outcome parameter).}
   \item{df }{ list with the following scalar components: \code{nall} (number of observations used for estimation, excluding missing values), \code{nobs} (equal to \code{nall}, minus the number of fixed-effects coefficients in REML models), \code{fixed} (number of estimated fixed-effects coefficients), \code{random} (number of estimated (co)variance terms).}
   \item{lab }{ list with the following label vectors: \code{m} for the \eqn{m} studies, \code{k} for the \eqn{k} outcome parameters, \code{p} for the \eqn{p} predictors (including intercept). The first two are derived from the vector/matrix of outcome parameters in \code{\link{formula}}, the third from the design matrix derived from \code{\link[=model.matrix.mvmeta]{model.matrix}}.}
@@ -31,7 +31,7 @@ Objects of class \code{"mvmeta"} are lists with defined components. Dimensions o
   \item{call }{ the function call.}
   \item{formula }{ the model supplied.}
   \item{terms }{ the \code{\link{terms}} object representing the fitted model.}
-  \item{control }{ a list with the values of the control arguments used, as returned by \code{\link{glm.control}}.}
+  \item{control }{ a list with the values of the control arguments used, as returned by \code{\link{mvmeta.control}}.}
   \item{method }{ the estimation method.}
   \item{contrasts }{ (where relevant) the contrasts used.}
   \item{xlevels }{ (where relevant) a record of the levels of the factors used in fitting.}

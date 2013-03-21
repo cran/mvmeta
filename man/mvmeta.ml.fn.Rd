@@ -5,7 +5,7 @@
 \alias{mvmeta.reml.gr}
 \alias{mvmeta.igls}
 
-\title{ Likelihood functions for mvmeta Models }
+\title{ Likelihood Functions for mvmeta Models }
 
 \description{
 These functions computes the value of the log-likelihood and the related vectors of first partial derivatives for random-effects multivariate and univariate meta-analysis and meta-regression, in terms of model parameters. They are meant to be used internally and not directly run by the users.
@@ -68,7 +68,7 @@ As stated earlier, these functions are called internally by \code{\link{mvmeta.m
 }
 
 \seealso{
-See \code{\link{mvmeta.fit}} and the \code{\link[=mvmeta.ml]{fitting functions}} for additional info on the fitting procedures. See \code{\link{mvmeta.control}} to determine specific parameters of the fitting procedures. See \code{\link{chol}} and \code{\link{qr}} for info on the Cholesky and QR decomposition.
+See \code{\link{mvmeta.fit}} and the links to specific fitting functions for additional info on the fitting procedures. See \code{\link{mvmeta.control}} to determine specific parameters of the fitting procedures. See \code{\link{chol}} and \code{\link{qr}} for info on the Cholesky and QR decomposition.
 See \code{\link{mvmeta-package}} for an overview of the package and modelling framework.
 }
 

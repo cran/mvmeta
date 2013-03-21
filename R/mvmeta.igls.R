@@ -39,7 +39,7 @@ function(Psi, Xlist, ylist, Slist, nalist, k, m) {
     inveUlist,flist,SIMPLIFY=FALSE)
   invteUZ <- do.call("rbind",invteUZlist)
   invteUf <- do.call("rbind",invteUflist)
-#
+#  
   # ESTIMATE THE COMPONENTS
   theta <- as.numeric(qr.solve(invteUZ,invteUf))
   Psi <- xpndMat(theta)

@@ -36,12 +36,14 @@ function(object, ci.level=0.95, ...) {
   corFixed <- vcov/outer(coef.se,coef.se)
 #  
 ###########################################################################
-# RANDOM EFFECTS ESTIMATES
-#
-  # SD OF EACH RANDOM EFFECT
-  ran.sd <- sqrt(diag(Psi))
-  # CORRELATION MATRIX OF RANDOM EFFECTS
-  corRandom <- Psi/outer(ran.sd,ran.sd)
+# RANDOM EFFECTS ESTIMATES (FOR RANDOM-EFFECTS MODELS)
+#  
+  corRandom <- if(object$method!="fixed") {
+    # SD OF EACH RANDOM EFFECT
+    ran.sd <- sqrt(diag(Psi))
+    # CORRELATION MATRIX OF RANDOM EFFECTS
+    Psi/outer(ran.sd,ran.sd)
+  } else NULL
 #  
 ###########################################################################
 # QTEST STATISTICS
@@ -51,8 +53,9 @@ function(object, ci.level=0.95, ...) {
 ###########################################################################
 # 
   # DEFINE THE LIST
-  keep <- match(c("vcov","Psi","df.res","rank","logLik","negeigen","converged",
-    "dim","df","lab","na.action","call","terms","method"),names(object),0L)
+  keep <- match(c("vcov","Psi","df.res","rank","logLik","converged","niter",
+    "negeigen","dim","df","lab","na.action","call","terms","method"),
+    names(object),0L)
   out <- c(list(coefficients=tabfixed),object[keep],list(AIC=AIC(object),
     BIC=BIC(object),corFixed=corFixed,corRandom=corRandom,qstat=qstat,
     ci.level=ci.level))

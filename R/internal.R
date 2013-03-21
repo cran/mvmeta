@@ -129,6 +129,8 @@ function(S, y, narm=NULL, subset=NULL) {
 `.mvsim` <- 
 function(nsim=1, mu, Sigma, posdeftol=sqrt(.Machine$double.eps), drop=TRUE) {
 #
+################################################################################
+#
   # DIMENSIONS
   k <- length(mu)
   eigen <- eigen(Sigma,symmetric=TRUE)
@@ -150,6 +152,8 @@ function(nsim=1, mu, Sigma, posdeftol=sqrt(.Machine$double.eps), drop=TRUE) {
 `.onAttach` <-
 function(lib, pkg) {
 #
+################################################################################
+#
   meta <- packageDescription("mvmeta")
   attachmsg <- paste("This is mvmeta ",meta$Version,
     ". For an overview type: help('mvmeta-package').",sep="")
@@ -160,6 +164,9 @@ function(lib, pkg) {
 #
 `.sumlist` <-
 function(list) {
+#
+################################################################################
+#
   res <- 0
   for(i in seq(list)) res <- res + list[[i]]
   return(res)
@@ -169,6 +176,9 @@ function(list) {
 #
 `.fbtr` <- 
 function(A,k) {
+#
+################################################################################
+#
   btrA <- 0
   for(i in seq(dim(A)[1]/k)) {
     ind <- (i-1)*k+1:k

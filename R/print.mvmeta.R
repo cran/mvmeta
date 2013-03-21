@@ -23,7 +23,7 @@ function(x, digits=4, ...) {
     x$df$random," random-effects parameters","\n",sep="")
   if(na <- length(x$na.action)) cat(" (",na," stud",ifelse(na>1L,"ies","y"),
     " removed due to missingness",")\n",sep="")
-  if(x$method!="mm") {
+  if(!x$method%in%c("mm","vc")) {
     table <- c(x$logLik,AIC(x),BIC(x))
     names(table) <- c("logLik","AIC","BIC")
     table <- formatC(table,digits=digits,format="f")

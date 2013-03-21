@@ -39,10 +39,16 @@ function(X, y, S, offset=NULL, method="reml", control=list()) {
 #
   # SELECT THE ESTIMATION METHOD
   control <- do.call("mvmeta.control",control)
-  fun <- paste("mvmeta",match.arg(method,c("fixed","ml","reml","mm")),sep=".")
+  fun <- paste("mvmeta",match.arg(method,c("fixed","ml","reml","mm","vc")),
+    sep=".")
   fit <- do.call(fun,list(Xlist=Xlist,ylist=ylist,Slist=Slist,nalist=nalist,
     k=k,m=m,p=p,nall=nall,control=control))
 #  
+  # MESSAGE OF NON-CONVERGENCE
+  if(!is.null(fit$converged)&&!fit$converged) {
+    warning("convergence not reached after maximum number of iterations")
+  }
+#
   # DEFINE DIMENSIONS, DF AND LABELS
   fit$dim <- list(k=k,m=m,p=p)
   fit$df <- list(nall=nall,nobs=nall-(method=="reml")*fit$rank,

@@ -7,8 +7,9 @@ function(x, digits=4, ...) {
 ################################################################################
 #
   # CREATE USEFUL OBJECTS
-  methodname <- c("reml","ml","fixed","mm")
-  methodlabel <- c("REML","ML","Fixed","Method of moments")
+  methodname <- c("reml","ml","fixed","mm","vc")
+  methodlabel <- c("REML","ML","Fixed","Method of moments",
+    "Variance components")
   int <- attr(x$terms,"intercept")==1L
 #
 ################################################################################
@@ -80,6 +81,10 @@ function(x, digits=4, ...) {
     table <- formatC(table,digits=digits,format="f")
     table[grep("NA",table)] <- "."
     print(table,quote=FALSE,right=TRUE,na.print="",print.gap=2)
+    if(!is.null(x$negeigen) && x$negeigen>0) {
+      cat("(Note: Truncated estimate - ",x$negeigen,
+        " negative eigenvalues set to 0)","\n",sep="")
+    }
     cat("\n")
   }
 #
@@ -101,14 +106,11 @@ function(x, digits=4, ...) {
     x$df$random," random-effects parameters","\n",sep="")
   if(na <- length(x$na.action)) cat("(",na," stud",ifelse(na>1L,"ies","y"),
     " removed due to missingness",")\n",sep="")
-  if(x$method!="mm") {
+  if(!x$method%in%c("mm","vc")) {
     table <- c(x$logLik,x$AIC,x$BIC)
     names(table) <- c("logLik","AIC","BIC")
     table <- formatC(table,digits=digits,format="f")
     print(table,quote=FALSE,right=TRUE,print.gap=2)
-  } else if(!is.null(x$negeigen)) {
-    cat("(Estimated variance components with ",x$negeigen,
-      " negative eigenvalues - set to 0)",sep="")
   }
   cat("\n")
 #

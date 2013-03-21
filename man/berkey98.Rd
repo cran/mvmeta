@@ -30,4 +30,20 @@ Berkey CS, Hoaglin DC, et al. (1998). Meta-analysis of multiple outcomes by regr
 Berkey C. S., Antczak-Bouckoms A., et al. (1995). Multiple-outcomes meta-analysis of treatments for periodontal disease. \emph{Journal of Dental Research}. \bold{74}(4):1030-1039.
 }
 
+\examples{
+# TO REPRODUCE THE RESULTS IN BERKEY ET AL. (1998)
+
+# GLS MODEL (VARIANCE COMPONENTS) 
+year <- berkey98$pubyear - 1983
+model <- mvmeta(cbind(PD,AL)~year,S=berkey98[5:7],data=berkey98,method="vc",
+  control=list(vc.adj=FALSE))
+print(summary(model),digits=3)
+round(model$Psi,3)
+
+# ML MODEL
+model <- mvmeta(cbind(PD,AL)~year,S=berkey98[5:7],data=berkey98,method="ml")
+print(summary(model),digits=3)
+round(model$Psi,3)
+}
+
 \keyword{datasets}

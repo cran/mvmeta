@@ -4,7 +4,7 @@
 #
 export(
   mvmeta, mvmeta.fit,
-  mvmeta.fixed, mvmeta.ml, mvmeta.reml, mvmeta.mm,
+  mvmeta.fixed, mvmeta.ml, mvmeta.reml, mvmeta.mm, mvmeta.vc,
   mvmeta.ml.fn, mvmeta.ml.gr, mvmeta.reml.fn, mvmeta.reml.gr,
   mvmeta.igls,
   mvmetaSim,

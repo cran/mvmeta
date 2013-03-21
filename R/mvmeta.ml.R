@@ -8,7 +8,7 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
 #
   # PRODUCE INITIAL VALUES THROUGH IGLS
   Psi <- diag(0.001,k)
-  for(i in seq(control$igls.niter)) {
+  for(i in seq(control$igls.iter)) {
     Psi <- mvmeta.igls(Psi,Xlist,ylist,Slist,nalist,k,m)
   }
 #    
@@ -20,9 +20,6 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
   opt <- optim(par,mvmeta.ml.fn,mvmeta.ml.gr,Xlist=Xlist,ylist=ylist,
     Slist=Slist,nalist=nalist,k=k,m=m,nall=nall,method="BFGS",
     control=control$optim)
-  if(!(converged <- opt$convergence==0L)) {
-    warning("convergence not reached after maximum number of iterations")
-  }
 #
   # Psi: ESTIMATED BETWEEN-STUDY (CO)VARIANCE MATRIX
   Psi <- matrix(0,k,k)
@@ -45,8 +42,8 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
 #
   fit <- list(coefficients=gls$coef,vcov=vcov,Psi=Psi,residuals=res,
     fitted.values=fitted,df.residual=nall-rank-length(par),rank=rank,
-    logLik=opt$value,converged=converged,control=control)
+    logLik=opt$value,converged=opt$convergence==0,niter=opt$counts[[2]],
+    control=control)
 #
   return(fit)
 }
-

@@ -2,7 +2,7 @@
 ### R routines for the R package mvmeta (c) Antonio Gasparrini 2013
 #
 `mvmetaSim` <- 
-function(y, S, Psi, nsim=1, seed=NULL, posdeftol) {
+function(y, S, Psi, sd, cor, nsim=1, seed=NULL, posdeftol) {
 #
 ################################################################################
 #
@@ -20,6 +20,14 @@ function(y, S, Psi, nsim=1, seed=NULL, posdeftol) {
   }
 #
   # PREPARE AND CHECK Psi, THEN SET THE DIMENSION
+  if(missing(Psi)) {
+    if(missing(sd)||missing(cor)) stop("'Psi' or 'sd'-'cor' must be provided")
+    R <- diag(1,length(sd))
+    R[lower.tri(R)] <- if(is.matrix(cor)) cor[lower.tri(cor)] else cor
+    R[upper.tri(R)] <- t(R)[upper.tri(t(R))]
+    if(any(R^2>1)) stop("correlations must be between -1 and 1")
+    Psi <- diag(sd)%*%R%*%diag(sd)
+  }
   if(!is.matrix(Psi)) Psi <- xpndMat(Psi)
   dim <- dim(Psi)
   if(dim[1]!=dim[2]) stop("'Psi' is not a square matrix")

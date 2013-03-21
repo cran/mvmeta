@@ -1,18 +1,15 @@
-\name{mvmeta.ml}
-\alias{mvmeta.ml}
-\alias{mvmeta.reml}
+\name{mvmeta.mm}
+\alias{mvmeta.mm}
 
 
-\title{ ML and REML Estimators for mvmeta Models }
+\title{ Method of Moments Estimator for mvmeta Models }
 
 \description{
-These functions implement maximum likeliihood (ML) and restricted maximum likelihood (REML) estimators for random-effects multivariate and univariate meta-analysis and meta-regression. They are meant to be used internally and not directly run by the users.
+This function implements a method of moments estimator for multivariate and univariate  random-effects meta-analysis and meta-regression. It is meant to be used internally and not directly run by the users.
 }
 
 \usage{
-mvmeta.ml(Xlist, ylist, Slist, nalist, k, m, p, nall, control)
-
-mvmeta.reml(Xlist, ylist, Slist, nalist, k, m, p, nall, control)
+mvmeta.mm(Xlist, ylist, Slist, nalist, k, m, p, nall, control)
 }
 
 \arguments{
@@ -29,31 +26,31 @@ Assuming a meta-analysis or meta-regression based on \eqn{m} studies, \eqn{k} ou
 \details{
 The estimation involves \eqn{kp} fixed-effects coefficients and \eqn{k(k+1)/2} variance components, corresponding to the lower triangular entries of the between-study (co)variance matrix \code{Psi}.
 
-The hybrid estimation procedure is based first on few runs of iterative generalized least square algorithm and then quasi-Newton iterations, using specific \code{\link[=mvmeta.ml.fn]{likelihood functions}}, until convergence. The estimation algorithm adopts a profiled (or concentrated) approach, that is expressed only in terms of the variance components. Cholesky and and QR decompositions are used for computational stability and efficiency, and for assuring the positive-definiteness of the estimated between-study (co)variance matrix. See the help page for the \code{\link[=mvmeta.ml.fn]{likelihood functions}} for further details. The method is described in details in Gasparrini and collaborators (2012) (see references below).
+The approach implemented here represents the multivariate extension of the traditional estimator proposed by DerSimonian and Laird (1986), and simplifies to the standard method in the univariate case. This non-iterative routine forces the positive semi-definiteness of the estimated between-study (co)variance matrix by setting its negative eigenvalues to zero.
+
+The specific method of moment estimator used here is described in Jackson and collaborators (2013), and represents a generalization of that developed by Chen and collaborators (2012). However, this general version is computationally more intensive, and may turn out to be slow when applied to meta-analysis of a relatively high number of studies. An alternative and computationally faster method of moment estimator was previously proposed by Jackson and collaborators (2010), although it is not invariant to reparameterization. This latter estimator is not implemented yet in \pkg{mvmeta}. See references below.
 }
 
 \value{
-These functions return an intermediate list object, whose components are then processed by \code{\link{mvmeta.fit}}. Other components are added later through \code{\link{mvmeta}} to finalize an object of class \code{"mvmeta"}.
+This function returns an intermediate list object, whose components are then processed by \code{\link{mvmeta.fit}}. Other components are added later through \code{\link{mvmeta}} to finalize an object of class \code{"mvmeta"}.
 }
 
 \references{
 Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. \bold{31}(29):3821--3839. [Freely available \href{http://www.ag-myresearch.com/statmed2012.html}{\bold{here}}].
 
-Pinheiro JC and Bates DM (2000). Mixed-Effects Models in S and S-PLUS. New York, Springer Verlag.
+Jackson D, White IR, Riley RD (2013). A matrix based method of moments for fitting the multivariate random effects model for meta-analysis and meta-regression. \emph{Biometrical Journal}. To be published.
 
-Lindstrom MJ and Bates DM (1988). Newton-Raphson and EM algorithms for linear mixed-effects models for repeated-measures data. \emph{Journal of the American Statistical Association}. \bold{83}(404):1014--1022.
+Chen H, Manning AK, Dupuis J (2012). A method of moments estimator for random effect multivariate meta-analysis. \emph{Biometrics}. \bold{68}(4):1278-1284.
 
-White IR (2009). Multivariate random-effects meta-analysis. \emph{Stata Journal}. \bold{9}(1):40--56.
+Jackson D, White IR, Thompson SG (2010). Extending DerSimonian and Laird's methodology to perform multivariate random effects meta-analyses. \emph{Statistics in Medicine}. \bold{29}(12):1282--1297.
 
-White IR (2011). Multivariate random-effects meta-regression: updates to mvmeta. \emph{Stata Journal}. \bold{11}(2):255-270.
-
-Goldstein H (1986). Multilevel mixed linear model analysis using iterative generalized least squares. \emph{Biometrika}. \bold{73}(1):43.
+DerSimonian R, Laird N (1986). Meta-analysis in clinical trials. \emph{Controlled Clinical Trials}. \bold{7}(3):177-188.
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}
 
 \note{
-As stated earlier, these functions are called internally by \code{\link{mvmeta.fit}}, and are not meant to be used directly. In particular, their code does not contain any check on the arguments provided, which are expected in specific formats. The functions are however exported in the namespace and documented for completeness.
+As stated earlier, this function is called internally by \code{\link{mvmeta.fit}}, and is not meant to be used directly. In particular, its code does not contain any check on the arguments provided, which are expected in specific formats. The function is however exported in the namespace and documented for completeness.
 
 The arguments above are prepared by \code{\link{mvmeta.fit}} from its arguments \code{X}, \code{y} and \code{S}. The list structure, although requiring more elaborate coding, is computationally more efficient, as it avoids the specification of sparse block-diagonal matrices, especially for meta-analysis involving a large number of studies.
 
@@ -65,16 +62,12 @@ See \code{\link{mvmeta}} for the general usage of the functions. See \code{\link
 }
 
 \examples{
-# REML ESTIMATOR: UNIVARIATE MODEL
-model <- mvmeta(PD~pubyear,S=berkey98[,5],data=berkey98)
+# METHOD OF MOMENTS ESTIMATOR: UNIVARIATE MODEL
+model <- mvmeta(PD~pubyear,S=berkey98[,5],data=berkey98,method="mm")
 summary(model)
 
-# REML ESTIMATOR: MULTIVARIATE MODEL
-model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[5:7],data=berkey98)
-summary(model)
-
-# ML ESTIMATOR
-model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[5:7],data=berkey98,method="ml")
+# METHOD OF MOMENTS ESTIMATOR: MULTIVARIATE MODEL
+model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[5:7],data=berkey98,method="mm")
 summary(model)
 }
 

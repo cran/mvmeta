@@ -56,7 +56,8 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
   # FORCE SEMI-POSITIVE DEFINITENESS
   eig <- eigen(Psi)
   negeigen <- sum(eig$values<0)
-  Psi <- eig$vectors %*% diag(pmax(eig$values,0),k) %*% t(eig$vectors)
+  Psi <- eig$vectors %*% diag(pmax(eig$values,control$set.negeigen),k) %*%
+    t(eig$vectors)
 #
   # FIT BY GLS
   gls <- .gls(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
@@ -73,8 +74,9 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
   rank <- qrinvtUX$rank
 #
   fit <- list(coefficients=gls$coef,vcov=vcov,Psi=Psi,residuals=res,
-    fitted.values=fitted,df.residual=nall-rank-length(par),rank=rank,logLik=NA,
-    negeigen=negeigen,control=control)
+    fitted.values=fitted,df.residual=nall-rank-length(par),rank=rank,
+    logLik=NA,negeigen=negeigen,
+    control=control)
 #
   return(fit)
 }
