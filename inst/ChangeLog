@@ -1,4 +1,55 @@
 ==============================================================================
+Changes in mvmeta 0.4.2 (31 March 2014)
+=====================================
+
+Major changes
+-------------
+
+    o New argument 'bscov' in mvmeta() to structure the between-study 
+      (co)variance matrix Psi. New functions initpar() and par2psi() to set the
+      initial values and derive Psi depending on the structure and type of
+      parameterization. New function checkPD to check positive definiteness.
+      Minor changes to functions mvmeta.ml(), mvmeta.reml() and other likelihood
+      functions. New help page mvmetaCovStruct with info.
+
+    o Added the option to input within-study correlations, when not provided,
+      thorugh the argument 'Scor' in the control list. Added function
+      inputcov() to input (co)variance matrices directly. Modifications to
+      mvmeta.fit(), mvmeta.control(), mkS().
+
+    o Starting values are now set through the new function initPar(). The values
+      can be submitted through the argument 'initPsi' in the control list. If
+      left NULL (the default), iter.igls() is called.
+
+    o Changes to mvmeta.control(): arguments 'initPsi', 'Psifix', 'Psicor' and
+      'Scor' to set initial values, to specify fixed Psi, correlations in Psi
+      and correlations in S.
+
+    o New data sets added: fibrinogen, hsls, hyp, p53, and smoking. Many
+      examples included in help pages.
+
+Minor changes
+-------------
+
+    o New code section in mvmeta() to set the fitting method and the structure
+      of Psi.
+
+    o Small changes in the code of the function mvmetaSim().
+
+    o Function mvmeta.igls() renamed iter.igls(). Functions mvmeta.ml* and
+      mvmeta.reml* renames mlprof* and remlprof*.
+
+    o Various internal function renamed without the initial dot '.'.
+
+    o Modification to print() method of summary.mvmeta objects.
+
+    o Special quotes "`" removed from names of the functions (this prevented
+      the debugging tools of RStudio to work).
+
+    o Documentation changed accordingly.
+
+
+==============================================================================
 Changes in mvmeta 0.3.5 (08 Dec 2013)
 =====================================
 

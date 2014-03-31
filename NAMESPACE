@@ -5,10 +5,9 @@
 export(
   mvmeta, mvmeta.fit,
   mvmeta.fixed, mvmeta.ml, mvmeta.reml, mvmeta.mm, mvmeta.vc,
-  mvmeta.ml.fn, mvmeta.ml.gr, mvmeta.reml.fn, mvmeta.reml.gr,
-  mvmeta.igls,
   mvmetaSim,
   mvmeta.control,
+  inputcov,
   summary.mvmeta,
   print.mvmeta, print.summary.mvmeta,
   predict.mvmeta, 
@@ -27,18 +26,30 @@ export(
 #################
 #
 # extractAIC.mvmeta, nobs.mvmeta
+# mlprof.fn, mlprof.gr, remlprof.fn, remlprof.gr
+# iter.igls
+#
+#################
+# NOT USED
+#################
+#
+# mlfull.fn, remlfull.fn
 #
 #################
 # INTERNAL
 #################
 #
 # .onAttach
-# .gls
-# .mkS
-# .mvsim
-# .gradchol.ml, .gradchol.reml
-# .sumlist
-# .fbtr
+# glsfit
+# mkS
+# inputScor
+# initpar
+# checkPD
+# par2Psi
+# mvsim
+# gradchol.ml, gradchol.reml
+# sumlist
+# fbtr
 #
 #################
 # IMPORTED

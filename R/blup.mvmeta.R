@@ -1,7 +1,7 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`blup.mvmeta` <-
+blup.mvmeta <-
 function(object, se=FALSE, pi=FALSE, vcov=FALSE, pi.level=0.95,
   format=c("matrix","list"), aggregate=c("stat","y"), ...) {
 #
@@ -138,5 +138,5 @@ function(object, se=FALSE, pi=FALSE, vcov=FALSE, pi.level=0.95,
     names(blup) <- rownames(X)
   }
 #
-  return(blup)
+  blup
 }

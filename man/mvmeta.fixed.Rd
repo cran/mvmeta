@@ -9,7 +9,7 @@ This function implements a generalized least square estimator for fixed-effects 
 }
 
 \usage{
-mvmeta.fixed(Xlist, ylist, Slist, nalist, k, m, p, nall, control)
+mvmeta.fixed(Xlist, ylist, Slist, nalist, k, m, p, nall, control, ...)
 }
 
 \arguments{
@@ -21,12 +21,13 @@ Assuming a meta-analysis or meta-regression based on \eqn{m} studies, \eqn{k} ou
   \item{nalist }{ a \eqn{m}-dimensional list of \eqn{k}-dimensional study-specific logical vectors, identifying missing outcomes.}
   \item{k, m, p, nall }{ numeric scalars: number of outcomes, number of studies included in estimation (equal to the length of lists above), number of predictors (including the intercept), number of observations (excluding missing).}
   \item{control }{ list of parameters for controlling the fitting process, usually internally set to default values by \code{\link{mvmeta.control}}.}
+  \item{\dots }{ further arguments passed to or from other methods. Currently not used.}
 }
 
 \details{
 The estimation involves only the \eqn{kp} fixed-effects coefficients.
 
-The routine is based on a standard generalized least square (GLS) algorithm implemented in the internal function \code{.gls}. The between-study (co)variance matrix is set to zero, so the marginal (co)variance matrix, composed only by elements of the within-study component, is assumed as completely known. Similarly to the likelihood-based estimators implemented in  \code{\link{mvmeta.ml}} and \code{\link{mvmeta.reml}}, the computation involves Cholesky and and QR decompositions for computational stability and efficiency. The method is described in details in Gasparrini and collaborators (2012) (see references below).
+The routine is based on a standard generalized least square (GLS) algorithm implemented in the internal function \code{glsfit}. The between-study (co)variance matrix is set to zero, so the marginal (co)variance matrix, composed only by elements of the within-study component, is assumed as completely known. Similarly to the likelihood-based estimators implemented in  \code{\link{mvmeta.ml}} and \code{\link{mvmeta.reml}}, the computation involves Cholesky and and QR decompositions for computational stability and efficiency. The method is described in details in Gasparrini and collaborators (2012) (see references below).
 }
 
 \value{
@@ -52,16 +53,18 @@ Some parameters of the fitting procedures are determined by the \code{control} a
 }
 
 \seealso{
-See \code{\link{mvmeta}} for the general usage of the functions. See \code{\link{mvmeta.control}} to determine specific parameters of the fitting procedures. See the function \code{\link{getAnywhere}} to access the code of the internal functions, such as \code{.gls}. See \code{\link{mvmeta-package}} for an overview of the package and modelling framework.
+See \code{\link{mvmeta}} for the general usage of the functions. See \code{\link{mvmeta.control}} to determine specific parameters of the fitting procedures. Use the triple colon operator ('\code{:::}') to access the code of the internal functions, such as \code{glsfit}. See \code{\link{mvmeta-package}} for an overview of the package and modelling framework.
 }
 
 \examples{
 # UNIVARIATE FIXED-EFFECTS MODEL
-model <- mvmeta(PD~pubyear,S=berkey98[,5],data=berkey98,method="fixed")
+model <- mvmeta(yC,S=SCC,data=smoking,method="fixed")
 summary(model)
 
 # MULTIVARIATE FIXED-EFFECTS MODEL
-model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[5:7],data=berkey98,method="fixed")
+y <- as.matrix(smoking[11:13])
+S <- as.matrix(smoking[14:19])
+model <- mvmeta(y,S,method="fixed")
 summary(model)
 
 # MULTIVARIATE FIXED-EFFECTS MODEL: REPLICATE THE RESULTS IN BERKEY ET AL. 1998

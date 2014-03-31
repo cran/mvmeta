@@ -9,7 +9,7 @@ This function implements a method of moments estimator for multivariate and univ
 }
 
 \usage{
-mvmeta.mm(Xlist, ylist, Slist, nalist, k, m, p, nall, control)
+mvmeta.mm(Xlist, ylist, Slist, nalist, k, m, p, nall, control, ...)
 }
 
 \arguments{
@@ -21,10 +21,11 @@ Assuming a meta-analysis or meta-regression based on \eqn{m} studies, \eqn{k} ou
   \item{nalist }{ a \eqn{m}-dimensional list of \eqn{k}-dimensional study-specific logical vectors, identifying missing outcomes.}
   \item{k, m, p, nall }{ numeric scalars: number of outcomes, number of studies included in estimation (equal to the length of lists above), number of predictors (including the intercept), number of observations (excluding missing).}
   \item{control }{ list of parameters for controlling the fitting process, usually internally set to default values by \code{\link{mvmeta.control}}.}
+  \item{\dots }{ further arguments passed to or from other methods. Currently not used.}
 }
 
 \details{
-The estimation involves \eqn{kp} fixed-effects coefficients and \eqn{k(k+1)/2} variance components, corresponding to the lower triangular entries of the between-study (co)variance matrix \code{Psi}.
+The estimation involves \eqn{kp} fixed-effects coefficients and \eqn{k(k+1)/2} random-effects parameters, corresponding to the lower triangular entries of the between-study (co)variance matrix.
 
 The approach implemented here represents the multivariate extension of the traditional estimator proposed by DerSimonian and Laird (1986), and simplifies to the standard method in the univariate case. This non-iterative routine forces the positive semi-definiteness of the estimated between-study (co)variance matrix by setting its negative eigenvalues to zero.
 
@@ -58,16 +59,22 @@ Some parameters of the fitting procedures are determined by the \code{control} a
 }
 
 \seealso{
-See \code{\link{mvmeta}} for the general usage of the functions. See \code{\link{mvmeta.control}} to determine specific parameters of the fitting procedures. See the function \code{\link{getAnywhere}} to access the code of the internal functions, such as \code{.gls}. See \code{\link{mvmeta-package}} for an overview of the package and modelling framework.
+See \code{\link{mvmeta}} for the general usage of the functions. See \code{\link{mvmeta.control}} to determine specific parameters of the fitting procedures. Use the triple colon operator ('\code{:::}') to access the code of the internal functions, such as \code{fbtr}. See \code{\link{mvmeta-package}} for an overview of the package and modelling framework.
 }
 
 \examples{
-# METHOD OF MOMENTS ESTIMATOR: UNIVARIATE MODEL
+# MM ESTIMATOR: UNIVARIATE MODEL
 model <- mvmeta(PD~pubyear,S=berkey98[,5],data=berkey98,method="mm")
 summary(model)
 
-# METHOD OF MOMENTS ESTIMATOR: MULTIVARIATE MODEL
-model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[5:7],data=berkey98,method="mm")
+# MM ESTIMATOR: REPRODUCE THE RESULTS IN CHEN ET AL. (2012)
+S <- as.matrix(hsls[5:10])
+model <- mvmeta(cbind(b1,b2,b3),S,data=hsls,method="mm")
+summary(model)
+
+# MM ESTIMATOR: REPRODUCE THE RESULTS IN JACKSON ET AL. (2013)
+S <- inputcov(hyp[c("sbp_se","dbp_se")],cor=hyp$rho)
+model <- mvmeta(cbind(sbp,dbp),S=S,data=hyp,method="mm")
 summary(model)
 }
 

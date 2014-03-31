@@ -24,7 +24,7 @@ This method function performs a Cochran Q test of (residual) heterogeneity on fi
 }
 
 \details{
-In this context, the test assesses the null hypothesis that the variability in the multivariate distribution of the outcomes is explained only in terms of estimation error in each study, measured by the within-study (co)variance matrices stored in the component \code{S} of \code{mvmeta} objects. This is equal to test the hypothesis that the between-study covariance matrix \code{Psi} is a zero matrix, and there is no random deviation in study-specific estimates. This test reduces to the standard Q test in univariate models. For multivariate models, tests for single outcome parameters, comparable to estimates from multiple univariate meta-analysis, are also reported.
+In multivariate models, the test assesses the null hypothesis that the variability in the multivariate distribution of the outcomes is explained only in terms of estimation error in each study, measured by the within-study (co)variance matrices stored in the component \code{S} of \code{mvmeta} objects. This is equal to test the hypothesis that the between-study (co)variance matrix is a zero matrix, and there is no random deviation in study-specific estimates. Tests for single outcome parameters, comparable to estimates from multiple univariate meta-analysis, are also reported. This test reduces to the standard Q test in univariate models. 
 
 The function compute the statistics by actually fitting the related fixed-effects model, re-evaluating the call of the model with \code{method} changed to \code{"fixed"}.
 }
@@ -52,7 +52,7 @@ Ritz J, Demidenkob E, Spiegelman G (2008). Multivariate meta-analysis for data c
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}
 
 \note{ 
-Tests on single outcome parameters are performed by extracting the related estimates and variances, but they do not account for the correlation between them, which nevertheless has been considered in estimation. These tests are not therefore comparable with those performed by running a univariate models on each outcome parameter.
+Tests on single outcome parameters are performed by extracting the related estimates and variances, but they do not account for the correlation between them, which nevertheless has been considered in estimation. These tests are not therefore comparable with those performed by running a univariate model on each outcome parameter.
 }
 
 \seealso{ 

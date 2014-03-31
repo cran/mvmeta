@@ -1,10 +1,10 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`mvmeta.control` <- 
-function (optim=list(), showiter=FALSE, maxiter=100, igls.iter=10,
-  reltol=sqrt(.Machine$double.eps),vc.adj=TRUE,
-  set.negeigen=sqrt(.Machine$double.eps)) {
+mvmeta.control <- 
+function(optim=list(), showiter=FALSE, maxiter=100, initPsi=NULL, Psifix=NULL,
+  Psicor=0, Scor=0, igls.iter=10, vc.adj=TRUE,
+  reltol=sqrt(.Machine$double.eps), set.negeigen=sqrt(.Machine$double.eps)) {
 #
 ################################################################################
 # SET CONTROL PARAMETERS FOR MODEL FITTING, WITH SPECIFIC DEFAULT VALUES
@@ -16,6 +16,10 @@ function (optim=list(), showiter=FALSE, maxiter=100, igls.iter=10,
     optim$REPORT <- 1
   }
 #
-	return(list(optim=optim,showiter=showiter,maxiter=maxiter,igls.iter=igls.iter,
-    reltol=reltol,vc.adj=vc.adj,set.negeigen=set.negeigen))
+  if(igls.iter<1) stop("'igls.iter' in the control list must be positive")
+#
+  # RETURN
+	list(optim=optim,showiter=showiter,maxiter=maxiter,
+    initPsi=initPsi,Psifix=Psifix,Psicor=Psicor,Scor=Scor,
+    igls.iter=igls.iter,vc.adj=vc.adj,reltol=reltol,set.negeigen=set.negeigen)
 }

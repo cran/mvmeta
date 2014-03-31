@@ -1,7 +1,7 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2014
 #
-`simulate.mvmeta` <- 
+simulate.mvmeta <- 
 function(object, nsim=1, seed=NULL, ...) {
 #
 ################################################################################
@@ -30,10 +30,10 @@ function(object, nsim=1, seed=NULL, ...) {
   # FOR EFFICIENCY, IT SAMPLES SEVERAL OUTCOMES FROM THE SAME MEAN AND
   #   THEN RE-ARRANGE THEM
   sim <- do.call("cbind",lapply(seq(nrow(fit)), function(i) {
-    .mvsim(nsim,fit[i,],Sigma=xpndMat(S[i,])+Psi,drop=FALSE)}))
+    mvSim(nsim,fit[i,],Sigma=xpndMat(S[i,])+Psi,drop=FALSE)}))
   sim <- lapply(seq(nrow(sim)), function(i) drop(matrix(sim[i,],
     ncol=ncol(fit),byrow=T,dimnames=dimnames(fit))))
   if(nsim==1) sim <- sim[[1]]
 #
-  return(sim)
+  sim
 }

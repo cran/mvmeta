@@ -1,11 +1,14 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`mvmeta.fit` <- 
-function(X, y, S, offset=NULL, method="reml", control=list()) {
+mvmeta.fit <- 
+function(X, y, S, offset=NULL, method="reml", bscov="unstr", control=list()) {
 #
 ################################################################################
-# PREPARE THE DATA
+# SET control AND PREPARE THE DATA
+#
+  # SET control
+  control <- do.call("mvmeta.control",control)
 #
   # SET DIMENSIONS AND MISSING
   y <- as.matrix(y)
@@ -23,37 +26,42 @@ function(X, y, S, offset=NULL, method="reml", control=list()) {
   # EXCLUDE OFFSET (RECYCLING RULE)
   if(!is.null(offset)) y <- y - offset
 #
-  # TRANSFORM X, y, S AND nay IN LISTS
+  # TRANSFORM X, y AND nay IN LISTS
   Xlist <- lapply(seq(m),function(i) diag(1,k)[!nay[i,],,drop=FALSE]%x%
     X[i,,drop=FALSE])
   ylist <- lapply(seq(m),function(i) y[i,][!nay[i,]])
+  nalist <- lapply(seq(m),function(i) nay[i,])
+#
+  # INPUT CORRELATIONS (IF NEEDED) AND TRANSFORM S IN A LIST
+  if(dim(S)[2]==k) S <- inputcov(sqrt(S),control$Scor)
   Slist <- lapply(seq(m),function(i) {
     Si <- xpndMat(S[i,])[!nay[i,],!nay[i,],drop=FALSE]
     if(any(is.na(Si))) stop("missing pattern in 'y' and S' is not consistent")
     return(Si)
   })
-  nalist <- lapply(seq(m),function(i) nay[i,])
 #
 ################################################################################
 # FIT THE MODEL AND SET OBJECTS
 #
   # SELECT THE ESTIMATION METHOD
-  control <- do.call("mvmeta.control",control)
-  fun <- paste("mvmeta",match.arg(method,c("fixed","ml","reml","mm","vc")),
-    sep=".")
+  fun <- paste("mvmeta",method,sep=".")
   fit <- do.call(fun,list(Xlist=Xlist,ylist=ylist,Slist=Slist,nalist=nalist,
-    k=k,m=m,p=p,nall=nall,control=control))
+    k=k,m=m,p=p,nall=nall,bscov=bscov,control=control))
 #  
   # MESSAGE OF NON-CONVERGENCE
   if(!is.null(fit$converged)&&!fit$converged) {
     warning("convergence not reached after maximum number of iterations")
   }
 #
-  # DEFINE DIMENSIONS, DF AND LABELS
+  # INCLUDE COMPONENTS
+  fit$method <- method
+  fit$bscov <- bscov
+  fit$offset <- offset
+  fit$S <- S
   fit$dim <- list(k=k,m=m,p=p)
   fit$df <- list(nall=nall,nobs=nall-(method=="reml")*fit$rank,
     df=nall-fit$df.residual,fixed=fit$rank,random=ifelse(method=="fixed",0,
-    k*(k+1)/2))
+    nall-fit$rank-fit$df.residual))
   fit$lab <- list(k=nk,p=np)
 #
   # RE-INSERT OFFSET IN y AND FITTED VALUES (RECYCLING RULE)
@@ -80,5 +88,5 @@ function(X, y, S, offset=NULL, method="reml", control=list()) {
     dimnames(fit$residuals) <- dimnames(fit$fitted.values) <- list(nm,nk)
   }
 #
-  return(fit)
+  fit
 }

@@ -21,11 +21,11 @@ These method functions return the model frame and design matrix for univariate o
 }
 
 \details{
-The model frame is produced by \code{\link{mvmeta}} when fitting the meta-analytical model, and stored in the \code{mvmeta} object if argument \code{model=TRUE}. Alternatively, the model frame is directly returned by \code{\link{mvmeta}} with argument \code{method="model.frame"}. The method function \code{model.frame} simply extracts the saved model frame if available, or otherwise evaluates a call to \code{\link{mvmeta}} while setting \code{method="model.frame"}.
+The model frame is produced by \code{\link{mvmeta}} when fitting the meta-analytical model, and stored in the \code{mvmeta} object if argument \code{model=TRUE}. Alternatively, the model frame is directly returned by \code{\link{mvmeta}} with argument \code{method="model.frame"}. The method function \code{model.frame} simply extracts the saved model frame if available, or otherwise evaluates a call to \code{\link{mvmeta}} when \code{method="model.frame"}.
 
-The method function \code{model.matrix} extracts the design matrix from a fitted meta-analytical model. The functions first extract the model frame by calling \code{model.frame}, and then passes the call to the default method.
+The method function \code{model.matrix} extracts the design matrix from a fitted meta-analytical model. It first extract the model frame by calling \code{model.frame}, and then passes the call to the default method.
 
-These methods functions are pretty much similar to those provided for regression objects \code{\link{lm}} and \code{\link{lm}}.
+These methods functions are similar to those provided for regression objects \code{\link{lm}} and \code{\link{lm}}.
 }
 
 \value{
@@ -37,7 +37,7 @@ For \code{model.matrix}, the design matrix used to fit the model.
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}
 
 \note{
-The reason why these specific method functions are made available for class \code{mvmeta}, and in particular why a new class \code{"data.frame.mvmeta"} has been defined for model frames, lies in the special handling of missing values in multivariate meta-analysis models fitted with \code{\link{mvmeta}}. Methods \code{\link[=na.omit.data.frame.mvmeta]{na.omit}} and \code{\link[=na.exclude.data.frame.mvmeta]{na.exclude}} for class \code{"data.frame.mvmeta"} are useful for properly account for missing values when fitting these models.
+The reason why these specific method functions are made available for class \code{mvmeta}, and in particular why a new class \code{"data.frame.mvmeta"} has been defined for model frames, lies in the special handling of missing values in multivariate meta-analysis models fitted with \code{\link{mvmeta}}. Methods \code{\link[=na.omit.data.frame.mvmeta]{na.omit}} and \code{\link[=na.exclude.data.frame.mvmeta]{na.exclude}} for class \code{"data.frame.mvmeta"} are useful for properly accounting for missing values when fitting these models.
 }
 
 \seealso{

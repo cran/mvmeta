@@ -1,7 +1,7 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`print.summary.mvmeta` <-  
+print.summary.mvmeta <-  
 function(x, digits=4, ...) {
 #
 ################################################################################
@@ -10,6 +10,11 @@ function(x, digits=4, ...) {
   methodname <- c("reml","ml","fixed","mm","vc")
   methodlabel <- c("REML","ML","Fixed","Method of moments",
     "Variance components")
+  bscovname <- c("unstr","diag","id","cs","hcs","ar1","prop","cor","fixed")
+  bscovlabel <- c("General positive-definite","Diagonal",
+    "Multiple of identity","Compound symmetry","Heterogeneous compound symmetry",
+    "Autoregressive of first order","Proportional to fixed matrix",
+    "Fixed correlation","Fixed")
   int <- attr(x$terms,"intercept")==1L
 #
 ################################################################################
@@ -25,9 +30,8 @@ function(x, digits=4, ...) {
   # CHECK LATER FOR CHOICE META-ANALYSIS OR METAREGRESSION
   cat("Dimension: ",x$dim$k,"\n",sep="")
   if(x$method!="fixed") {
-    cat("Estimation method: ",
-        methodlabel[which(x$method==methodname)],"\n",sep="")
-    cat("Variance-covariance matrix Psi: ","unstructured","\n",sep="")
+    cat("Estimation method: ",methodlabel[which(x$method==methodname)],
+      "\n",sep="")
   }
   cat("\n")
 #
@@ -68,19 +72,29 @@ function(x, digits=4, ...) {
 # RANDOM COMPONENTS
 #
   if(!x$method=="fixed") {  
-    cat("Variance components: between-studies Std. Dev and correlation matrix",
+    cat("Between-study random-effects (co)variance components","\n",sep="")
+    if(x$dim$k>1L) cat("\t","Structure: ",bscovlabel[which(x$bscov==bscovname)],
       "\n",sep="")
 #
-    # COMPUTE USEFUL OBJECTS
-    corRan <- x$corRandom
-    corRan[upper.tri(x$corRan)] <- NA
+    # STANDARD DEVIATIONS
+    sd <- formatC(cbind("Std. Dev"=sqrt(diag(x$Psi))),digits=digits,format="f")
+    if(x$dim$k==1L) rownames(sd) <- ""
+#
+    # CORRELATIONS
+    if(x$dim$k>1L) {
+      corRan <- x$corRandom
+      corRan[upper.tri(x$corRan,diag=TRUE)] <- NA
+      dimnames(corRan) <- NULL
+      corRan <- format(corRan[-1,-ncol(corRan),drop=FALSE],digits=digits,
+        format="f")
+      corRan <- rbind(x$lab$k[-x$dim$k],corRan)
+      colnames(corRan) <- c("Corr",rep("",x$dim$k-2))
+      corRan[grep("NA",corRan)] <- ""
+    } else corRan <- NULL
 #
     # PRODUCE THE TABLE
-    table <- cbind("Std. Dev"=sqrt(diag(x$Psi)),corRan)
-    if(x$dim$k==1L) rownames(table) <- ""
-    table <- formatC(table,digits=digits,format="f")
-    table[grep("NA",table)] <- "."
-    print(table,quote=FALSE,right=TRUE,na.print="",print.gap=2)
+    print(cbind(sd,corRan),quote=FALSE,right=TRUE,na.print="",print.gap=2)
+#
     if(!is.null(x$negeigen) && x$negeigen>0) {
       cat("(Note: Truncated estimate - ",x$negeigen,
         " negative eigenvalues set to 0)","\n",sep="")

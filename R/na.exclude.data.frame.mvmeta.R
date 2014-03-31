@@ -1,7 +1,7 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`na.exclude.data.frame.mvmeta` <-
+na.exclude.data.frame.mvmeta <-
 function (object, ...) {
 #
 ################################################################################
@@ -45,5 +45,5 @@ function (object, ...) {
     attr(xx,"na.action") <- temp
   }
 #
-  return(xx)
+  xx
 }

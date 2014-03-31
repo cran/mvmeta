@@ -6,7 +6,7 @@
 \title{ Vectorization and expansion of symmetric matrices }
 
 \description{
-The function \code{vechMat} transforms a symmetric matrix in a vector containing its lower triangular elements. The function \code{xpndMat} reverses this transformation.
+The function \code{vechMat} transforms a symmetric matrix in a vector containing its lower triangular elements, taken by column. The function \code{xpndMat} reverses this transformation.
 }
 
 \usage{
@@ -32,19 +32,12 @@ See functions \code{vech} and \code{xpnd} in package \pkg{MCMCpack}.
 }
 
 \examples{
-### FIRST EXAMPLE
-### GENERATE A POSITIVE-DEFINITE MATRIX
-### VECTORIZE IT AND THEN RE-EXPAND
-
+# GENERATE A POSITIVE-DEFINITE MATRIX, VECTORIZE IT AND THEN RE-EXPAND
 (M <- crossprod(matrix(rnorm(9),3)))
 (v <- vechMat(M))
 xpndMat(v)
 
-
-### SECOND EXAMPLE
-### EXTRACT VECTORIZED S FROM BERKEY DATA
-### EXPAND TO A LIST OF (CO)VARIANCE MATRICES, AND RE-VECTORIZE
-
+# EXTRACT VECTORIZED S, EXPAND TO A LIST, AND RE-VECTORIZE
 (S <- as.matrix(berkey98[5:7]))
 (Slist <- lapply(seq(nrow(S)),function(i) xpndMat(S[i,])))
 t(sapply(Slist,vechMat))

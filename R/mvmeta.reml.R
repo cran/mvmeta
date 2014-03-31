@@ -1,33 +1,27 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`mvmeta.reml` <-
-function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
+mvmeta.reml <-
+function(Xlist, ylist, Slist, nalist, k, m, p, nall, bscov, control, ...) {
 #
 ################################################################################
 #
-  # PRODUCE INITIAL VALUES THROUGH IGLS
-  Psi <- diag(0.001,k)
-  for(i in seq(control$igls.iter)) {
-    Psi <- mvmeta.igls(Psi,Xlist,ylist,Slist,nalist,k,m)
-  }
-#    
-  # PARAMETERIZATION OF theta AS THE LOWER TRIANGULAR COMPONENTS OF
-  #  THE SQUARE ROOT OF Psi, THROUGH CHOLESKY-DECOMPOSITION
-  par <- vechMat(t(chol(Psi)))
+  # DEFINE THE PARAMETERS DEPENDING ON STRUCTURE AND PARAMETERIZATION
+  par <- initpar(Xlist,ylist,Slist,nalist,k,m,p,bscov,control)
 #
   # MAXIMIZE
-  opt <- optim(par,mvmeta.reml.fn,mvmeta.reml.gr,Xlist=Xlist,ylist=ylist,
-    Slist=Slist,nalist=nalist,k=k,m=m,nall=nall,method="BFGS",
-    control=control$optim)
+  fn <- remlprof.fn
+  gr <- if(bscov=="unstr") remlprof.gr else NULL
+  # NB: ARGUMENT CONTROL NAMED DIFFERENTLY TO AVAOID CONFLICT WITH OPTIM
+  opt <- optim(par=par,fn=fn,gr=gr,Xlist=Xlist,ylist=ylist,Slist=Slist,
+    nalist=nalist,k=k,m=m,p=p,nall=nall,bscov=bscov,ctrl=control,
+    method="BFGS",control=control$optim)
 #    
   # Psi: ESTIMATED BETWEEN-STUDY (CO)VARIANCE MATRIX
-  Psi <- matrix(0,k,k)
-  Psi[lower.tri(Psi,diag=TRUE)] <- opt$par
-  Psi <- tcrossprod(Psi)
+  Psi <- par2Psi(opt$par,k,bscov,control)
 #  
   # FIT BY GLS
-  gls <- .gls(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
+  gls <- glsfit(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
 #
   # COMPUTE (CO)VARIANCE MATRIX OF coef
   qrinvtUX <- qr(gls$invtUX)
@@ -40,10 +34,9 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
   fitted <- lapply(Xlist,"%*%",gls$coef)
   rank <- qrinvtUX$rank
 #
-  fit <- list(coefficients=gls$coef,vcov=vcov,Psi=Psi,residuals=res,
+  # RETURN
+  list(coefficients=gls$coef,vcov=vcov,Psi=Psi,residuals=res,
     fitted.values=fitted,df.residual=nall-rank-length(par),rank=rank,
     logLik=opt$value,converged=opt$convergence==0,niter=opt$counts[[2]],
     control=control)
-#
-  return(fit)
 }

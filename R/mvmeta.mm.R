@@ -1,14 +1,14 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2013-2014
 #
-`mvmeta.mm` <-
-function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
+mvmeta.mm <-
+function(Xlist, ylist, Slist, nalist, k, m, p, nall, control, ...) {
 #
 ################################################################################
 #
   # FIT FIXED EFFECTS MODEL
   Psi <- diag(0,k)
-  gls <- .gls(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
+  gls <- glsfit(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
 #  
   # RE-CREATE THE FULL-REGRESSION OBJECTS
   Wlist <- mapply(function(invU,na) {
@@ -24,24 +24,24 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
   y[!na] <- unlist(ylist)
 #
   # HAT MATRIX
-  tXWXtot <- .sumlist(lapply(gls$invtUXlist,crossprod))
+  tXWXtot <- sumlist(lapply(gls$invtUXlist,crossprod))
   invtXWXtot <- chol2inv(chol(tXWXtot))
   H <- X %*% invtXWXtot %*% crossprod(X,W)
   IminusH <- diag(m*k)-H
 #
   # Q matrix
-  Q <- .fbtr(W%*%tcrossprod(IminusH%*%y),k)
+  Q <- fbtr(W%*%tcrossprod(IminusH%*%y),k)
 #
   # A AND B
   A <- crossprod(IminusH,W)
   B <- crossprod(IminusH,diag(!na))
 #
   # BLOCK COMPUTATION
-  btrB <- .fbtr(B,k)
+  btrB <- fbtr(B,k)
   ind <- (seq(m)-1)*k
   indrow <- rep(ind,length(ind))
   indcol <- rep(ind,each=length(ind))
-  tBA <- .sumlist(lapply(seq(indrow), function(i) {
+  tBA <- sumlist(lapply(seq(indrow), function(i) {
     row <- indrow[i]+(seq(k))
     col <- indcol[i]+(seq(k))
     t(B[row,col]%x%A[row,col])}))
@@ -60,7 +60,7 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
     t(eig$vectors)
 #
   # FIT BY GLS
-  gls <- .gls(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
+  gls <- glsfit(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
 #
   # COMPUTE (CO)VARIANCE MATRIX OF coef
   qrinvtUX <- qr(gls$invtUX)
@@ -73,10 +73,8 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
   fitted <- lapply(Xlist,"%*%",gls$coef)
   rank <- qrinvtUX$rank
 #
-  fit <- list(coefficients=gls$coef,vcov=vcov,Psi=Psi,residuals=res,
-    fitted.values=fitted,df.residual=nall-rank-length(par),rank=rank,
-    logLik=NA,negeigen=negeigen,
-    control=control)
-#
-  return(fit)
+  # RETURN
+  list(coefficients=gls$coef,vcov=vcov,Psi=Psi,residuals=res,
+    fitted.values=fitted,df.residual=nall-rank-length(par),rank=rank,logLik=NA,
+    negeigen=negeigen,control=control)
 }

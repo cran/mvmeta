@@ -1,7 +1,7 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`xpndMat` <-
+xpndMat <-
 function(vech) {
 #
 ################################################################################
@@ -11,6 +11,7 @@ function(vech) {
   mat <- matrix(nrow=dim,ncol=dim)
   mat[lower.tri(mat,diag=TRUE)] <- as.matrix(vech)
   mat[upper.tri(mat)] <- t(mat)[upper.tri(mat)]
-  return(mat)
+#
+  mat
 }
 

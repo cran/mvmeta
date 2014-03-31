@@ -1,14 +1,14 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`mvmeta.fixed` <-
-function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
+mvmeta.fixed <-
+function(Xlist, ylist, Slist, nalist, k, m, p, nall, control, ...) {
 #
 ################################################################################
 #
-  # FIT BY GLS
+  # FIT GLS
   Psi <- diag(0,k)
-  gls <- .gls(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
+  gls <- glsfit(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
 #
   # COMPUTE (CO)VARIANCE MATRIX OF coef
   qrinvtUX <- qr(gls$invtUX)
@@ -33,8 +33,7 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
 #  
   logLik <- as.numeric(pconst + pdet + pres)
 #
-  fit <- list(coefficients=gls$coef,vcov=vcov,residuals=res,fitted.values=fitted,
+  # RETURN
+  list(coefficients=gls$coef,vcov=vcov,residuals=res,fitted.values=fitted,
     df.residual=nall-rank,rank=rank,logLik=logLik,control=control)
-#
-  return(fit)
 }

@@ -9,7 +9,7 @@ This function implements a variance components estimator for multivariate and un
 }
 
 \usage{
-mvmeta.vc(Xlist, ylist, Slist, nalist, k, m, p, nall, control)
+mvmeta.vc(Xlist, ylist, Slist, nalist, k, m, p, nall, control, ...)
 }
 
 \arguments{
@@ -21,16 +21,17 @@ Assuming a meta-analysis or meta-regression based on \eqn{m} studies, \eqn{k} ou
   \item{nalist }{ a \eqn{m}-dimensional list of \eqn{k}-dimensional study-specific logical vectors, identifying missing outcomes.}
   \item{k, m, p, nall }{ numeric scalars: number of outcomes, number of studies included in estimation (equal to the length of lists above), number of predictors (including the intercept), number of observations (excluding missing).}
   \item{control }{ list of parameters for controlling the fitting process, usually internally set to default values by \code{\link{mvmeta.control}}.}
+  \item{\dots }{ further arguments passed to or from other methods. Currently not used.}
 }
 
 \details{
-The estimation involves \eqn{kp} fixed-effects coefficients and \eqn{k(k+1)/2} variance components, corresponding to the lower triangular entries of the between-study (co)variance matrix \code{Psi}.
+The estimation involves \eqn{kp} fixed-effects coefficients and \eqn{k(k+1)/2} random-effects parameters, corresponding to the lower triangular entries of the between-study (co)variance matrix.
 
 The procedure is based on the estimate of the between-study (co)variance as the difference between the marginal (co)variance and the average within-study (co)variance. This in turn requires the estimate of the marginal (co)variance, obtained by the residuals of the fitted model. The procedure is iterative, with the current estimate of the between-study (co)variance plugged into a generalized least square (GLS) routine. Starting values are provided by a fixed-effects estimator (see \code{\link{mvmeta.fixed}}). The algorithm is fast and generally converges with few iterations.
 
 Similar versions of this estimator has been previously proposed. Berkey and collaborators (1998) simply called it GLS method, and a non-iterative approach was proposed by Ritz and collaborators (2008), referred to as MVEE3. A non-iterative version for univariate models is discussed in Sidik and Jonkman (2007). The results from Berkey and collaborators (1998) are reproduced in the example below.
 
-In the original approach, the estimate of the marginal (co)variance from the average of the residual component with a degrees of freedom correction equal to \code{m-p}. Following the development proposed by Kauermann and Carroll (2001) and Fay and Graubard (2001) in the context of sandwich (co)variance estimators, then discussed by Lu and collaborators (2007), this adjustment is performed by dividing the residuals by a quantity derived from the hat matrix. This method is expected to perform better in the presence of missing values and small data sets. This alternative adjustment is chosen by default by \code{vc.adj=TRUE} in the \code{control} argument.
+In the original approach, the estimate of the marginal (co)variance is obtained from the sum of the residual components using a denominator equal to \code{m-p}. Following the development proposed by Kauermann and Carroll (2001) and Fay and Graubard (2001) in the context of sandwich (co)variance estimators, then discussed by Lu and collaborators (2007), an adjusted denominator can be computed as a quantity derived from the hat matrix. This method is expected to perform better in the presence of missing values and small data sets. This alternative adjustment is chosen by default by setting \code{vc.adj=TRUE} in the \code{control} argument.
 
 The variance component estimator is not bounded to provide a positive semi-definite between-study (co)variance matrix, as shown in the simulation study by Liu and colleagues (2009). Here positive semi-definiteness is forced by setting the negative eigenvalues of the estimated matrix to zero at each iteration. Little is known about the impact of such constraint.
 }
@@ -62,24 +63,24 @@ Some parameters of the fitting procedures are determined by the \code{control} a
 }
 
 \seealso{
-See \code{\link{mvmeta}} for the general usage of the functions. See \code{\link{mvmeta.control}} to determine specific parameters of the fitting procedures. See the function \code{\link{getAnywhere}} to access the code of the internal functions, such as \code{.gls}. See \code{\link{mvmeta-package}} for an overview of the package and modelling framework.
+See \code{\link{mvmeta}} for the general usage of the functions. See \code{\link{mvmeta.control}} to determine specific parameters of the fitting procedures. Use the triple colon operator ('\code{:::}') to access the code of the internal functions, such as \code{sumlist}. See \code{\link{mvmeta-package}} for an overview of the package and modelling framework.
 }
 
 \examples{
-# VARIANCE COMPONENTS ESTIMATOR: UNIVARIATE MODEL
+# VC ESTIMATOR: UNIVARIATE MODEL
 model <- mvmeta(PD~pubyear,S=berkey98[,5],data=berkey98,method="vc")
 summary(model)
 
-# VARIANCE COMPONENTS ESTIMATOR: MULTIVARIATE MODEL
+# VC ESTIMATOR: MULTIVARIATE MODEL
 model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[5:7],data=berkey98,method="vc")
 summary(model)
 
-# VARIANCE COMPONENTS ESTIMATOR: NON-ITERATIVE VERSION
+# VC ESTIMATOR: NON-ITERATIVE VERSION
 model <- mvmeta(cbind(PD,AL)~pubyear,S=berkey98[5:7],data=berkey98,method="vc",
   control=list(maxiter=1))
 summary(model)
 
-# VARIANCE COMPONENTS ESTIMATOR: REPLICATE THE RESULTS IN BERKEY ET AL. 1998
+# VARIANCE COMPONENTS ESTIMATOR: REPLICATE THE RESULTS IN BERKEY ET AL. (1998)
 model <- mvmeta(cbind(PD,AL)~I(pubyear-1983),S=berkey98[5:7],
   data=berkey98,method="vc",control=list(vc.adj=FALSE))
 summary(model)

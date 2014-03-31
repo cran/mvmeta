@@ -1,9 +1,9 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`mvmeta` <-
-function(formula, S, data, subset, method="reml", model=TRUE, contrasts=NULL,
-  offset, na.action, control=list()) {
+mvmeta <-
+function(formula, S, data, subset, method="reml", bscov="unstr", model=TRUE,
+  contrasts=NULL, offset, na.action, control=list()) {
 #
 ################################################################################
 # CREATE THE CALL
@@ -42,6 +42,15 @@ function(formula, S, data, subset, method="reml", model=TRUE, contrasts=NULL,
   if(is.empty.model(mf)) stop("empty model not allowed")
 #
 ################################################################################
+# SET method AND bscov
+#
+  method <- match.arg(method,c("fixed","ml","reml","mm","vc"))
+  bscov <- match.arg(bscov,c("unstr","diag","id","cs","hcs","ar1","prop",
+    "cor","fixed"))
+  if(bscov!="unstr" && !method%in%c("ml","reml"))
+    stop("structured Psi only available for methods 'ml' or 'reml'")
+#
+################################################################################
 # DERIVE OBJECTS FOR FITTING
 #
   terms <- attr(mf,"terms")
@@ -53,9 +62,11 @@ function(formula, S, data, subset, method="reml", model=TRUE, contrasts=NULL,
     if (length(offset) != NROW(y)) 
       stop("number of offsets should equal number of observations")
   }
-  # CREATE S (AS A MATRIX OF VECTORIZED COVAR)
+  # PRODUCE S AS A MATRIX OF:
+  #   VECTORIZED (CO)VARIANCES (IF CORRELATION PROVIDED)
+  #   SERIES OF VARIANCES
   S <- eval(call$S,if(missing(data)) parent.frame() else data)
-  S <- .mkS(S,y,attr(mf,"na.action"), if(missing(subset)) NULL else 
+  S <- mkS(S,y,attr(mf,"na.action"), if(missing(subset)) NULL else 
     eval(call$subset,if(missing(data)) parent.frame() else data))
   if(nrow(y)<2L) stop("less than 2 valid studies after exclusion of missing")
 #
@@ -63,24 +74,22 @@ function(formula, S, data, subset, method="reml", model=TRUE, contrasts=NULL,
 # FIT THE MODEL CALLING mvmeta.fit
 #  
   # MODEL FIT
-  fit <- mvmeta.fit(X,y,S,offset,method,control)
+  fit <- mvmeta.fit(X,y,S,offset,method,bscov,control)
 #
 ################################################################################
-#  COMPLETE THE LIST
+#  COMPLETE THE LIST OF COMPONENTS
 #
-  fit$S <- S
   fit$model <- if(model) mf else NULL
   fit$na.action <- attr(mf,"na.action")
   fit$call <- call
   fit$formula <- formula
   fit$terms <- terms
-  fit$offset <- offset 
-  fit$method <- method
   fit$contrasts <- attr(X,"contrasts")
   fit$xlevels <- .getXlevels(terms,mf)
 #
   class(fit) <- "mvmeta"
 #
-  return(fit)
+  fit
 }
 
+#

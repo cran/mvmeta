@@ -1,7 +1,7 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`qtest.mvmeta` <-
+qtest.mvmeta <-
 function(object, ...) {
 #
 ################################################################################
@@ -25,23 +25,30 @@ function(object, ...) {
 #
   # GLS 
   Psi <- diag(0,dim$k)
-  gls <- .gls(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
+  gls <- glsfit(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
 #
 ################################################################################
 # COMPUTE THE STATS
 #
-  Q <- c(drop(crossprod(gls$invtUy-gls$invtUX%*%gls$coef)),
-    colSums(do.call("rbind",mapply(function(y,S,X,na) {
+  # GLOBAL
+  Q <- drop(crossprod(gls$invtUy-gls$invtUX%*%gls$coef))
+  df <- with(object$df,nall-fixed)
+# 
+  # IF MULTIVARIATE, ADD OUTCOME-SPECIFIC
+  if(dim$k>1L) {
+    Q <- c(Q,colSums(do.call("rbind",mapply(function(y,S,X,na) {
       comp <- rep(0,dim$k)
       comp[!na] <- as.vector((y-X%*%gls$coef)^2 / diag(S))
       return(comp)},ylist,Slist,Xlist,nalist,SIMPLIFY=FALSE))))
+    df <- c(df,colSums(!nay,na.rm=TRUE)-dim$p)
+  }
 #
-  df <- c(with(object$df,nall-fixed),colSums(!nay,na.rm=TRUE)-dim$p)
-  pvalue <- sapply(seq(Q),function(i) 1-pchisq(Q[i],df[i]))
-  names(Q) <- names(df) <- names(pvalue) <- c(".all",object$lab$k)
+  pvalue <- sapply(seq(length(Q)),function(i) 1-pchisq(Q[i],df[i]))
+  names(Q) <- names(df) <- names(pvalue) <- 
+    if(dim$k>1L) c(".all",object$lab$k) else object$lab$k
 #
   qstat <- list(Q=Q,df=df,pvalue=pvalue,residual=object$dim$p-int>0L,k=dim$k)
   class(qstat) <- "qtest.mvmeta"
 #
-  return(qstat)
+  qstat
 }

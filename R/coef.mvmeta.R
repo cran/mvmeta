@@ -1,7 +1,7 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`coef.mvmeta` <- 
+coef.mvmeta <- 
 function(object, format=c("vector","matrix"), ...) {
 #
 ################################################################################
@@ -14,5 +14,5 @@ function(object, format=c("vector","matrix"), ...) {
   coef <- as.numeric(coef)
   names(coef) <- names
 #
-  return(coef)
+  coef
 }

@@ -43,7 +43,6 @@ attributes(ll)
 # AIC and BIC
 AIC(model)
 BIC(model)
-
 }
 
 \keyword{models}

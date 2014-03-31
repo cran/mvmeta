@@ -1,13 +1,13 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`mvmeta.igls` <-
+iter.igls <-
 function(Psi, Xlist, ylist, Slist, nalist, k, m) {
 #
 ################################################################################
 #
   # FIT BY GLS
-  gls <- .gls(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
+  gls <- glsfit(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
 #
   # CREATE A MATRIX WITH INDICATOR OF (CO)VAR COMPONENTS
   npar <- k*(k+1)/2
@@ -46,8 +46,7 @@ function(Psi, Xlist, ylist, Slist, nalist, k, m) {
   # FORCING POSITIVE-DEFINITENESS
   eig <- eigen(Psi)
   eig$values <- pmax(eig$values,10^-8)
-  Psi <- eig$vectors %*% diag(eig$values,k) %*% t(eig$vectors)
 #
-  return(Psi)
+  eig$vectors %*% diag(eig$values,k) %*% t(eig$vectors)
 }
 

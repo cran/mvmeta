@@ -1,7 +1,7 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2012-2014
 #
-`print.qtest.mvmeta` <-
+print.qtest.mvmeta <-
 function(x, digits=3, ...) {
 #
 ################################################################################
@@ -19,9 +19,11 @@ function(x, digits=3, ...) {
     if(x$residual) "residual ", "heterogeneity","\n",sep="")
   if(x$k>1L) cat("\nOverall test:","\n")
   cat("Q = ",Q[1]," (df = ",x$df[1],"), p-value = ",pvalue[1],"\n",sep="")
-  if(x$k>1L) cat("\nTests on single outcome parameters:","\n")
-  if(x$k>1L) print(table[-1,,drop=FALSE],quote=FALSE,right=TRUE,print.gap=2)
-  if(x$k>1L) cat("---\nSignif. codes: ", attr(signif, "legend"), "\n")
+  if(x$k>1L) {
+    cat("\nTests on single outcome parameters:","\n")
+    print(table[-1,,drop=FALSE],quote=FALSE,right=TRUE,print.gap=2)
+    cat("---\nSignif. codes: ", attr(signif, "legend"), "\n")
+  }
   cat("\n")
 }
 

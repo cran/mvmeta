@@ -1,8 +1,8 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2013-2014
 #
-`mvmeta.vc` <-
-function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
+mvmeta.vc <-
+function(Xlist, ylist, Slist, nalist, k, m, p, nall, control, ...) {
 #
 ################################################################################
 #
@@ -17,10 +17,10 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
 #    
     old.Psi <- Psi
     # FIT BY GLS
-    gls <- .gls(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
+    gls <- glsfit(Xlist,ylist,Slist,nalist,Psi,onlycoef=FALSE)
 #
     # HAT MATRIX COMPONENTS
-    tXWXtot <- .sumlist(lapply(gls$invtUXlist,crossprod))
+    tXWXtot <- sumlist(lapply(gls$invtUXlist,crossprod))
     invtXWXtot <- chol2inv(chol(tXWXtot))
     # RESIDUALS COMPONENTS
     reslist <- mapply(function(y,X) y-X%*%gls$coef,ylist,Xlist,SIMPLIFY=FALSE)
@@ -50,12 +50,12 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
       return(S0)},Slist,nalist,SIMPLIFY=FALSE)
 #
     # DEFINE NUMBER OF OBSERVATIONS FOR EACH ENTRY
-    ind <- m-.sumlist(nalist)
+    ind <- m-sumlist(nalist)
     Nmat <- matrix(pmin(rep(ind,k),rep(ind,each=k)),k,k)
 #
     # ESTIMATE: DEPENDENDENT ON SPECIFIC ESTIMATOR CHOSEN
     df.corr <- ifelse(control$vc.adj,0,p)
-    Psi <- .sumlist(Mlist)/(Nmat-df.corr) - .sumlist(S0list)/Nmat
+    Psi <- sumlist(Mlist)/(Nmat-df.corr) - sumlist(S0list)/Nmat
 #
     # FORCE SEMI-POSITIVE DEFINITENESS
     eig <- eigen(Psi)
@@ -67,7 +67,10 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
     niter <- niter+1
     value <- abs(Psi-old.Psi)
     converged <- all(value<reltol*abs(Psi+reltol))
-    if(control$showiter) cat("iter ",niter,": value ",max(value),"\n",sep="")
+    if(control$showiter) {
+      cat("iter ",niter,": value ",max(value),"\n",sep="")
+      if(converged) cat("converged\n")
+    }
   }
 #
   # COMPUTE (CO)VARIANCE MATRIX OF coef
@@ -81,10 +84,8 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control) {
   fitted <- lapply(Xlist,"%*%",gls$coef)
   rank <- qrinvtUX$rank
 #
-  fit <- list(coefficients=gls$coef,vcov=vcov,Psi=Psi,residuals=res,
-    fitted.values=fitted,df.residual=nall-rank-length(par),rank=rank,
-    logLik=NA,converged=converged,niter=niter,negeigen=negeigen,
-    control=control)
-#
-  return(fit)
+  # RETURN
+  list(coefficients=gls$coef,vcov=vcov,Psi=Psi,residuals=res,
+    fitted.values=fitted,df.residual=nall-rank-length(par),rank=rank,logLik=NA,
+    converged=converged,niter=niter,negeigen=negeigen,control=control)
 }

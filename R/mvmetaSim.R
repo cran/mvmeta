@@ -1,7 +1,7 @@
 ###
-### R routines for the R package mvmeta (c) Antonio Gasparrini 2013
+### R routines for the R package mvmeta (c) Antonio Gasparrini 2013-2014
 #
-`mvmetaSim` <- 
+mvmetaSim <- 
 function(y, S, Psi, sd, cor, nsim=1, seed=NULL, posdeftol) {
 #
 ################################################################################
@@ -19,38 +19,31 @@ function(y, S, Psi, sd, cor, nsim=1, seed=NULL, posdeftol) {
     on.exit(assign(".Random.seed", R.seed, envir = .GlobalEnv))
   }
 #
-  # PREPARE AND CHECK Psi, THEN SET THE DIMENSION
-  if(missing(Psi)) {
-    if(missing(sd)||missing(cor)) stop("'Psi' or 'sd'-'cor' must be provided")
-    R <- diag(1,length(sd))
-    R[lower.tri(R)] <- if(is.matrix(cor)) cor[lower.tri(cor)] else cor
-    R[upper.tri(R)] <- t(R)[upper.tri(t(R))]
-    if(any(R^2>1)) stop("correlations must be between -1 and 1")
-    Psi <- diag(sd)%*%R%*%diag(sd)
-  }
-  if(!is.matrix(Psi)) Psi <- xpndMat(Psi)
-  dim <- dim(Psi)
-  if(dim[1]!=dim[2]) stop("'Psi' is not a square matrix")
-  if(any(is.na(Psi))) stop("missing values not allowed in 'Psi'")
-  k <- dim[1]
-#
   # PREPARE AND CHECK y
   if(!is.matrix(y)) y <- as.matrix(y)
-  if(ncol(y)!=k) stop("Dimensions of 'y' and 'Psi' not consistent")
+  k <- ncol(y)
   if(any(is.na(y))) stop("missing values not allowed in 'y'")
 #
   # PREPARE AND CHECK S
-  S <- .mkS(S,y)
+  S <- mkS(S,y)
   if(any(is.na(S))) stop("missing values not allowed in 'S'")
+#
+  # PREPARE AND CHECK Psi, THEN SET THE DIMENSION
+  if(missing(Psi)) {
+    if(missing(sd)||missing(cor)) stop("'Psi' or 'sd'-'cor' must be provided")
+    Psi <- inputcov(sd,cor)
+  }
+  if(!is.matrix(Psi)) Psi <- xpndMat(Psi)
+  Psi <- checkPD(Psi,k,"Psi")
 #
   # SAMPLE THE RESPONSES
   # FOR EFFICIENCY, IT SAMPLES SEVERAL OUTCOMES FROM THE SAME MEAN AND
   #   THEN RE-ARRANGE THEM
   sim <- do.call("cbind",lapply(seq(nrow(y)), function(i) {
-    .mvsim(nsim,y[i,],Sigma=xpndMat(S[i,])+Psi,posdeftol=posdeftol,drop=FALSE)}))
+    mvSim(nsim,y[i,],Sigma=xpndMat(S[i,])+Psi,posdeftol=posdeftol,drop=FALSE)}))
   sim <- lapply(seq(nrow(sim)), function(i) drop(matrix(sim[i,],
     ncol=ncol(y),byrow=T,dimnames=dimnames(y))))
   if(nsim==1) sim <- sim[[1]]
 #
-  return(sim)
+  sim
 }
