@@ -24,6 +24,7 @@ function(formula, S, data, subset, method="reml", bscov="unstr", model=TRUE,
     environment(formula) <- parent.frame()
     call[[mn[1]]] <- mcall[[mn[1]]] <- formula
   }
+  if(missing(data)) data <- environment(formula)
 #
 ################################################################################
 # DERIVE THE MODEL FRAME (SPECIAL HANDLING OF MISSING VALUES)
@@ -65,9 +66,9 @@ function(formula, S, data, subset, method="reml", bscov="unstr", model=TRUE,
   # PRODUCE S AS A MATRIX OF:
   #   VECTORIZED (CO)VARIANCES (IF CORRELATION PROVIDED)
   #   SERIES OF VARIANCES
-  S <- eval(call$S,if(missing(data)) parent.frame() else data)
+  S <- eval(call$S,data,parent.frame())
   S <- mkS(S,y,attr(mf,"na.action"), if(missing(subset)) NULL else 
-    eval(call$subset,if(missing(data)) parent.frame() else data))
+    eval(call$subset,data,parent.frame()))
   if(nrow(y)<2L) stop("less than 2 valid studies after exclusion of missing")
 #
 ################################################################################

@@ -1,5 +1,5 @@
 ==============================================================================
-Changes in mvmeta 0.4.2 (31 March 2014)
+Changes in mvmeta 0.4.3 (08 Apr 2014)
 =====================================
 
 Major changes
@@ -24,6 +24,9 @@ Major changes
     o Changes to mvmeta.control(): arguments 'initPsi', 'Psifix', 'Psicor' and
       'Scor' to set initial values, to specify fixed Psi, correlations in Psi
       and correlations in S.
+
+    o Bug fixed in mvmeta(): call to define argument 'S' now set with correct
+      environment. Previously possible conflicts with suggested packages.
 
     o New data sets added: fibrinogen, hsls, hyp, p53, and smoking. Many
       examples included in help pages.

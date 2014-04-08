@@ -6,7 +6,11 @@ function(sd, cor=0) {
 #
 ################################################################################
 # 
-  # IF S IS A VECTOR, INTERPRETED AS STD DEV FOR A SINGLE MATRIX
+  # IF DATA FRAME, TRANSFORM TO A MATRIX/VECTOR
+  if(is.data.frame(sd)) sd <- drop(as.matrix(sd))
+  if(is.data.frame(cor)) cor <- drop(as.matrix(cor))
+#
+  # IF sd IS A VECTOR, INTERPRETED AS STD DEV FOR A SINGLE MATRIX
   if(is.vector(sd)) sd <- t(sd)
   k <- ncol(sd)
   m <- nrow(sd)

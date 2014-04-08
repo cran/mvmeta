@@ -1,4 +1,4 @@
-c712a51f40e9e4ec5653daf3be54e0bd *DESCRIPTION
+35067cb0050d2dc9358e1488fa799620 *DESCRIPTION
 16232d7fd08dd5e755772c091b7e0bd9 *NAMESPACE
 4cabe200bfdf36d0d9ead8390bac369e *R/blup.R
 73b5f9ed366b4243e7df6e17cdb47dc1 *R/blup.mvmeta.R
@@ -10,7 +10,7 @@ bb146edad30a6aed3a4cdfb8298dff37 *R/fbtr.R
 4386267a74caea62f5c85b358855ed20 *R/gradchol.ml.R
 bacd0ee6c982da94cff0b1abfbc4be8e *R/gradchol.reml.R
 cca59e7ea3b6e752c5530dfb365b6c6b *R/initpar.R
-dd180dafe4fa65aa24751e36e4850d03 *R/inputcov.R
+31e878ceed0f03fa894911d47373fc0c *R/inputcov.R
 2fc9dfad42c9a2352a15a2826813bf29 *R/iter.igls.R
 f8b27e1f3914317ac004446376100e18 *R/logLik.mvmeta.R
 0ea8e58a2ece7ebabf7c593bd3d5816f *R/mkS.R
@@ -20,7 +20,7 @@ f8b27e1f3914317ac004446376100e18 *R/logLik.mvmeta.R
 e12dbe8b037b38c58fa018bf4c02e3a6 *R/model.frame.mvmeta.R
 fc58f31ae58dba17a09b3fef3707d793 *R/model.matrix.mvmeta.R
 4593e6b44fd386ed57c698b8ee62e4cf *R/mvSim.R
-5b701eaa447a6bea9002c8ee75eb3461 *R/mvmeta.R
+2c2886d4ff5be282b45dde6fecfa5bb2 *R/mvmeta.R
 a54d362e6c2080cb2b004572e73cb46f *R/mvmeta.control.R
 36fc72475b534653b4243526f88a2e0c *R/mvmeta.fit.R
 e54a98fe40de0da887ecc24117666a52 *R/mvmeta.fixed.R
@@ -56,7 +56,7 @@ e09f19d0e01590657d652a598a299b03 *data/hyp.rda
 0cd8157dac216c75353e394615c7089e *data/p53.rda
 00aa2f3d448a9dadd53df55f0c1773b2 *data/smoking.rda
 e6ffb08d6eb3435fd637a4c254584f18 *inst/CITATION
-561d6b467c244175bb04b2427065c1fd *inst/ChangeLog
+a21fbc08e409c8cd3022385e80a305c5 *inst/ChangeLog
 208b1d1f68dff2b6d839b9dbf7ab0ecd *man/berkey98.Rd
 be3acd8c01f78b7d3c8e9735aee53b34 *man/blup.mvmeta.Rd
 fad637c9601154ab0eb0a8833c33023d *man/coef.mvmeta.Rd
