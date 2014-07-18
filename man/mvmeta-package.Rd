@@ -49,7 +49,7 @@ Method functions are available for objects of class \code{"mvmeta"} (see \code{\
 
 Methods for \code{\link[=model.frame.mvmeta]{model.frame}} and \code{\link[=model.matrix.mvmeta]{model.matrix}} are used to extract and construct the model frame and the design matrix of the regression meta-analytical model, respectively. Methods for \code{\link[=na.omit.data.frame.mvmeta]{na.omit}} and \code{\link[=na.exclude.data.frame.mvmeta]{na.exclude}} help handle correctly missing values.
 
-Simulations can be produced using the function \code{\link{mvmetaSim}} and the method function \code{\link[=simulate.mvmeta]{simulate}}, which return one or multiple sets of simulated outcomes for a group of studies.
+Simulations can be produced using the function \code{\link{mvmetaSim}} and the method function \code{\link[=simulate.mvmeta]{simulate}}, which return one or multiple sets of simulated outcomes for a group of studies. The function \code{\link{augment}} is used internally to augment the missing data values.
 
 The method function \code{\link{qtest.mvmeta}} (producing an object with class of the same name) performs the (multivariate) Cochran Q test for (residual) heterogeneity, both on the overall multivariate distribution and on each single outcome. The generic method function is \code{\link{qtest}}.
 

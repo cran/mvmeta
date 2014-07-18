@@ -10,7 +10,7 @@ This internal function sets the parameter options used for fitting meta-analytic
 
 \usage{
 mvmeta.control(optim=list(), showiter=FALSE, maxiter=100, initPsi=NULL, Psifix=NULL,
-  Psicor=0, Scor=0, igls.iter=10, vc.adj=TRUE,
+  Psicor=0, Scor=0, augment=FALSE, augvar=10^4, igls.iter=10, vc.adj=TRUE,
   reltol=sqrt(.Machine$double.eps), set.negeigen=sqrt(.Machine$double.eps))
 }
 
@@ -23,6 +23,8 @@ mvmeta.control(optim=list(), showiter=FALSE, maxiter=100, initPsi=NULL, Psifix=N
   \item{Psifix }{ either a matrix or a vector of its lower triangular elements (with diagonal, taken by column) equal or proportional to the between-study (co)variance. Only used when \code{bscov="fixed"} or \code{bscov="prop"} in \code{\link{mvmeta}}, and, if not provided, it set internally to a 0 or identity matrix, respectively.}
   \item{Psicor }{  either a scalar, vector or matrix representing the between-study correlation(s) (see \code{\link{inputcov}}). Only used when \code{bscov="cor"} in \code{\link{mvmeta}}.}
   \item{Scor }{ either a scalar, vector or matrix representing the within-study correlation(s) to be inputted when the covariances are not provided, and ignored if they are (see \code{\link{inputcov}}).}
+  \item{augment }{ logical. If data augmentation must be performed internally. To be used with caution, see \code{\link{augment}}.}
+  \item{augvar }{ multiplier for inputting the missing variances, to be passed as an argument to \code{\link{augment}}.}
   \item{igls.iter }{ number of iteration of the iterative generalized least square algorithm to be run in the hybrid optimization procedure of linkelihood-based models to provide the starting value. See \code{\link{iter.igls}}.}
   \item{vc.adj }{ logical. If \code{TRUE}, an adjustement to the way the marginal variance part is computed in the variance components estimator is applied. See \code{\link{mvmeta.vc}}.}
   \item{reltol }{ relative convergence tolerance in methods involving optimization procedures. The algorithm stops if it is unable to reduce the value by a factor of \code{reltol * (abs(val) + reltol)} at a step.}

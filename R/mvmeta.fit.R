@@ -23,6 +23,14 @@ function(X, y, S, offset=NULL, method="reml", bscov="unstr", control=list()) {
   nm <- rownames(y)
   np <- colnames(X)
 #
+  # DATA AUGMENTATION
+  if(control$augment) {
+    augdata <- augment(y,S,augvar=control$augvar)
+    y <- augdata[,seq(k)]
+    S <- augdata[,-seq(k)]
+    nay[nay] <- FALSE
+  }
+#
   # EXCLUDE OFFSET (RECYCLING RULE)
   if(!is.null(offset)) y <- y - offset
 #
@@ -57,7 +65,6 @@ function(X, y, S, offset=NULL, method="reml", bscov="unstr", control=list()) {
   fit$method <- method
   fit$bscov <- bscov
   fit$offset <- offset
-  fit$S <- S
   fit$dim <- list(k=k,m=m,p=p)
   fit$df <- list(nall=nall,nobs=nall-(method=="reml")*fit$rank,
     df=nall-fit$df.residual,fixed=fit$rank,random=ifelse(method=="fixed",0,

@@ -12,12 +12,12 @@ The dataset contains the results of ten studies that assess the effectiveness of
 
 \format{
   A data frame with 10 observations on the following 7 variables:
-  \describe{
-    \item{\code{study}}{ study ID.}
-    \item{\code{sbp, sbp_se}}{ estimated difference and its standard error in systolic blood pressure.}
-    \item{\code{dbp, dbp_se}}{ estimated difference and its standard error in diastolic blood pressure.}
-    \item{\code{rho}}{ within-study correlation between the estimated differences in systolic and diastolic blood pressure.}
-    \item{\code{ish}}{ indicator for studies on patients with isolated systolic hypertension.}
+  \itemize{
+    \item{\code{study}: study ID.}
+    \item{\code{sbp, sbp_se}: estimated difference and its standard error in systolic blood pressure.}
+    \item{\code{dbp, dbp_se}: estimated difference and its standard error in diastolic blood pressure.}
+    \item{\code{rho}: within-study correlation between the estimated differences in systolic and diastolic blood pressure.}
+    \item{\code{ish}: indicator for studies on patients with isolated systolic hypertension.}
   }
 }
 

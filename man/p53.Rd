@@ -12,10 +12,10 @@ The dataset includes studies providing evidence about whether the presence of mu
 
 \format{
   A data frame with 6 observations on the following 5 variables:
-  \describe{
-    \item{\code{study}}{ study ID.}
-    \item{\code{y1, V1}}{ estimates and associated variance of the log hazard ratio for disease-free survival.}
-    \item{\code{y2, V2}}{ estimates and associated variance of the log hazard ratio for overall survival.}
+  \itemize{
+    \item{\code{study}: study ID.}
+    \item{\code{y1, V1}: estimate and associated variance of the log hazard ratio for disease-free survival.}
+    \item{\code{y2, V2}: estimate and associated variance of the log hazard ratio for overall survival.}
   }
 }
 

@@ -12,11 +12,11 @@ This is a nationally representative, longitudinal study of more than 21,000 9th 
 
 \format{
   A data frame with 8 observations on the following 10 variables:
-  \describe{
-    \item{\code{race}}{ race group.}
-    \item{\code{b1, b2, b3}}{ estimated regression coefficients for sex, socio-economic status and sex by socio-economic status interaction, respectively, on the mathematics standardized score.}
-    \item{\code{V11, V22, V33}}{ variances of the estimated coefficients.}
-    \item{\code{V12, V13, V23}}{ covariances of the estimated coefficients.}
+  \itemize{
+    \item{\code{race}: race group.}
+    \item{\code{b1, b2, b3}: estimated regression coefficients for sex, socio-economic status and sex by socio-economic status interaction, respectively, on the mathematics standardized score.}
+    \item{\code{V11, V22, V33}: variances of the estimated coefficients.}
+    \item{\code{V12, V13, V23}: covariances of the estimated coefficients.}
   }
 }
 

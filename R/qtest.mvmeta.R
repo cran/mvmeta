@@ -19,6 +19,7 @@ function(object, ...) {
   Xlist <- lapply(seq(dim$m),function(i) diag(1,dim$k)[!nay[i,],,drop=FALSE]%x%
     X[i,,drop=FALSE])
   ylist <- lapply(seq(dim$m),function(i) y[i,][!nay[i,]])
+  if(dim(S)[2]==ncol(y)) S <- inputcov(sqrt(S),object$control$Scor)
   Slist <- lapply(seq(dim$m),function(i) 
     xpndMat(S[i,])[!nay[i,],!nay[i,],drop=FALSE])
   nalist <- lapply(seq(dim$m),function(i) nay[i,])

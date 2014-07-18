@@ -45,6 +45,7 @@ function(object, se=FALSE, pi=FALSE, vcov=FALSE, pi.level=0.95,
 #
   # COMPUTE Sigma, WITH VARIANCES CORRESPONDING TO MISSING FILLED IN WITH 10^10
   # NB: FOR COMPLETELY MISSING OBS, SET TO NA LATER THROUGH X
+  if(dim(S)[2]==ncol(y)) S <- inputcov(sqrt(S),object$control$Scor)
   Psi <- if(!is.null(object$Psi)) object$Psi else diag(0,object$dim$k)
   Sigmalist <- lapply(seq(nrow(X)),function(i) {
     if(all(nay[i,])) return(diag(1,object$dim$k))

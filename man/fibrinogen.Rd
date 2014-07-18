@@ -12,11 +12,11 @@ The Fibrinogen Studies Collaboration is a meta-analysis of individual data on 15
 
 \format{
   A data frame with 31 observations on the following 15 variables:
-  \describe{
-    \item{\code{cohort}}{ study ID.}
-    \item{\code{b2, b3, b4, b5}}{ estimated log-hazard ratios for the second to fifth categories versus the baseline category.}
-    \item{\code{V_2_2, V_3_3, V_4_4, V_5_5}}{ variances of the estimated log-hazard ratios.}
-    \item{\code{V_2_3, V_2_4, V_2_5, V_3_4, V_3_5, V_4_5}}{ covariances of the estimated log-hazard ratios.}
+  \itemize{
+    \item{\code{cohort}: study ID.}
+    \item{\code{b2, b3, b4, b5}: estimated log-hazard ratios for the second to fifth categories versus the baseline category.}
+    \item{\code{V_2_2, V_3_3, V_4_4, V_5_5}: variances of the estimated log-hazard ratios.}
+    \item{\code{V_2_3, V_2_4, V_2_5, V_3_4, V_3_5, V_4_5}: covariances of the estimated log-hazard ratios.}
   }
 }
 

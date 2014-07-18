@@ -1,4 +1,23 @@
 ==============================================================================
+Changes in mvmeta 0.4.4 (18 Jul 2014)
+=====================================
+
+Major changes
+-------------
+
+    o Data augmentation now available trhough the new function augment(). This
+      is called internally with the argument 'augment' in the control list.
+
+    o Help pages of data sets changed to avoid warnings, as requested by the
+       R CRAN.
+
+Minor changes
+-------------
+
+    o Documentation changed accordingly.
+
+
+==============================================================================
 Changes in mvmeta 0.4.3 (08 Apr 2014)
 =====================================
 

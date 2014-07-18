@@ -12,13 +12,13 @@ The dataset contains the results of 24 trials comparing four alternative interve
 
 \format{
   A data frame with 24 observations on the following 19 variables:
-  \describe{
-    \item{\code{study}}{ study ID.}
-    \item{\code{design}}{ design of the trial, reporting the interventions being compared.}
-    \item{\code{dA, dB, dC, dD}}{ number of successes for each intervention.}
-    \item{\code{nA, nB, nC, nD}}{ number of participants for each intervention.}
-    \item{\code{yB, yC, yD}}{ estimated log-odds ratios for interventions B, C and D versus intervention A.}
-    \item{\code{SBB, SBC, SBD, SCC, SCD, SDD}}{ variances and co-variances of the estimated log-odds ratios for interventions B, C and D versus intervention A. The order corresponds to the lower triangular elements of the (co)variance matrix taken by column.}
+  \itemize{
+    \item{\code{study}: study ID.}
+    \item{\code{design}: design of the trial, reporting the interventions being compared.}
+    \item{\code{dA, dB, dC, dD}: number of successes for each intervention.}
+    \item{\code{nA, nB, nC, nD}: number of participants for each intervention.}
+    \item{\code{yB, yC, yD}: estimated log-odds ratios for interventions B, C and D versus intervention A.}
+    \item{\code{SBB, SBC, SBD, SCC, SCD, SDD}: variances and co-variances of the estimated log-odds ratios for interventions B, C and D versus intervention A. The order corresponds to the lower triangular elements of the (co)variance matrix taken by column.}
   }
 }
 

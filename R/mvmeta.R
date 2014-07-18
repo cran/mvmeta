@@ -81,6 +81,7 @@ function(formula, S, data, subset, method="reml", bscov="unstr", model=TRUE,
 #  COMPLETE THE LIST OF COMPONENTS
 #
   fit$model <- if(model) mf else NULL
+  fit$S <- S
   fit$na.action <- attr(mf,"na.action")
   fit$call <- call
   fit$formula <- formula

@@ -7,6 +7,7 @@ export(
   mvmeta.fixed, mvmeta.ml, mvmeta.reml, mvmeta.mm, mvmeta.vc,
   mvmetaSim,
   mvmeta.control,
+  augment,
   inputcov,
   summary.mvmeta,
   print.mvmeta, print.summary.mvmeta,
