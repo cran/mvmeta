@@ -31,6 +31,7 @@ function(S, y, narm=NULL, subset=NULL) {
 #
   # IF A LIST
   if(is.list(S)) {
+    S <- lapply(S,as.matrix)
     if(!is.null(subset)) S <- S[subset]
     if(!is.null(narm)) S <- S[-narm]
     if(length(S)!=m) stop(mes)

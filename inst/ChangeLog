@@ -1,4 +1,24 @@
 ==============================================================================
+Changes in mvmeta 0.4.5 (10 Aug 2014)
+=====================================
+
+Major changes
+-------------
+
+    o Function augment() included in version 0.4.4 is replaced by inputna(). The
+      reason is the potential confusion in terminology with data augmentation
+      performed in network meta-analysis.
+
+Minor changes
+-------------
+
+    o Fixed bug in mkS() occurring with univariate models and S supplied as a
+      list.
+
+    o Documentation changed accordingly.
+
+
+==============================================================================
 Changes in mvmeta 0.4.4 (18 Jul 2014)
 =====================================
 

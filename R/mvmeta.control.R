@@ -3,7 +3,7 @@
 #
 mvmeta.control <- 
 function(optim=list(), showiter=FALSE, maxiter=100, initPsi=NULL, Psifix=NULL,
-  Psicor=0, Scor=0, augment=FALSE, augvar=10^4, igls.iter=10, vc.adj=TRUE,
+  Psicor=0, Scor=0, inputna=FALSE, inputvar=10^4, igls.iter=10, vc.adj=TRUE,
   reltol=sqrt(.Machine$double.eps), set.negeigen=sqrt(.Machine$double.eps)) {
 #
 ################################################################################
@@ -20,6 +20,6 @@ function(optim=list(), showiter=FALSE, maxiter=100, initPsi=NULL, Psifix=NULL,
 #
   # RETURN
 	list(optim=optim,showiter=showiter,maxiter=maxiter,initPsi=initPsi,
-    Psifix=Psifix,Psicor=Psicor,Scor=Scor,augment=augment,augvar=augvar,
+    Psifix=Psifix,Psicor=Psicor,Scor=Scor,inputna=inputna,inputvar=inputvar,
     igls.iter=igls.iter,vc.adj=vc.adj,reltol=reltol,set.negeigen=set.negeigen)
 }
