@@ -25,19 +25,13 @@ Assuming a meta-analysis or meta-regression based on \eqn{k} outcomes:
 }
 
 \section{Details}{
-The structuring of the (co)variance matrix of random effects is only available for models estimated through (restricted) maximum likelihood.
-
-The unrestricted parameters defining the between-study matrix are estimated in the iterative optimization algorithm. The starting values are usually obtained by a iterative generalized least square algorithm (see the specific \code{\link[=mlprof.fn]{likelihood functions}}). The algorithm computes an unstructured matrix. For structured forms, the starting values for variances and/or correlations are taken as the average of the related elements. Although rarely needed and not recommeded, the user can provide a starting value of the (co)variance matrix, from which the parameters are derived (see \code{\link{mvmeta.control}}).
-}
-
-\section{Details}{
 The structuring of the between-study (co)variance matrix of random effects is only available for models estimated through (restricted) maximum likelihood.
 
 The unrestricted parameters defining the between-study matrix are estimated in the iterative optimization algorithm. The starting values are usually obtained by a iterative generalized least square algorithm (see the specific \code{\link[=mlprof.fn]{likelihood functions}}). The algorithm computes an unstructured matrix. For structured forms, the starting values for variances and/or correlations are taken as the average of the related elements. Although rarely needed and not recommeded, the user can provided a starting value of the (co)variance matrix, from which the parameters are derived (see \code{\link{mvmeta.control}}).
 }
 
 \references{
-Pinheiro JC and Bates DM (2000). Mixed-Effects Models in S and S-PLUS. New York, Springer Verlag.
+Pinheiro JC and Bates DM (2000). \emph{Mixed-Effects Models in S and S-PLUS}. New York, Springer Verlag.
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}

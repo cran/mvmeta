@@ -47,7 +47,7 @@ Ritz J, Demidenko E, Spiegelman G (2008). Multivariate meta-analysis for data co
 
 Berkey, CS, Hoaglin DC, et al. (1998). Meta-analysis of multiple outcomes by regression with random effects. \emph{Statistics in Medicine}. \bold{17}(22):2537--2550.
 
-Liu Q, Cook NR, Bergstrom A, Hsieh CC (2009). A two-stage hierarchical regression model for meta-analysis of epidemiologic nonlinear dose-response data. \bold{53}(12):4157--4167
+Liu Q, Cook NR, Bergstrom A, Hsieh CC (2009). A two-stage hierarchical regression model for meta-analysis of epidemiologic nonlinear dose-response data. \emph{Computational Statistics and Data Analysis}. \bold{53}(12):4157--4167
 
 Sidik K, Jonkman JN (2007). A comparison of heterogeneity variance estimators in combining results of studies. \emph{Statistics in  Medicine}. \bold{26}(9):1964--81.
 }

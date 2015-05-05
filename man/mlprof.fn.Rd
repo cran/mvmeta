@@ -45,7 +45,7 @@ These functions actually specify the \emph{profiled} version of the (restricted)
 
 The random-effects parameters in \code{par} depends on the chosen \code{\link[=mvmetaCovStruct]{structure}} for the between-study (co)variance matrix. The parameterization ensures the positive-definiteness of the estimated matrix. A Cholesky decomposition is then performed on the marginal (co)variance matrix in order to re-express the problem as standard least square equations, an approach which speeds up the computation of matrix inverses and determinants. These equations are finally solved through a QR decomposition, which guarantees stability. More details are provided in the references below.
 
-Some parameters of the fitting procedures are determined through \code{\link{mvmeta.control}}.
+Some parameters of the fitting procedures are determined through \code{\link{mvmeta.control}}. Specifically, the user can obtain the Hessian matrix of the estimated parameters (appropriately transformed, see \code{\link{mvmetaCovStruct}}) in the optimization function by setting \code{hessian=TRUE}, and specific control settings in the optimization process can be defined by the control list argument \code{optim}. These values are passed to the optimization function \code{\link{optim}}.
 }
 
 \value{
@@ -59,7 +59,7 @@ Goldstein H (1986). Multilevel mixed linear model analysis using iterative gener
 
 Lindstrom MJ and Bates DM (1988). Newton-Raphson and EM algorithms for linear mixed-effects models for repeated-measures data. \emph{Journal of the American Statistical Association}. \bold{83}(404):1014--1022.
 
-Pinheiro JC and Bates DM (2000). Mixed-Effects Models in S and S-PLUS. New York, Springer Verlag.
+Pinheiro JC and Bates DM (2000). \emph{Mixed-Effects Models in S and S-PLUS}. New York, Springer Verlag.
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}

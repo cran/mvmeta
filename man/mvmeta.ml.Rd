@@ -29,7 +29,7 @@ Assuming a meta-analysis or meta-regression based on \eqn{m} studies, \eqn{k} ou
 }
 
 \details{
-The estimation involves \eqn{kp} fixed-effects coefficients and a number of random-effects parameters defining the between-study (co)variance matrix, depending on the chosen \code{\link[=mlprof.fn]{(co)variance structure}}. Up to \eqn{k(k+1)/2} parameters are needed for an unstructured form, while a smaller set are required for structed matrices
+The estimation involves \eqn{kp} fixed-effects coefficients and a number of random-effects parameters defining the between-study (co)variance matrix, depending on the chosen \code{\link[=mvmetaCovStruct]{(co)variance structure}}. Up to \eqn{k(k+1)/2} parameters are needed for an unstructured form, while a smaller set are required for structed matrices
 
 The hybrid estimation procedure is based first on few runs of iterative generalized least square algorithm and then quasi-Newton iterations, using specific \code{\link[=mlprof.fn]{likelihood functions}}, until convergence. The estimation algorithm adopts a profiled (or concentrated) approach, that is expressed only in terms of the random-effects parameters. Cholesky and and QR decompositions are used for computational stability and efficiency, and for assuring the positive-definiteness of the estimated between-study (co)variance matrix. See the help page for the \code{\link[=mlprof.fn]{likelihood functions}} for further details. The method is described in details in Gasparrini and collaborators (2012) (see references below).
 }
@@ -41,7 +41,7 @@ These functions return an intermediate list object, whose components are then pr
 \references{
 Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. \bold{31}(29):3821--3839. [Freely available \href{http://www.ag-myresearch.com/statmed2012.html}{\bold{here}}].
 
-Pinheiro JC and Bates DM (2000). Mixed-Effects Models in S and S-PLUS. New York, Springer Verlag.
+Pinheiro JC and Bates DM (2000). \emph{Mixed-Effects Models in S and S-PLUS}. New York, Springer Verlag.
 
 Lindstrom MJ and Bates DM (1988). Newton-Raphson and EM algorithms for linear mixed-effects models for repeated-measures data. \emph{Journal of the American Statistical Association}. \bold{83}(404):1014--1022.
 

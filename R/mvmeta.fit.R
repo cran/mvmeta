@@ -23,7 +23,7 @@ function(X, y, S, offset=NULL, method="reml", bscov="unstr", control=list()) {
   nm <- rownames(y)
   np <- colnames(X)
 #
-  # MSSING REPLACEMENT THROUGH DATA AUGMENTATION
+  # MISSING REPLACEMENT THROUGH DATA AUGMENTATION
   if(control$inputna) {
     augdata <- inputna(y,S,inputvar=control$inputvar)
     y <- augdata[,seq(k)]

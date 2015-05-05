@@ -1,4 +1,22 @@
 ==============================================================================
+Changes in mvmeta 0.4.7 (05 May 2015)
+=====================================
+
+Minor changes
+-------------
+
+    o Models fitted using ikelihood-based estimators now return also the objects
+      'par' and (optionally) 'hessian'. The former are the original parameters
+      estimated in the optimization process, corresponding to trasformations of
+      entries of the between-study (co)variance matrix of random effects,
+      depending on the chosen structure. The latter is the related Hessian
+      matrix, which is only returned with argument 'hessian=TRUE' (default to
+      FALSE) in mvmeta.control().
+
+    o Documentation changed accordingly.
+
+
+==============================================================================
 Changes in mvmeta 0.4.5 (10 Aug 2014)
 =====================================
 

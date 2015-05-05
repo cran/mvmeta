@@ -15,7 +15,7 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, bscov, control, ...) {
   # NB: ARGUMENT CONTROL NAMED DIFFERENTLY TO AVAOID CONFLICT WITH OPTIM
   opt <- optim(par=par,fn=fn,gr=gr,Xlist=Xlist,ylist=ylist,Slist=Slist,
     nalist=nalist,k=k,m=m,p=p,nall=nall,bscov=bscov,ctrl=control,
-    method="BFGS",control=control$optim)
+    method="BFGS",control=control$optim,hessian=control$hessian)
 #    
   # Psi: ESTIMATED BETWEEN-STUDY (CO)VARIANCE MATRIX
   Psi <- par2Psi(opt$par,k,bscov,control)
@@ -35,8 +35,9 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, bscov, control, ...) {
   rank <- qrinvtUX$rank
 #
   # RETURN
-  list(coefficients=gls$coef,vcov=vcov,Psi=Psi,residuals=res,
+  c(list(coefficients=gls$coef,vcov=vcov,Psi=Psi,residuals=res,
     fitted.values=fitted,df.residual=nall-rank-length(par),rank=rank,
-    logLik=opt$value,converged=opt$convergence==0,niter=opt$counts[[2]],
-    control=control)
+    logLik=opt$value,converged=opt$convergence==0,par=opt$par),
+    if(!is.null(opt$hessian)) list(hessian=opt$hessian),
+    list(niter=opt$counts[[2]],control=control))
 }

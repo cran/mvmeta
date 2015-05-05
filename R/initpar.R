@@ -20,7 +20,7 @@ function(Xlist, ylist, Slist, nalist, k, m, p, bscov, control) {
   # CHECK AND RETURN STARTING VALUES (IF PROVIDED)
   if(!is.null(initPsi <- control$initPsi)) {
     if(is.vector(initPsi)) initPsi <- xpndMat(initPsi)
-    initPsi <- checkPD(initPsi,k,"iniPsi")
+    initPsi <- checkPD(initPsi,k,"initPsi")
   # IF NOT PROVIDED AND NEEDED, DETERMINE Psi WITH IGLS
   } else if(!bscov%in%c("fixed")) {
     initPsi <- diag(0.001,k)
