@@ -73,7 +73,7 @@ function(x, digits=4, ...) {
 #
   if(!x$method=="fixed") {  
     cat("Between-study random-effects (co)variance components","\n",sep="")
-    if(x$dim$k>1L) cat("\t","Structure: ",bscovlabel[which(x$bscov==bscovname)],
+    if(x$dim$k>1L) cat("Structure: ",bscovlabel[which(x$bscov==bscovname)],
       "\n",sep="")
 #
     # STANDARD DEVIATIONS

@@ -58,6 +58,7 @@ export(
 #
 import(stats, graphics, grDevices)
 importFrom(utils, packageDescription)
+importFrom(utils, modifyList)
 #
 #################
 # METHODS

@@ -54,7 +54,7 @@ function(Xlist, ylist, Slist, nalist, k, m, p, bscov, control) {
     },
     # AUTOREGRESSIVE OF FIRST ORDER
     ar1 = {
-      if(k<2) stop("bscov='hcs' only meaningful with more than 1 outcome")
+      if(k<2) stop("bscov='ar1' only meaningful with more than 1 outcome")
       cor <- mean(cov2cor(initPsi)[row(initPsi)-col(initPsi)==1L])
       c(log(diag(initPsi)), (qlogis((cor+1)/2)))
     },

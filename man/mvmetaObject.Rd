@@ -19,7 +19,7 @@ Objects of class \code{"mvmeta"} are lists with defined components. Dimensions o
   \item{df.residual }{ the residual degrees of freedom.}
   \item{rank }{ the numeric rank of the fitted model.}
   \item{logLik }{ the (restricted) log-likelihood of the fitted model. Set to \code{NA} for non-likelihood models.}
-  \item{converged, niter }{ for models with iterative estimation methods, logical scalar indicating if the algorithm eventually converged, and number of iterations.}
+  \item{converged, niter }{ for models with iterative estimation methods, logical scalar indicating if the algorithm eventually converged.}
   \item{par }{ parameters estimated in the optimization process when using likelihood-based estimators. These correspond to trasformations of entries of the between-study (co)variance matrix of random effects, dependent on chosen \code{\link[=mvmetaCovStruct]{(co)variance structure}}. See also the \code{\link[=mlprof.fn]{optimizations algorithms}} for details.}
   \item{hessian }{ Hessian matrix of the estimated parameters in \code{par} above, only returned if \code{hessian=TRUE} in \code{\link{mvmeta.control}}. See the related \code{\link[=mlprof.fn]{optimizations algorithms}} for details.}
   \item{negeigen }{ for models fitted through method of moments, the number of negative eigenvalues in the estimated between-study (co)variance matrix, then set to 0.}
@@ -52,7 +52,7 @@ All the methods above are visible (exported from the namespace) and documented. 
 }
 
 \references{
-Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. \bold{31}(29):3821--3839. [Freely available \href{http://www.ag-myresearch.com/statmed2012.html}{\bold{here}}].
+Gasparrini A, Armstrong B, Kenward MG (2012). Multivariate meta-analysis for non-linear and other multi-parameter associations. \emph{Statistics in Medicine}. \bold{31}(29):3821--3839. [Freely available \href{http://www.ag-myresearch.com/2012_gasparrini_statmed.html}{\bold{here}}].
 }
 
 \author{Antonio Gasparrini, \email{antonio.gasparrini@lshtm.ac.uk}}

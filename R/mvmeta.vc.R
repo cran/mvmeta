@@ -32,7 +32,8 @@ function(Xlist, ylist, Slist, nalist, k, m, p, nall, control, ...) {
         IH <- diag(1,sum(!na)) - X%*%invtXWXtot%*%crossprod(X,tcrossprod(invU))
         # COMPUTE EIGEN DECOMPOSITION AND THEN THE SQUARE ROOT OF THE INVERSE
         eig <- eigen(IH)
-        invsqrtIH <- with(eig,vectors%*%(diag(1/sqrt(values),k))%*%solve(vectors))
+        invsqrtIH <- with(eig,vectors%*%(diag(1/sqrt(values),length(values)))%*%
+            solve(vectors))
         return(invsqrtIH%*%res)
         },reslist,Xlist,gls$invUlist,nalist,SIMPLIFY=FALSE)
     }
