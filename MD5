@@ -1,6 +1,6 @@
-3442354dd2f7b5ec1c96ebf0d927f0c3 *DESCRIPTION
-744be0ed86ff7f2ddaf854e4be85d6f9 *NAMESPACE
-7ed77c93b72448e14bf6b52ed2db5ec6 *NEWS.md
+9c5d3e7247c021dc7dda4d913b00c8ba *DESCRIPTION
+2608179fa9b712bc3dc2e463f61006d5 *NAMESPACE
+914c0b183e87af75d2c4bb3c469356e0 *NEWS.md
 ea42cd98cb1a424339b9b20c6ab90e7d *R/blup.mvmeta.R
 f6a6d29eeaf141b260715f52a50627cc *R/checkPD.R
 cb276f69398c8fb2de0b57e84d330d96 *R/coef.mvmeta.R
@@ -51,13 +51,16 @@ e09f19d0e01590657d652a598a299b03 *data/hyp.rda
 0cd8157dac216c75353e394615c7089e *data/p53.rda
 00aa2f3d448a9dadd53df55f0c1773b2 *data/smoking.rda
 3d2ff29a7b1b13883cac3b2d2f9f7d0b *inst/CITATION
-7ed77c93b72448e14bf6b52ed2db5ec6 *inst/NEWS
+914c0b183e87af75d2c4bb3c469356e0 *inst/NEWS
 7bd8c1ae48e76fc913ebf241f374f5ce *man/berkey98.Rd
+2b832782e1fdd84648be29727cdab4cd *man/blup.Rd
 8e581dacdd72c3c7ed3f7ee93d7e23e3 *man/blup.mvmeta.Rd
 fad637c9601154ab0eb0a8833c33023d *man/coef.mvmeta.Rd
 44a8f75248beaf39b7b5cc75e7c3fa25 *man/fibrinogen.Rd
 04408cd7cf7703cf0aa15545396568ea *man/hsls.Rd
 46cb1af7918e2bde57e73d521d40f437 *man/hyp.Rd
+95362aaad2947175b57ef66cf54a9aef *man/inputcov.Rd
+6df9fab60171325ac1a9440b0b168ba8 *man/inputna.Rd
 c4e0980d78d9550b551808cc0454649e *man/logLik.mvmeta.Rd
 6c2c26d01d94b6252601176e3115cde6 *man/mlprof.fn.Rd
 0252af80c92fe6a5b0a3ed6ab1c5ca13 *man/model.frame.mvmeta.Rd
@@ -74,6 +77,8 @@ c306dd83293923b0f0609a314c9bf95f *man/mvmeta.ml.Rd
 7c517583520bb225a980962bc8ad4b15 *man/na.omit.data.frame.mvmeta.Rd
 d684e1f6fd6522743753fea489216b22 *man/p53.Rd
 47fa4a4e7efc81a8d174708482d68f92 *man/predict.mvmeta.Rd
+829b16a1f8732ffa3674fe59ba65e369 *man/qtest.Rd
 8c3d5ab44e37da70a5e36a4ea014fd5c *man/qtest.mvmeta.Rd
 f67dd12f16c4831d5de2977f9ed64472 *man/smoking.Rd
 d19cb8abbe3165aa6b15a156d5c7e94e *man/summary.mvmeta.Rd
+d983ab44b5876d28c8c204798f50d451 *man/vechMat.Rd
